@@ -6,12 +6,24 @@
 Game *game = NULL;
 
 int main(int argc, const char * argv[]){
+    int FPS = 60;
+    int frameDelta = 1000 / FPS;
     game = initGame("The Last Engineer", 800, 600, false);
+
+    Uint32 frameStart;
+    int frameTime;
+
     while(game->isRunning){
+        frameStart = SDL_GetTicks();
+        
         game->handleEvents();
         game->update();
         game->render();
+
+        frameTime = SDL_GetTicks() - frameStart;
+        if(frameDelta > frameTime) SDL_Delay(frameDelta - frameTime);
     }
+
     game->clean();
     return 0;
 }

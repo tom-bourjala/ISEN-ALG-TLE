@@ -31,6 +31,7 @@ void render(){
     //Render EFFECTS
     //Render OBJECTS
     //Render UI
+    SDL_RenderPresent(GAME->renderer);
 }
 
 void clean(){

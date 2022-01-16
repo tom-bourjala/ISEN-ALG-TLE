@@ -10,9 +10,9 @@ typedef struct
     void (*update)(void);
     void (*render)(void);
     void (*clean)(void);
-    bool isRunning;
     SDL_Window *window;
     SDL_Renderer *renderer;
+    bool isRunning;    
 } Game;
 
 Game *initGame(const char* title, int width, int height, bool fullscreen);
