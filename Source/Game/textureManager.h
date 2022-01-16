@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 #include <stdio.h>
-#include <stlib.h>
+#include <stdlib.h>
+#include <stdbool.h>
 #include <time.h>
 
 typedef struct

@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 #include <stdio.h>
-#include <stlib.h>
+#include <stdlib.h>
+#include <stdbool.h>
 #include <time.h>
 
 typedef struct
@@ -9,24 +10,26 @@ typedef struct
     void (*update)(void);
     void (*render)(void);
     void (*clean)(void);
-    bool (*isRunning)(void);
+    bool isRunning;
     SDL_Window *window;
     SDL_Renderer *renderer;
 } Game;
 
 Game *initGame(const char* title, int width, int height, bool fullscreen);
 
-typedef struct
-{
+typedef struct GameObject GameObject;
+
+struct GameObject{
     void (*update)(GameObject *self);
     void (*render)(GameObject *self);
     void (*delete)(GameObject *self);
     bool (*isAlive)(GameObject *self);
     SDL_Window *window;
     void *actor;
-} GameObject;
+};
 
 typedef enum{BALLISTIC, PLASMA, EXPLOSIVE} weaponType;
+
 
 typedef struct{
     int speed;
