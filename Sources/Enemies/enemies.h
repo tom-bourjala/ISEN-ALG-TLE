@@ -6,12 +6,8 @@
 
 typedef struct
 {
-    void (*handleEvents)(void);
-    void (*update)(void);
-    void (*render)(void);
-    void (*clean)(void);
-    bool (*isRunning)(void);
-    SDL_Window *window;
-    SDL_Renderer *renderer;
-    textureManager *textureManager;
+    int pv;
+    int pvMax;
+    int shield;
+    int shieldMax;
 } Enemy;
