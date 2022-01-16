@@ -18,14 +18,29 @@ Game *initGame(const char* title, int width, int height, bool fullscreen);
 
 typedef struct
 {
-    void (*handleEvents)(void);
-    void (*update)(void);
-    void (*render)(void);
-    void (*clean)(void);
-    bool (*isRunning)(void);
+    void (*update)(GameObject *self);
+    void (*render)(GameObject *self);
+    void (*delete)(GameObject *self);
+    bool (*isAlive)(GameObject *self);
     SDL_Window *window;
     void *actor;
 } GameObject;
+
+typedef enum{BALLISTIC, PLASMA, EXPLOSIVE} weaponType;
+
+typedef struct{
+    int speed;
+    int damage;
+    weaponType type;
+    GameObject *parent;
+} projectile;
+
+typedef struct{
+    int damage;
+    weaponType type;
+    GameObject *parent;
+    GameObject *target;
+} hit;
 
 typedef struct
 {
