@@ -10,8 +10,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifndef SMART_UI
-#define SMART_UI
+#ifndef SMART_LIST
+#define SMART_LIST
 
 
 
