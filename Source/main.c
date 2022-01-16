@@ -22,8 +22,8 @@ int main(int argc, const char * argv[]){
 
         frameTime = SDL_GetTicks() - frameStart;
         if(frameDelta > frameTime) SDL_Delay(frameDelta - frameTime);
+        else printf("\033[1;33mPerformances Issue : %d ms frame processing time excess.\033[0m\n", frameTime - frameDelta);
     }
-
     game->clean();
     return 0;
 }
