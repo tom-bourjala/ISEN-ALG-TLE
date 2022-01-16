@@ -2,7 +2,7 @@
  * @file SmartList.c
  * @brief Functions for the management of lists
  * 
- * @copyright Copyright (c) 2021
+ * @copyright Copyright (c) 2022
  * 
  */
 
@@ -20,7 +20,6 @@
 chainItem *newChainItem(void *data){
     chainItem *newItem = malloc(sizeof(chainItem));
     newItem->data = data;
-    newItem->index = 0;
     newItem->previous = NULL;
     newItem->next = NULL;
     return newItem;
@@ -46,28 +45,11 @@ chainItem *getItemAtIndex(list list, int index){
     return target;
 }
 
-/**
- * @brief Update indexes of a list
- * 
- * @param[in] list list to update
- */
-void updateIndexs(list *list){
-    chainItem *item = list->first;
-    int index = 0;
-    while(item != NULL){
-        item->index = index;
-        index++;
-        item = item->next;
-    }
-    list->last = getItemAtIndex(*list, list->length-1);
-}
-
 void *getDataAtIndex(list list, int index){
-    if(index < 0){
+    if(index < 0)
         printf("\033[1;31mSmartList_ERROR : Get Data at negative index\n\033[0m");
-        exit(1);
-    }
-    return getItemAtIndex(list, index)->data;
+    void *data = getItemAtIndex(list, index)->data;
+    return data;
 }
 
 /**
@@ -78,10 +60,8 @@ void *getDataAtIndex(list list, int index){
  * @param[in] index 
  */
 void putItemAtIndex(list *list, chainItem *item, int index){
-    if(index < 0){
+    if(index < 0)
         printf("\033[1;31mSmartList_ERROR : Put Item at negative index\n\033[0m");
-        exit(1);
-    }
     if(item == NULL || list->length < index) return;
     item->previous = getItemAtIndex(*list, index-1);
     item->next = getItemAtIndex(*list, index);
@@ -95,14 +75,11 @@ void putItemAtIndex(list *list, chainItem *item, int index){
     if(index == 0) list->first = item;
     if(index == list->length-1) list->last = item;
     list->length++;
-    updateIndexs(list);
 }
 
 void deleteItemAtIndex(list *list, int index){
-    if(index < 0){
+    if(index < 0)
         printf("\033[1;31mSmartList_ERROR : Delete Item at negative index (%d)\n\033[0m", index);
-        exit(1);
-    }
     if(list->length < index) return;
     chainItem *item = getItemAtIndex(*list, index);
     if(item->previous)
@@ -112,7 +89,6 @@ void deleteItemAtIndex(list *list, int index){
     if(index == 0) list->first = item->next;
     if(index == list->length-1) list->last = item->previous;
     list->length--;
-    updateIndexs(list);
     free(item);
 }
 
@@ -143,7 +119,14 @@ chainItem *searchItemInList(list list, void *data){
 int searchIndexInList(list list, void *data){
     chainItem *result = searchItemInList(list, data);
     if(result == NULL) return -404;
-    return result->index;
+    chainItem *item = list.first; 
+    int index = 0;
+    while(item != NULL){
+        if(list.comparator(item->data, data) == 0) return index;
+        item = item->next;
+    }
+    printf("\033[1;31mSmartList_ERROR : Inconsistant search results between searchItemInList and searchIndexInList(%p)\n\033[0m", data);
+    return -404;
 }
 
 void *searchDataInList(list list, void *data){
@@ -162,55 +145,10 @@ void emptyList(list *list){
     while(list->length > 0) deleteItemAtIndex(list, 0);
 }
 
-// void saveChainFileAs(chainItem *list, char *fileName){
-//     FILE* file = NULL;
-//     file = fopen(fileName, "w+");
-//     fputc('[', file);
-//     chainItem *item = list;
-//     while(item != NULL){
-//         if(item != list) fputc(',', file);
-//         fprintf(file, "{id:%d,name:\"%s\",mass:\"%.2f\"}", item->data.id, item->data.name, item->data.mass);
-//         item = item->next;
-//     }
-//     fputc(']', file);
-//     fclose(file);
-//     printf("%s a été créé avec succès.", fileName);
-//     charCachePurge();charCachePurge();
-// }
-
-// chainData sMakeChainData(char buffer[100]){
-//     chainData newData = newChainData();
-//     char masssBufffer[10];
-//     sscanf(buffer, "id:%d,name:\"%[^\"]\",mass:\"%[^\"]", &newData.id, newData.name, masssBufffer);
-//     printf("%s\n", masssBufffer);
-//     sscanf(masssBufffer, "%f", &newData.mass);
-//     return newData;
-// }
-
-// chainItem *openChainFile(chainItem *list, char *fileName){
-//     FILE* file = NULL;
-//     file = fopen(fileName, "r");
-//     if(file == NULL){
-//         printf("Echec de l'ouverture de %s.", fileName);
-//         charCachePurge();charCachePurge();
-//         return list;
-//     }
-//     char cursor = fgetc(file);
-//     while(cursor != ']'){
-//         if(cursor ==  '{'){
-//             char buffer[100];
-//             long startPin = ftell(file);
-//             long endPin = startPin;
-//             while(cursor != '}') {
-//                 cursor = fgetc(file);
-//                 endPin++;
-//             }
-//             fseek(file, startPin, SEEK_SET);
-//             fgets(buffer, endPin - startPin, file);
-//             chainPush(&list, sMakeChainData(buffer));
-//         }
-//         if(cursor == ',' || cursor == '[' || cursor == '}') cursor = fgetc(file);
-//     }
-//     fclose(file);
-//     return list;
-// }
+void forEach(list *list, void (*function)(void *data)){
+    chainItem *item = list->first; 
+    while(item != NULL){
+        function(item->data);
+        item = item->next;
+    }
+}

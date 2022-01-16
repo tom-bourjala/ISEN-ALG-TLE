@@ -27,8 +27,6 @@ typedef struct chainItem chainItem;
 struct chainItem{
     /**Pointer to stored data*/
     void *data; 
-    /**Index of item*/
-    int index;
     /**Previous item in list, NULL if none*/
     chainItem *previous;
     /**Next item in list, NULL if none */
@@ -47,7 +45,7 @@ typedef struct{
     /** Last item of the list*/
     chainItem *last;                        
     /** Function to compare data on the list*/
-    compareTwoPointersFunction comparator;  
+    compareTwoPointersFunction comparator;
 } list;
 
 /**
@@ -74,15 +72,6 @@ void *getDataAtIndex(list list, int index);
  * @param list 
  * @param index 
  * @return chainItem* 
- */
-
-chainItem *getItemAtIndex(list list, int index);
-
-/**
- * @brief Delete the Item at Index object
- * 
- * @param list 
- * @param index 
  */
 
 void deleteItemAtIndex(list *list, int index);
@@ -142,6 +131,14 @@ int searchIndexInList(list list, void *data);
  * @return void* 
  */
 void *searchDataInList(list list, void *data);
+
+/**
+ * @brief Apply a specified function to all data of an array
+ * 
+ * @param list List of data
+ * @param function Function to execute for each data
+ */
+void forEach(list *list, void (*function)(void *data));
 
 /**
  * @brief Delete All Items in the list
