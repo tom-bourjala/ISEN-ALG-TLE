@@ -4,6 +4,8 @@
 #include <stdbool.h>
 #include <time.h>
 #include "game.h"
+#include "../Turrets/turrets.h"
+
 
 Game *GAME = NULL;
 
@@ -22,7 +24,11 @@ void handleEvents(){
 }
 
 void update(){
-    printf("UPDATE\n");
+
+}
+
+void renderGameObject(void *object){
+    ((GameObject*)object)->render(object);
 }
 
 void render(){
@@ -30,11 +36,13 @@ void render(){
     //Render MAP
     //Render EFFECTS
     //Render OBJECTS
+    forEach(GAME->gameObjects, renderGameObject);
     //Render UI
     SDL_RenderPresent(GAME->renderer);
 }
 
 void clean(){
+    GAME->textureManager->empty();
     SDL_DestroyWindow(GAME->window);
     SDL_DestroyRenderer(GAME->renderer);
     SDL_Quit();
@@ -59,6 +67,8 @@ Game *initGame(const char* title, int width, int height, bool fullscreen){
     GAME->update = update;
     GAME->render = render;
     GAME->clean = clean;
+    GAME->textureManager = initTexManager(GAME->renderer);
+    GAME->gameObjects = newList(COMPARE_PTR);
+    appendInList(GAME->gameObjects, newGameObject_Turret(*GAME, "debug.turret", 200, 200));
     return GAME;
 }
-

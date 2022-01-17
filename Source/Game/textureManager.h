@@ -1,16 +1,24 @@
 #include <SDL2/SDL.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
-#include <time.h>
+#include "../List/SmartList.h"
+
+#ifndef TEXTUREMANAGER_H
+#define TEXTUREMANAGER_H
 
 typedef struct
 {
-    void (*getTexture)(void);
-    void (*update)(void);
-    void (*render)(void);
-    void (*clean)(void);
-    bool (*isRunning)(void);
-    SDL_Window *window;
-    SDL_Renderer *renderer;
+    SDL_Texture* (*getTexture)(char* string, int modifier);
+    void (*empty)(void);
+    list *texList;
 } textureManager;
+
+typedef struct
+{
+    char* name;
+    SDL_Texture* texture;
+} texture;
+
+textureManager *initTexManager(SDL_Renderer *renderer);
+
+#endif

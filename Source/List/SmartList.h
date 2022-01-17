@@ -13,12 +13,11 @@
 #ifndef SMART_LIST
 #define SMART_LIST
 
-
-
 typedef void (*voidFunction)(void);
 typedef int (*compareTwoPointersFunction)(void *data1, void *data2);
 typedef void (*voidOnePointersFunction)(void *data);
 typedef struct chainItem chainItem;
+int COMPARE_PTR(void *data1, void *data2);
 
 /**
  * @brief Item container of list 

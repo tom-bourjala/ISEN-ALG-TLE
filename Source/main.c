@@ -2,10 +2,12 @@
 #include <stdlib.h>
 #include <time.h>
 #include "./Game/game.h"
+#include "./List/SmartList.h"
+
 
 Game *game = NULL;
 
-int main(int argc, const char * argv[]){
+int main(int argc, const char * argv[]) {
     int FPS = 60;
     int frameDelta = 1000 / FPS;
     game = initGame("The Last Engineer", 800, 600, false);

@@ -11,6 +11,9 @@
 #include <stdlib.h>
 #include "SmartList.h"
 
+int COMPARE_PTR(void *data1, void *data2){
+    return data1 == data2 ? 0 : 1;
+}
 /**
  * @brief init chain item
  * 
@@ -65,7 +68,6 @@ void putItemAtIndex(list *list, chainItem *item, int index){
     if(item == NULL || list->length < index) return;
     item->previous = getItemAtIndex(*list, index-1);
     item->next = getItemAtIndex(*list, index);
-    item->index = index;
 
     if(item->previous != NULL)
         item->previous->next = item;

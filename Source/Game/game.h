@@ -3,6 +3,11 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <time.h>
+#include "textureManager.h"
+#include "../List/SmartList.h"
+
+#ifndef GAME_H
+#define GAME_H
 
 typedef struct
 {
@@ -12,7 +17,9 @@ typedef struct
     void (*clean)(void);
     SDL_Window *window;
     SDL_Renderer *renderer;
-    bool isRunning;    
+    textureManager *textureManager;
+    list *gameObjects;
+    bool isRunning;
 } Game;
 
 Game *initGame(const char* title, int width, int height, bool fullscreen);
@@ -20,11 +27,11 @@ Game *initGame(const char* title, int width, int height, bool fullscreen);
 typedef struct GameObject GameObject;
 
 struct GameObject{
-    void (*update)(GameObject *self);
-    void (*render)(GameObject *self);
-    void (*delete)(GameObject *self);
-    bool (*isAlive)(GameObject *self);
-    SDL_Window *window;
+    void (*update)(void *self);
+    void (*render)(void *self);
+    void (*delete)(void *self);
+    bool (*isAlive)(void *self);
+    Game game;
     void *actor;
 };
 
@@ -50,3 +57,5 @@ typedef struct
     int x;
     int y;
 } point;
+
+#endif
