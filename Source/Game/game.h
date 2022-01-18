@@ -36,7 +36,7 @@ struct GameObject{
 };
 
 typedef enum{BALLISTIC, PLASMA, EXPLOSIVE} weaponType;
-
+weaponType getWeaponTypeFromString(char *fileParamString);
 
 typedef struct{
     int speed;

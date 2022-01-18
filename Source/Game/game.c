@@ -6,6 +6,8 @@
 #include <time.h>
 #include "game.h"
 #include "../Turrets/turrets.h"
+#include "../Robots/robots.h"
+
 
 
 Game *GAME = NULL;
@@ -24,8 +26,13 @@ void handleEvents(){
     }
 }
 
-void update(){
+void updateGameObject(void *object){
+    ((GameObject*)object)->update(object);
+}
 
+
+void update(){
+    forEach(GAME->gameObjects, updateGameObject);
 }
 
 void renderGameObject(void *object){
@@ -33,7 +40,7 @@ void renderGameObject(void *object){
 }
 
 void render(){
-    SDL_SetRenderDrawColor(GAME->renderer, 0, 0 ,0, 255);
+    SDL_SetRenderDrawColor(GAME->renderer, 55, 55, 55, 255);
     SDL_RenderClear(GAME->renderer);
     //Render MAP
     //Render EFFECTS
@@ -73,5 +80,13 @@ Game *initGame(const char* title, int width, int height, bool fullscreen){
     GAME->textureManager = initTexManager(GAME->renderer);
     GAME->gameObjects = newList(COMPARE_PTR);
     appendInList(GAME->gameObjects, newGameObject_Turret(*GAME, "debug.turret", 100, 100));
+    appendInList(GAME->gameObjects, newGameObject_Robot(*GAME, "debug.robot", 200, 200));
     return GAME;
+}
+
+weaponType getWeaponTypeFromString(char *fileParamString){
+    if(!strcmp("BALLISTIC", fileParamString)) return BALLISTIC;
+    if(!strcmp("PLASMA", fileParamString)) return PLASMA;
+    if(!strcmp("EXPLOSIVE", fileParamString)) return EXPLOSIVE;
+    return 0;
 }

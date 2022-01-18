@@ -5,7 +5,7 @@
 #include "turrets.h"
 #include "../Game/game.h"
 
-typedef enum{TP_NAME, TP_TEX_REF, TP_TEX_ANIM_FRAMES, TP_ROTATION_SPEED, TP_ROTATION_ACCELERATION, TP_WEAPON_DAMAGE, TP_WEAPON_SPEED, TP_WEAPON_DELAY, TP_WEAPON_TYPE,TP_NONE} turretConfigFileParam;
+typedef enum{TP_NAME, TP_TEX_REF, TP_TEX_ANIM_FRAMES, TP_ROTATION_SPEED, TP_ROTATION_ACCELERATION, TP_WEAPON_DAMAGE, TP_WEAPON_SPEED, TP_WEAPON_DELAY, TP_WEAPON_TYPE,TP_WEAPON_RANGE,TP_NONE} turretConfigFileParam;
 
 turretConfigFileParam getTurretConfigFileParamFromString(char *fileParamString){
     if(!strcmp("NAME", fileParamString)) return TP_NAME;
@@ -17,14 +17,8 @@ turretConfigFileParam getTurretConfigFileParamFromString(char *fileParamString){
     if(!strcmp("WEAPON_SPEED", fileParamString)) return TP_WEAPON_SPEED;
     if(!strcmp("WEAPON_DELAY", fileParamString)) return TP_WEAPON_DELAY;
     if(!strcmp("WEAPON_TYPE", fileParamString)) return TP_WEAPON_TYPE;
+    if(!strcmp("WEAPON_RANGE", fileParamString)) return TP_WEAPON_RANGE;
     return TP_NONE;
-}
-
-weaponType getWeaponTypeFromString(char *fileParamString){
-    if(!strcmp("BALLISTIC", fileParamString)) return BALLISTIC;
-    if(!strcmp("PLASMA", fileParamString)) return PLASMA;
-    if(!strcmp("EXPLOSIVE", fileParamString)) return EXPLOSIVE;
-    return 0;
 }
 
 
@@ -68,6 +62,9 @@ turret *newTurret(Game GAME,char *turretFileName, int xpos, int ypos){
             case TP_WEAPON_TYPE :
                 createdTurret->weapon.type = getWeaponTypeFromString(stat_value);
                 break;
+            case TP_WEAPON_RANGE :
+                createdTurret->weapon.range = atoi(stat_value);
+                break;
             case TP_NONE :
                 break;
         }
@@ -95,13 +92,13 @@ turret *newTurret(Game GAME,char *turretFileName, int xpos, int ypos){
 void turretUpdate(void *self){
     GameObject *thisGameObject = self;
     turret *this = thisGameObject->actor;
-    this->rotation += 0.01;
+    this->rotation = fmod(this->rotation + 0.01,M_PI*2.0);
+    this->canon.currentFrame = (this->canon.currentFrame + 1) % this->canon.nOfFrames;
 }
 
 void turretRender(void *self){
     GameObject *thisGameObject = self;
     turret *this = thisGameObject->actor;
-    printf("RENDER TURRET %s\n", this->name);
     SDL_Rect rect={this->x,this->y,350,350};
     
     SDL_RenderCopyEx(thisGameObject->game.renderer, this->base.texture,NULL,&rect,0,NULL,SDL_FLIP_NONE);

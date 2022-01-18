@@ -4,6 +4,7 @@
 
 typedef struct{
     int delay;
+    int range;
     int projectileSpeed;
     int projectileDamage;
     int x;

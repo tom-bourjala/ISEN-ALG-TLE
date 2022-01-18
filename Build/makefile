@@ -1,5 +1,5 @@
 # Module List & Files
-moduleList = Game List Turrets
+moduleList = Game List Turrets Robots
 moduleListC = $(moduleList:=/*.c)
 moduleListPathC = $(addprefix ../Source/,$(moduleListC))
 moduleListH = $(moduleList:=/*.h)
