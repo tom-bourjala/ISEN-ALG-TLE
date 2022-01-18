@@ -7,7 +7,7 @@ moduleListPathH = $(addprefix ../Source/,$(moduleListH))
 
 # config
 # flags = -lm
-flags = -lm $(shell pkg-config --cflags --libs sdl2) -lSDL2_ttf -lSDL2_image -O2
+flags = -lm $(shell pkg-config --cflags --libs sdl2) -lSDL2 -lSDL2_ttf -lSDL2_image -O2
 
 # EXECUTABLE
 # cp ../Source/main.c $(moduleListPathC) $(moduleListPathH) ./
