@@ -20,20 +20,20 @@ list *loadAllTextures(SDL_Renderer *renderer){
     DIR* repertory = opendir("./assets/tex");
     struct dirent* readfile = NULL;
     if(!repertory)
-        perror("\033[1;31mTextureManager_ERROR : Can't open texture directory\n\033[0m ");
+        perror("\033[1;31mTextureManager_ERROR : Can't open texture directory\n\033[0m");
     while ((readfile = readdir(repertory)) != NULL)
     {
         if(strcmp(readfile->d_name, ".") && strcmp(readfile->d_name, "..")){
-            printf("Loading Texture - '%s'\n", readfile->d_name);
+            printf("Loading Texture - '%s'...\n", readfile->d_name);
             
             texture *loaded_texture = malloc(sizeof(texture));
             loaded_texture->name = malloc(sizeof(char) * strlen(readfile->d_name) + 1);
             strcpy(loaded_texture->name, readfile->d_name);
 
-            SDL_Surface *surface_image = IMG_Load(readfile->d_name);
-            loaded_texture->texture = SDL_CreateTextureFromSurface(renderer, surface_image);
-            SDL_FreeSurface(surface_image);
-
+            char texturePath[255];
+            sprintf(texturePath, "./assets/tex/%s", loaded_texture->name);
+            loaded_texture->texture = IMG_LoadTexture(renderer, texturePath);
+            if(!loaded_texture->texture) printf("\033[1;31m%s\n\033[0m", SDL_GetError());
             appendInList(textures, loaded_texture);
         }
     }

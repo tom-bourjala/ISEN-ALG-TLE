@@ -27,15 +27,17 @@ weaponType getWeaponTypeFromString(char *fileParamString){
     return 0;
 }
 
+
 turret *newTurret(Game GAME,char *turretFileName, int xpos, int ypos){
     turret *createdTurret = malloc(sizeof(turret));
     char path[50];
     sprintf(path, "./assets/turrets/%s", turretFileName);
     FILE *turret_file = fopen(path,"r");
+    char line_cache[255];
     char stat_name[255];
     char stat_value[255];
-    while(fscanf(turret_file,"%[^ ]= %s",stat_name,stat_value) != EOF){
-        printf("PARAM \"%s\" = \"%s\"\n", stat_name, stat_value);
+    while(fgets(line_cache,255,turret_file) != NULL){
+        sscanf(line_cache,"%[^ ] = %[^\n]", stat_name, stat_value);
         switch(getTurretConfigFileParamFromString(stat_name)){
             case TP_NAME:
                 createdTurret->name = malloc(sizeof(char)*(strlen(stat_value)-1));
@@ -72,16 +74,17 @@ turret *newTurret(Game GAME,char *turretFileName, int xpos, int ypos){
     }
     
     createdTurret->base.textureName = malloc(sizeof(char)*50);
-    sprintf(createdTurret->base.textureName, "tur_%s_base", createdTurret->texref);
+    sprintf(createdTurret->base.textureName, "tur_%s_base.png", createdTurret->texref);
     createdTurret->base.texture = GAME.textureManager->getTexture(createdTurret->base.textureName, 0);
-
+    
     createdTurret->support.textureName = malloc(sizeof(char)*50);
-    sprintf(createdTurret->support.textureName, "tur_%s_sup", createdTurret->texref);
-    createdTurret->canon.texture = GAME.textureManager->getTexture(createdTurret->canon.textureName, 0);
+    sprintf(createdTurret->support.textureName, "tur_%s_sup.png", createdTurret->texref);
+    createdTurret->support.texture = GAME.textureManager->getTexture(createdTurret->support.textureName, 0);
 
     createdTurret->canon.textureName = malloc(sizeof(char)*50);
-    sprintf(createdTurret->canon.textureName, "tur_%s_can_anim", createdTurret->texref);
-    createdTurret->support.texture = GAME.textureManager->getTexture(createdTurret->support.textureName, 0);
+    sprintf(createdTurret->canon.textureName, "tur_%s_can_anim.png", createdTurret->texref);
+    createdTurret->canon.texture = GAME.textureManager->getTexture(createdTurret->canon.textureName, 0);
+    createdTurret->canon.currentFrame = 0;
 
     createdTurret->x = xpos;
     createdTurret->y = ypos;
@@ -98,10 +101,14 @@ void turretUpdate(void *self){
 void turretRender(void *self){
     GameObject *thisGameObject = self;
     turret *this = thisGameObject->actor;
-    SDL_Rect rect={this->x,this->y-64,this->x+64,this->y};
+    printf("RENDER TURRET %s\n", this->name);
+    SDL_Rect rect={this->x,this->y,350,350};
+    
     SDL_RenderCopyEx(thisGameObject->game.renderer, this->base.texture,NULL,&rect,0,NULL,SDL_FLIP_NONE);
     SDL_RenderCopyEx(thisGameObject->game.renderer, this->support.texture,NULL,&rect,-this->rotation*90/(M_PI/2),NULL,SDL_FLIP_NONE);
-    SDL_RenderCopyEx(thisGameObject->game.renderer, this->canon.texture,NULL,&rect,-this->rotation*90/(M_PI/2),NULL,SDL_FLIP_NONE);
+
+    SDL_Rect srcrect={this->canon.currentFrame*64,0,64,64};
+    SDL_RenderCopyEx(thisGameObject->game.renderer, this->canon.texture,&srcrect,&rect,-this->rotation*90/(M_PI/2),NULL,SDL_FLIP_NONE);
 }
 
 void turretDelete(void *self){

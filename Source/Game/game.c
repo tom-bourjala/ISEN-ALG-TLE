@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -32,6 +33,7 @@ void renderGameObject(void *object){
 }
 
 void render(){
+    SDL_SetRenderDrawColor(GAME->renderer, 0, 0 ,0, 255);
     SDL_RenderClear(GAME->renderer);
     //Render MAP
     //Render EFFECTS
@@ -63,12 +65,13 @@ Game *initGame(const char* title, int width, int height, bool fullscreen){
         if(GAME->renderer) printf("Renderer Created...\n");
         GAME->isRunning = true;
     } else GAME->isRunning = false;
+    IMG_Init(IMG_INIT_PNG);
     GAME->handleEvents = handleEvents;
     GAME->update = update;
     GAME->render = render;
     GAME->clean = clean;
     GAME->textureManager = initTexManager(GAME->renderer);
     GAME->gameObjects = newList(COMPARE_PTR);
-    appendInList(GAME->gameObjects, newGameObject_Turret(*GAME, "debug.turret", 200, 200));
+    appendInList(GAME->gameObjects, newGameObject_Turret(*GAME, "debug.turret", 100, 100));
     return GAME;
 }
