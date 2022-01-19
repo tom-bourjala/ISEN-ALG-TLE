@@ -10,7 +10,7 @@ Game *game = NULL;
 int main(int argc, const char * argv[]) {
     int FPS = 60;
     int frameDelta = 1000 / FPS;
-    game = initGame("The Last Engineer", 1500, 1500, false);
+    game = initGame("The Last Engineer", 1300, 900, false);
 
     Uint32 frameStart;
     int frameTime;
