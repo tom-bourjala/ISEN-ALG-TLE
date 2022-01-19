@@ -14,7 +14,6 @@ int compareAnimId(void *data1, void *data2){
 
 void updateAnim(void *self){
     animation *this = self;
-    printf("%d (%d/%d)\n", this->timer, *this->toIncrement, this->nOfFrames);
     if(this->timer >= this->delay){
         this->timer = 0;
         *this->toIncrement += 1;
