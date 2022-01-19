@@ -28,6 +28,7 @@ typedef struct
 Game *initGame(const char* title, int width, int height, bool fullscreen);
 
 typedef struct GameObject GameObject;
+typedef enum {GOT_Turret, GOT_Robot, GOT_Projectile, GOT_Effect} GameObjectType;
 
 struct GameObject{
     void (*update)(void *self);
@@ -35,6 +36,7 @@ struct GameObject{
     void (*delete)(void *self);
     bool (*isAlive)(void *self);
     Game *game;
+    GameObjectType type;
     void *actor;
 };
 
@@ -42,23 +44,10 @@ typedef enum{BALLISTIC, PLASMA, EXPLOSIVE} weaponType;
 weaponType getWeaponTypeFromString(char *fileParamString);
 
 typedef struct{
-    int speed;
-    int damage;
-    weaponType type;
-    GameObject *parent;
-} projectile;
-
-typedef struct{
     int damage;
     weaponType type;
     GameObject *parent;
     GameObject *target;
 } hit;
-
-typedef struct
-{
-    int x;
-    int y;
-} point;
 
 #endif
