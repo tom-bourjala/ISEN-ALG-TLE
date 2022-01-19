@@ -1,5 +1,8 @@
 NAME = Debug Robot
 TEX_REF = debug
+WIDTH = 100
+HEIGHT = 100
+
 TEX_ANIM_FRAMES = 6
 MOVE_SPEED = 2
 LIFE = 2

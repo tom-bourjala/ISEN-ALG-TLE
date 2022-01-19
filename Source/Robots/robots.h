@@ -25,10 +25,12 @@ typedef struct{
     char* texref;
     int id;
     float rotation;
-    int x;
-    int y;
-    int speedx;
-    int speedy;
+    float x;
+    float y;
+    int width;
+    int height;
+    float speedx;
+    float speedy;
     int life;
     int shield;
     int maxShield;

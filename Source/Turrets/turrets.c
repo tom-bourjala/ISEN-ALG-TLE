@@ -3,13 +3,16 @@
 #include <string.h>
 #include <math.h>
 #include "turrets.h"
+#include "turretAi.h"
 #include "../Game/game.h"
 
-typedef enum{TP_NAME, TP_TEX_REF, TP_TEX_ANIM_FRAMES, TP_ROTATION_SPEED, TP_ROTATION_ACCELERATION, TP_WEAPON_DAMAGE, TP_WEAPON_SPEED, TP_WEAPON_DELAY, TP_WEAPON_TYPE,TP_WEAPON_RANGE,TP_NONE} turretConfigFileParam;
+typedef enum{TP_NAME, TP_TEX_REF, TP_WIDTH, TP_HEIGHT, TP_TEX_ANIM_FRAMES, TP_ROTATION_SPEED, TP_ROTATION_ACCELERATION, TP_WEAPON_DAMAGE, TP_WEAPON_SPEED, TP_WEAPON_DELAY, TP_WEAPON_TYPE,TP_WEAPON_RANGE,TP_NONE} turretConfigFileParam;
 
 turretConfigFileParam getTurretConfigFileParamFromString(char *fileParamString){
     if(!strcmp("NAME", fileParamString)) return TP_NAME;
     if(!strcmp("TEX_REF", fileParamString)) return TP_TEX_REF;
+    if(!strcmp("WIDTH", fileParamString)) return TP_WIDTH;
+    if(!strcmp("HEIGHT", fileParamString)) return TP_HEIGHT;
     if(!strcmp("TEX_ANIM_FRAMES", fileParamString)) return TP_TEX_ANIM_FRAMES;
     if(!strcmp("ROTATION_SPEED", fileParamString)) return TP_ROTATION_SPEED;
     if(!strcmp("ROTATION_ACCELERATION", fileParamString)) return TP_ROTATION_ACCELERATION;
@@ -45,6 +48,12 @@ turret *newTurret(Game GAME,char *turretFileName, int xpos, int ypos){
             case TP_TEX_REF:
                 createdTurret->texref = malloc(sizeof(char)*(strlen(stat_value) + 1));
                 strcpy(createdTurret->texref, stat_value);
+                break;
+            case TP_WIDTH :
+                createdTurret->width = atoi(stat_value);
+                break;
+            case TP_HEIGHT :
+                createdTurret->height = atoi(stat_value);
                 break;
             case TP_TEX_ANIM_FRAMES :
                 createdTurret->canon.nOfFrames = atoi(stat_value);
@@ -102,7 +111,8 @@ turret *newTurret(Game GAME,char *turretFileName, int xpos, int ypos){
 void turretUpdate(void *self){
     GameObject *thisGameObject = self;
     turret *this = thisGameObject->actor;
-    this->rotation = fmod(this->rotation + 0.01,M_PI*2.0);
+    // this->rotation = fmod(this->rotation + 0.01,M_PI*2.0);
+    updateTurretRotation(*thisGameObject);
     if(!thisGameObject->game->animationManager->getAnim(this->canon.animationId))
         thisGameObject->game->animationManager->addAnim(this->canon.animationId, &this->canon.currentFrame, this->canon.nOfFrames, 10);
 }
@@ -110,7 +120,7 @@ void turretUpdate(void *self){
 void turretRender(void *self){
     GameObject *thisGameObject = self;
     turret *this = thisGameObject->actor;
-    SDL_Rect rect={this->x,this->y,350,350};
+    SDL_Rect rect={this->x,this->y,this->width,this->height};
     
     SDL_RenderCopyEx(thisGameObject->game->renderer, this->base.texture,NULL,&rect,0,NULL,SDL_FLIP_NONE);
     SDL_RenderCopyEx(thisGameObject->game->renderer, this->support.texture,NULL,&rect,-this->rotation*90/(M_PI/2),NULL,SDL_FLIP_NONE);
@@ -140,6 +150,7 @@ bool turretIsAlive(void *self){
 GameObject *newGameObject_Turret(Game *GAME, char *turretFileName, int xpos, int ypos){
     GameObject *gameObject = malloc(sizeof(GameObject));
     gameObject->actor = newTurret(*GAME, turretFileName, xpos, ypos);
+    gameObject->type = GOT_Turret;
     gameObject->game = GAME;
     gameObject->update = turretUpdate;
     gameObject->render = turretRender;

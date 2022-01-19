@@ -39,6 +39,8 @@ typedef struct{
     float maxRotationAcceleration;
     int x;
     int y;
+    int width;
+    int height;
     turret_weapon weapon;
     turret_base base;
     turret_support support;

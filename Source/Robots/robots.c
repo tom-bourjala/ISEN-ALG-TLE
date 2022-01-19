@@ -5,12 +5,14 @@
 #include "robots.h"
 #include "../Game/game.h"
 
-typedef enum{ROB_NAME, ROB_TEX_REF, ROB_TEX_ANIM_FRAMES, ROB_LIFE, ROB_WEAPON_DAMAGE, ROB_WEAPON_SPEED, ROB_WEAPON_DELAY, ROB_WEAPON_TYPE, ROB_WEAPON_RANGE, ROB_IS_FRIENDLY, ROB_NONE} robotConfigFileParam;
+typedef enum{ROB_NAME, ROB_TEX_REF, ROB_WIDTH, ROB_HEIGHT, ROB_TEX_ANIM_FRAMES, ROB_LIFE, ROB_WEAPON_DAMAGE, ROB_WEAPON_SPEED, ROB_WEAPON_DELAY, ROB_WEAPON_TYPE, ROB_WEAPON_RANGE, ROB_IS_FRIENDLY, ROB_NONE} robotConfigFileParam;
 
 
 robotConfigFileParam getRobotConfigFileParamFromString(char *fileParamString){
     if(!strcmp("NAME", fileParamString)) return ROB_NAME;
     if(!strcmp("TEX_REF", fileParamString)) return ROB_TEX_REF;
+    if(!strcmp("WIDTH", fileParamString)) return ROB_WIDTH;
+    if(!strcmp("HEIGHT", fileParamString)) return ROB_HEIGHT;
     if(!strcmp("TEX_ANIM_FRAMES", fileParamString)) return ROB_TEX_ANIM_FRAMES;
     if(!strcmp("WEAPON_DAMAGE", fileParamString)) return ROB_WEAPON_DAMAGE;
     if(!strcmp("WEAPON_SPEED", fileParamString)) return ROB_WEAPON_SPEED;
@@ -71,6 +73,12 @@ robot *newRobot(Game GAME,char *robotFileName, int xpos, int ypos){
             case ROB_IS_FRIENDLY :
                 createdRobot->isFriendly = true;
                 break;
+            case ROB_WIDTH :
+                createdRobot->width = atoi(stat_value);
+                break;
+            case ROB_HEIGHT:
+                createdRobot->height = atoi(stat_value);
+                break;
             case ROB_NONE :
                 break;
         }
@@ -83,8 +91,8 @@ robot *newRobot(Game GAME,char *robotFileName, int xpos, int ypos){
 
     createdRobot->x = xpos;
     createdRobot->y = ypos;
-    createdRobot->speedx = 2;
-    createdRobot->speedy = 1;
+    createdRobot->speedx = 1.3;
+    createdRobot->speedy = 0.3;
     createdRobot->rotation = 0.0;
 
     return createdRobot;
@@ -108,7 +116,7 @@ void robotUpdate(void *self){
 void robotRender(void *self){
     GameObject *thisGameObject = self;
     robot *this = thisGameObject->actor;
-    SDL_Rect rect={this->x,this->y,100,100};
+    SDL_Rect rect={this->x,this->y,this->width,this->height};
 
     SDL_Rect srcrect={this->walk.currentFrame*64,0,64,64};
     SDL_RenderCopyEx(thisGameObject->game->renderer, this->walk.texture,&srcrect,&rect,-this->rotation*90/(M_PI/2) + 180,NULL,SDL_FLIP_NONE);
@@ -132,6 +140,7 @@ bool robotIsAlive(void *self){
 GameObject *newGameObject_Robot(Game *GAME, char *robotFileName, int xpos, int ypos){
     GameObject *gameObject = malloc(sizeof(GameObject));
     gameObject->actor = newRobot(*GAME, robotFileName, xpos, ypos);
+    gameObject->type = GOT_Robot;
     gameObject->game = GAME;
     gameObject->update = robotUpdate;
     gameObject->render = robotRender;
