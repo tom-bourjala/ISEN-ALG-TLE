@@ -34,7 +34,7 @@ struct GameObject{
     void (*render)(void *self);
     void (*delete)(void *self);
     bool (*isAlive)(void *self);
-    Game game;
+    Game *game;
     void *actor;
 };
 
