@@ -37,4 +37,4 @@ typedef struct{
     robot_weapon weapon;
 } robot;
 
-GameObject *newGameObject_Robot(Game GAME, char *robotFileName, int xpos, int ypos);
+GameObject *newGameObject_Robot(Game *GAME, char *robotFileName, int xpos, int ypos);

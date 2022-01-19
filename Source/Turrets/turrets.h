@@ -45,4 +45,4 @@ typedef struct{
     turret_canon canon;
 } turret;
 
-GameObject *newGameObject_Turret(Game GAME, char *turretFileName, int xpos, int ypos);
+GameObject *newGameObject_Turret(Game *GAME, char *turretFileName, int xpos, int ypos);

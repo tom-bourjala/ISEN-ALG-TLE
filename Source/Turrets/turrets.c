@@ -24,6 +24,11 @@ turretConfigFileParam getTurretConfigFileParamFromString(char *fileParamString){
 
 turret *newTurret(Game GAME,char *turretFileName, int xpos, int ypos){
     turret *createdTurret = malloc(sizeof(turret));
+    
+    static int id = 0;
+    createdTurret->id = id;
+    id++;
+
     char path[50];
     sprintf(path, "./assets/turrets/%s", turretFileName);
     FILE *turret_file = fopen(path,"r");
@@ -34,11 +39,11 @@ turret *newTurret(Game GAME,char *turretFileName, int xpos, int ypos){
         sscanf(line_cache,"%[^ ] = %[^\n]", stat_name, stat_value);
         switch(getTurretConfigFileParamFromString(stat_name)){
             case TP_NAME:
-                createdTurret->name = malloc(sizeof(char)*(strlen(stat_value)-1));
+                createdTurret->name = malloc(sizeof(char)*(strlen(stat_value) + 1));
                 strcpy(createdTurret->name, stat_value);
                 break;
             case TP_TEX_REF:
-                createdTurret->texref = malloc(sizeof(char)*(strlen(stat_value)-1));
+                createdTurret->texref = malloc(sizeof(char)*(strlen(stat_value) + 1));
                 strcpy(createdTurret->texref, stat_value);
                 break;
             case TP_TEX_ANIM_FRAMES :
@@ -69,7 +74,7 @@ turret *newTurret(Game GAME,char *turretFileName, int xpos, int ypos){
                 break;
         }
     }
-    
+    fclose(turret_file);
     createdTurret->base.textureName = malloc(sizeof(char)*50);
     sprintf(createdTurret->base.textureName, "tur_%s_base.png", createdTurret->texref);
     createdTurret->base.texture = GAME.textureManager->getTexture(createdTurret->base.textureName);
@@ -90,9 +95,6 @@ turret *newTurret(Game GAME,char *turretFileName, int xpos, int ypos){
     createdTurret->y = ypos;
     createdTurret->rotation = 0.0;
 
-    static int id = 0;
-    createdTurret->id = id;
-    id++;
     
     return createdTurret;
 }
@@ -101,8 +103,8 @@ void turretUpdate(void *self){
     GameObject *thisGameObject = self;
     turret *this = thisGameObject->actor;
     this->rotation = fmod(this->rotation + 0.01,M_PI*2.0);
-    if(!thisGameObject->game.animationManager->getAnim(this->canon.animationId))
-        thisGameObject->game.animationManager->addAnim(this->canon.animationId, &this->canon.currentFrame, this->canon.nOfFrames, 10);
+    if(!thisGameObject->game->animationManager->getAnim(this->canon.animationId))
+        thisGameObject->game->animationManager->addAnim(this->canon.animationId, &this->canon.currentFrame, this->canon.nOfFrames, 10);
 }
 
 void turretRender(void *self){
@@ -110,11 +112,11 @@ void turretRender(void *self){
     turret *this = thisGameObject->actor;
     SDL_Rect rect={this->x,this->y,350,350};
     
-    SDL_RenderCopyEx(thisGameObject->game.renderer, this->base.texture,NULL,&rect,0,NULL,SDL_FLIP_NONE);
-    SDL_RenderCopyEx(thisGameObject->game.renderer, this->support.texture,NULL,&rect,-this->rotation*90/(M_PI/2),NULL,SDL_FLIP_NONE);
+    SDL_RenderCopyEx(thisGameObject->game->renderer, this->base.texture,NULL,&rect,0,NULL,SDL_FLIP_NONE);
+    SDL_RenderCopyEx(thisGameObject->game->renderer, this->support.texture,NULL,&rect,-this->rotation*90/(M_PI/2),NULL,SDL_FLIP_NONE);
 
     SDL_Rect srcrect={this->canon.currentFrame*64,0,64,64};
-    SDL_RenderCopyEx(thisGameObject->game.renderer, this->canon.texture,&srcrect,&rect,-this->rotation*90/(M_PI/2),NULL,SDL_FLIP_NONE);
+    SDL_RenderCopyEx(thisGameObject->game->renderer, this->canon.texture,&srcrect,&rect,-this->rotation*90/(M_PI/2),NULL,SDL_FLIP_NONE);
 }
 
 void turretDelete(void *self){
@@ -135,13 +137,13 @@ bool turretIsAlive(void *self){
     return true;
 }
 
-GameObject *newGameObject_Turret(Game GAME, char *turretFileName, int xpos, int ypos){
-    GameObject *GameObject = malloc(sizeof(GameObject));
-    GameObject->actor = newTurret(GAME, turretFileName, xpos, ypos);
-    GameObject->game = GAME;
-    GameObject->update = turretUpdate;
-    GameObject->render = turretRender;
-    GameObject->delete = turretDelete;
-    GameObject->isAlive = turretIsAlive;
-    return GameObject;
+GameObject *newGameObject_Turret(Game *GAME, char *turretFileName, int xpos, int ypos){
+    GameObject *gameObject = malloc(sizeof(GameObject));
+    gameObject->actor = newTurret(*GAME, turretFileName, xpos, ypos);
+    gameObject->game = GAME;
+    gameObject->update = turretUpdate;
+    gameObject->render = turretRender;
+    gameObject->delete = turretDelete;
+    gameObject->isAlive = turretIsAlive;
+    return gameObject;
 }

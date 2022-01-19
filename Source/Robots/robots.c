@@ -24,6 +24,11 @@ robotConfigFileParam getRobotConfigFileParamFromString(char *fileParamString){
 
 robot *newRobot(Game GAME,char *robotFileName, int xpos, int ypos){
     robot *createdRobot = malloc(sizeof(robot));
+    
+    static int id = 0;
+    createdRobot->id = id;
+    id++;
+
     char path[50];
     sprintf(path, "./assets/robots/%s", robotFileName);
     FILE *robot_file = fopen(path,"r");
@@ -35,14 +40,14 @@ robot *newRobot(Game GAME,char *robotFileName, int xpos, int ypos){
         sscanf(line_cache,"%[^ ] = %[^\n]", stat_name, stat_value);
         switch(getRobotConfigFileParamFromString(stat_name)){
             case ROB_NAME:
-                createdRobot->name = malloc(sizeof(char)*(strlen(stat_value)-1));
+                createdRobot->name = malloc(sizeof(char)*(strlen(stat_value)+1));
                 strcpy(createdRobot->name, stat_value);
                 break;
             case ROB_LIFE:
                 createdRobot->life = atoi(stat_value);
                 break;
             case ROB_TEX_REF:
-                createdRobot->texref = malloc(sizeof(char)*(strlen(stat_value)-1));
+                createdRobot->texref = malloc(sizeof(char)*(strlen(stat_value)+1));
                 strcpy(createdRobot->texref, stat_value);
                 break;
             case ROB_TEX_ANIM_FRAMES :
@@ -70,7 +75,7 @@ robot *newRobot(Game GAME,char *robotFileName, int xpos, int ypos){
                 break;
         }
     }
-    
+    fclose(robot_file);
     createdRobot->walk.textureName = malloc(sizeof(char)*50);
     sprintf(createdRobot->walk.textureName, "rob_%s_%s_walk.png", createdRobot->isFriendly ? "friendly" : "hostile", createdRobot->texref);
     createdRobot->walk.texture = GAME.textureManager->getTexture(createdRobot->walk.textureName);
@@ -81,10 +86,6 @@ robot *newRobot(Game GAME,char *robotFileName, int xpos, int ypos){
     createdRobot->speedx = 2;
     createdRobot->speedy = 1;
     createdRobot->rotation = 0.0;
-
-    static int id = 0;
-    createdRobot->id = id;
-    id++;
 
     return createdRobot;
 }
@@ -110,7 +111,7 @@ void robotRender(void *self){
     SDL_Rect rect={this->x,this->y,100,100};
 
     SDL_Rect srcrect={this->walk.currentFrame*64,0,64,64};
-    SDL_RenderCopyEx(thisGameObject->game.renderer, this->walk.texture,&srcrect,&rect,-this->rotation*90/(M_PI/2) + 180,NULL,SDL_FLIP_NONE);
+    SDL_RenderCopyEx(thisGameObject->game->renderer, this->walk.texture,&srcrect,&rect,-this->rotation*90/(M_PI/2) + 180,NULL,SDL_FLIP_NONE);
 }
 
 void robotDelete(void *self){
@@ -128,13 +129,13 @@ bool robotIsAlive(void *self){
     return this->life > 0;
 }
 
-GameObject *newGameObject_Robot(Game GAME, char *robotFileName, int xpos, int ypos){
-    GameObject *GameObject = malloc(sizeof(GameObject));
-    GameObject->actor = newRobot(GAME, robotFileName, xpos, ypos);
-    GameObject->game = GAME;
-    GameObject->update = robotUpdate;
-    GameObject->render = robotRender;
-    GameObject->delete = robotDelete;
-    GameObject->isAlive = robotIsAlive;
-    return GameObject;
+GameObject *newGameObject_Robot(Game *GAME, char *robotFileName, int xpos, int ypos){
+    GameObject *gameObject = malloc(sizeof(GameObject));
+    gameObject->actor = newRobot(*GAME, robotFileName, xpos, ypos);
+    gameObject->game = GAME;
+    gameObject->update = robotUpdate;
+    gameObject->render = robotRender;
+    gameObject->delete = robotDelete;
+    gameObject->isAlive = robotIsAlive;
+    return gameObject;
 }
