@@ -150,7 +150,8 @@ void emptyList(list *list){
 void forEach(list *list, void (*function)(void *data)){
     chainItem *item = list->first; 
     while(item != NULL){
+        chainItem *next = item->next;
         function(item->data);
-        item = item->next;
+        item = next;
     }
 }
