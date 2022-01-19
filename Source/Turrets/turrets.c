@@ -72,20 +72,28 @@ turret *newTurret(Game GAME,char *turretFileName, int xpos, int ypos){
     
     createdTurret->base.textureName = malloc(sizeof(char)*50);
     sprintf(createdTurret->base.textureName, "tur_%s_base.png", createdTurret->texref);
-    createdTurret->base.texture = GAME.textureManager->getTexture(createdTurret->base.textureName, 0);
+    createdTurret->base.texture = GAME.textureManager->getTexture(createdTurret->base.textureName);
     
     createdTurret->support.textureName = malloc(sizeof(char)*50);
     sprintf(createdTurret->support.textureName, "tur_%s_sup.png", createdTurret->texref);
-    createdTurret->support.texture = GAME.textureManager->getTexture(createdTurret->support.textureName, 0);
+    createdTurret->support.texture = GAME.textureManager->getTexture(createdTurret->support.textureName);
 
     createdTurret->canon.textureName = malloc(sizeof(char)*50);
     sprintf(createdTurret->canon.textureName, "tur_%s_can_anim.png", createdTurret->texref);
-    createdTurret->canon.texture = GAME.textureManager->getTexture(createdTurret->canon.textureName, 0);
+    createdTurret->canon.texture = GAME.textureManager->getTexture(createdTurret->canon.textureName);
     createdTurret->canon.currentFrame = 0;
+
+    createdTurret->canon.animationId = malloc(sizeof(char)*50);
+    sprintf(createdTurret->canon.animationId, "T%d", createdTurret->id);
 
     createdTurret->x = xpos;
     createdTurret->y = ypos;
     createdTurret->rotation = 0.0;
+
+    static int id = 0;
+    createdTurret->id = id;
+    id++;
+    
     return createdTurret;
 }
 
@@ -93,7 +101,8 @@ void turretUpdate(void *self){
     GameObject *thisGameObject = self;
     turret *this = thisGameObject->actor;
     this->rotation = fmod(this->rotation + 0.01,M_PI*2.0);
-    this->canon.currentFrame = (this->canon.currentFrame + 1) % this->canon.nOfFrames;
+    if(!thisGameObject->game.animationManager->getAnim(this->canon.animationId))
+        thisGameObject->game.animationManager->addAnim(this->canon.animationId, &this->canon.currentFrame, this->canon.nOfFrames, 10);
 }
 
 void turretRender(void *self){
@@ -115,7 +124,8 @@ void turretDelete(void *self){
     free(this->texref);  
     free(this->base.textureName); 
     free(this->support.textureName);
-    free(this->canon.textureName); 
+    free(this->canon.textureName);
+    free(this->canon.animationId);
     free(this);
 }
 

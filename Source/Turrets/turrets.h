@@ -27,10 +27,12 @@ typedef struct{
     SDL_Texture *texture;
     int nOfFrames;
     int currentFrame;
+    char *animationId;
 } turret_canon;
 
 typedef struct{
     char* name;
+    int id;
     char* texref;
     float rotation;
     float maxRotationSpeed;

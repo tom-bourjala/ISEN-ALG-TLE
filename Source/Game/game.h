@@ -4,6 +4,8 @@
 #include <stdbool.h>
 #include <time.h>
 #include "textureManager.h"
+#include "animationManager.h"
+
 #include "../List/SmartList.h"
 
 #ifndef GAME_H
@@ -18,6 +20,7 @@ typedef struct
     SDL_Window *window;
     SDL_Renderer *renderer;
     textureManager *textureManager;
+    animationManager *animationManager;
     list *gameObjects;
     bool isRunning;
 } Game;

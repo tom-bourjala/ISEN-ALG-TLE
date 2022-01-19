@@ -23,6 +23,7 @@ typedef struct{
 typedef struct{
     char* name;
     char* texref;
+    int id;
     float rotation;
     int x;
     int y;

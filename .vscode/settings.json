@@ -4,6 +4,7 @@
         "time.h": "c",
         "smartlist.h": "c",
         "dirent.h": "c",
-        "stdio.h": "c"
+        "stdio.h": "c",
+        "animationmanager.h": "c"
     }
 }

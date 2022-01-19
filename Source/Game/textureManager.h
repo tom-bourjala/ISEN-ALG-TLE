@@ -8,7 +8,7 @@
 
 typedef struct
 {
-    SDL_Texture* (*getTexture)(char* string, int modifier);
+    SDL_Texture* (*getTexture)(char* string);
     void (*empty)(void);
     list *texList;
 } textureManager;

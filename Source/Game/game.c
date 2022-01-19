@@ -30,9 +30,13 @@ void updateGameObject(void *object){
     ((GameObject*)object)->update(object);
 }
 
+void updateAnimation(void *targetAnim){
+    ((animation*)targetAnim)->update(targetAnim);
+}
 
 void update(){
     forEach(GAME->gameObjects, updateGameObject);
+    forEach(GAME->animationManager->animList, updateAnimation);
 }
 
 void renderGameObject(void *object){
@@ -59,7 +63,6 @@ void clean(){
     free(GAME);
 }
 
-
 Game *initGame(const char* title, int width, int height, bool fullscreen){
     int flags = 0;
     if(fullscreen) flags = SDL_WINDOW_FULLSCREEN;
@@ -78,6 +81,7 @@ Game *initGame(const char* title, int width, int height, bool fullscreen){
     GAME->render = render;
     GAME->clean = clean;
     GAME->textureManager = initTexManager(GAME->renderer);
+    GAME->animationManager = initAnimManager();
     GAME->gameObjects = newList(COMPARE_PTR);
     appendInList(GAME->gameObjects, newGameObject_Turret(*GAME, "debug.turret", 100, 100));
     appendInList(GAME->gameObjects, newGameObject_Robot(*GAME, "debug.robot", 200, 200));

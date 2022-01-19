@@ -73,7 +73,7 @@ robot *newRobot(Game GAME,char *robotFileName, int xpos, int ypos){
     
     createdRobot->walk.textureName = malloc(sizeof(char)*50);
     sprintf(createdRobot->walk.textureName, "rob_%s_%s_walk.png", createdRobot->isFriendly ? "friendly" : "hostile", createdRobot->texref);
-    createdRobot->walk.texture = GAME.textureManager->getTexture(createdRobot->walk.textureName, 0);
+    createdRobot->walk.texture = GAME.textureManager->getTexture(createdRobot->walk.textureName);
     createdRobot->walk.currentFrame = 0;
 
     createdRobot->x = xpos;
@@ -81,6 +81,11 @@ robot *newRobot(Game GAME,char *robotFileName, int xpos, int ypos){
     createdRobot->speedx = 2;
     createdRobot->speedy = 1;
     createdRobot->rotation = 0.0;
+
+    static int id = 0;
+    createdRobot->id = id;
+    id++;
+
     return createdRobot;
 }
 

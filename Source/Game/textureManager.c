@@ -40,16 +40,11 @@ list *loadAllTextures(SDL_Renderer *renderer){
     return textures;
 }
 
-SDL_Texture *getTexture(char *name, int modifier){
+SDL_Texture *getTexture(char *name){
     texture *request = malloc(sizeof(texture));
     request->name = name;
     texture *data = searchDataInList(*TEXTURE_MANAGER->texList, request);
     return data->texture;
-    // if(!modifier) return data->texture;
-    // else{
-    //  SDL_Texture *sprite=NULL;
-    //  SDL_QueryTexture(texture_voulue, NULL, NULL, &image_tourelle->longueur,&image_tourelle->largeur);
-    // }
 }
 
 void clearTexture(void *data){
@@ -61,6 +56,9 @@ void clearTexture(void *data){
 
 void clearTextures(){
     forEach(TEXTURE_MANAGER->texList, clearTexture);
+    emptyList(TEXTURE_MANAGER->texList);
+    free(TEXTURE_MANAGER->texList);
+    free(TEXTURE_MANAGER);
 }
 
 textureManager *initTexManager(SDL_Renderer *renderer){
