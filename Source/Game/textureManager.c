@@ -19,8 +19,12 @@ list *loadAllTextures(SDL_Renderer *renderer){
     list *textures = newList(compareNames);
     DIR* repertory = opendir("./assets/tex");
     struct dirent* readfile = NULL;
-    if(!repertory)
-        perror("\033[1;31mTextureManager_ERROR : Can't open texture directory\n\033[0m");
+    if(!repertory){
+        printf("\033[1;31m TextureManager_ERROR : Can't open texture directory\n");
+        perror("ERROR:");
+        printf("\033[0m");
+        exit(3);
+    }
     while ((readfile = readdir(repertory)) != NULL)
     {
         if(strcmp(readfile->d_name, ".") && strcmp(readfile->d_name, "..")){
@@ -37,6 +41,7 @@ list *loadAllTextures(SDL_Renderer *renderer){
             appendInList(textures, loaded_texture);
         }
     }
+    closedir(repertory);
     return textures;
 }
 
