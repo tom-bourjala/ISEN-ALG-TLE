@@ -4,16 +4,6 @@
 #include "../Game/game.h"
 
 typedef struct{
-    int delay;
-    int range;
-    int projectileSpeed;
-    int projectileDamage;
-    int x;
-    int y;
-    weaponType type;
-} robot_weapon;
-
-typedef struct{
     char *textureName;
     SDL_Texture *texture;
     int nOfFrames;
@@ -36,7 +26,7 @@ typedef struct{
     int maxShield;
     bool isFriendly;
     robot_walk walk;
-    robot_weapon weapon;
+    char *projectileName;
 } robot;
 
 GameObject *newGameObject_Robot(Game *GAME, char *robotFileName, int xpos, int ypos);

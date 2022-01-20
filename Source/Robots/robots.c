@@ -5,7 +5,7 @@
 #include "robots.h"
 #include "../Game/game.h"
 
-typedef enum{ROB_NAME, ROB_TEX_REF, ROB_WIDTH, ROB_HEIGHT, ROB_TEX_ANIM_FRAMES, ROB_LIFE, ROB_WEAPON_DAMAGE, ROB_WEAPON_SPEED, ROB_WEAPON_DELAY, ROB_WEAPON_TYPE, ROB_WEAPON_RANGE, ROB_IS_FRIENDLY, ROB_NONE} robotConfigFileParam;
+typedef enum{ROB_NAME, ROB_TEX_REF, ROB_PROJECTILE_NAME, ROB_WIDTH, ROB_HEIGHT, ROB_TEX_ANIM_FRAMES, ROB_LIFE, ROB_WEAPON_DELAY, ROB_WEAPON_RANGE, ROB_IS_FRIENDLY, ROB_NONE} robotConfigFileParam;
 
 
 robotConfigFileParam getRobotConfigFileParamFromString(char *fileParamString){
@@ -14,12 +14,10 @@ robotConfigFileParam getRobotConfigFileParamFromString(char *fileParamString){
     if(!strcmp("WIDTH", fileParamString)) return ROB_WIDTH;
     if(!strcmp("HEIGHT", fileParamString)) return ROB_HEIGHT;
     if(!strcmp("TEX_ANIM_FRAMES", fileParamString)) return ROB_TEX_ANIM_FRAMES;
-    if(!strcmp("WEAPON_DAMAGE", fileParamString)) return ROB_WEAPON_DAMAGE;
-    if(!strcmp("WEAPON_SPEED", fileParamString)) return ROB_WEAPON_SPEED;
     if(!strcmp("WEAPON_DELAY", fileParamString)) return ROB_WEAPON_DELAY;
-    if(!strcmp("WEAPON_TYPE", fileParamString)) return ROB_WEAPON_TYPE;
     if(!strcmp("WEAPON_RANGE", fileParamString)) return ROB_WEAPON_RANGE;
     if(!strcmp("IS_FRIENDLY", fileParamString)) return ROB_IS_FRIENDLY;
+    if(!strcmp("PROJECTILE", fileParamString)) return ROB_PROJECTILE_NAME;
     if(!strcmp("LIFE", fileParamString)) return ROB_LIFE;
     return ROB_NONE;
 }
@@ -55,20 +53,11 @@ robot *newRobot(Game GAME,char *robotFileName, int xpos, int ypos){
             case ROB_TEX_ANIM_FRAMES :
                 createdRobot->walk.nOfFrames = atoi(stat_value);
                 break;
-            case ROB_WEAPON_DAMAGE :
-                createdRobot->weapon.projectileDamage = atof(stat_value);
-                break;
-            case ROB_WEAPON_SPEED :
-                createdRobot->weapon.projectileSpeed = atof(stat_value);
-                break;
             case ROB_WEAPON_DELAY :
-                createdRobot->weapon.delay = atof(stat_value);
-                break;
-            case ROB_WEAPON_TYPE :
-                createdRobot->weapon.type = getWeaponTypeFromString(stat_value);
+                createdRobot->delay = atoi(stat_value);
                 break;
             case ROB_WEAPON_RANGE :
-                createdRobot->weapon.range = atoi(stat_value);
+                createdRobot->range = atoi(stat_value);
                 break;
             case ROB_IS_FRIENDLY :
                 createdRobot->isFriendly = true;
@@ -78,6 +67,10 @@ robot *newRobot(Game GAME,char *robotFileName, int xpos, int ypos){
                 break;
             case ROB_HEIGHT:
                 createdRobot->height = atoi(stat_value);
+                break;
+            case ROB_PROJECTILE_NAME:
+                createdRobot->projectileName = malloc(sizeof(char)*(strlen(stat_value)+1));
+                strcpy(createdRobot->projectileName, stat_value);
                 break;
             case ROB_NONE :
                 break;

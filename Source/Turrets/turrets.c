@@ -6,7 +6,7 @@
 #include "turretAi.h"
 #include "../Game/game.h"
 
-typedef enum{TP_NAME, TP_TEX_REF, TP_WIDTH, TP_HEIGHT, TP_TEX_ANIM_FRAMES, TP_ROTATION_SPEED, TP_ROTATION_ACCELERATION, TP_WEAPON_DAMAGE, TP_WEAPON_SPEED, TP_WEAPON_DELAY, TP_WEAPON_TYPE,TP_WEAPON_RANGE,TP_NONE} turretConfigFileParam;
+typedef enum{TP_NAME, TP_TEX_REF, TP_WIDTH, TP_HEIGHT, TP_TEX_ANIM_FRAMES, TP_ROTATION_SPEED, TP_ROTATION_ACCELERATION, TP_WEAPON_DELAY, TP_WEAPON_RANGE, TP_NONE} turretConfigFileParam;
 
 turretConfigFileParam getTurretConfigFileParamFromString(char *fileParamString){
     if(!strcmp("NAME", fileParamString)) return TP_NAME;
@@ -16,11 +16,8 @@ turretConfigFileParam getTurretConfigFileParamFromString(char *fileParamString){
     if(!strcmp("TEX_ANIM_FRAMES", fileParamString)) return TP_TEX_ANIM_FRAMES;
     if(!strcmp("ROTATION_SPEED", fileParamString)) return TP_ROTATION_SPEED;
     if(!strcmp("ROTATION_ACCELERATION", fileParamString)) return TP_ROTATION_ACCELERATION;
-    if(!strcmp("WEAPON_DAMAGE", fileParamString)) return TP_WEAPON_DAMAGE;
-    if(!strcmp("WEAPON_SPEED", fileParamString)) return TP_WEAPON_SPEED;
-    if(!strcmp("WEAPON_DELAY", fileParamString)) return TP_WEAPON_DELAY;
-    if(!strcmp("WEAPON_TYPE", fileParamString)) return TP_WEAPON_TYPE;
-    if(!strcmp("WEAPON_RANGE", fileParamString)) return TP_WEAPON_RANGE;
+    if(!strcmp("DELAY", fileParamString)) return TP_WEAPON_DELAY;
+    if(!strcmp("RANGE", fileParamString)) return TP_WEAPON_RANGE;
     return TP_NONE;
 }
 
@@ -64,20 +61,11 @@ turret *newTurret(Game GAME,char *turretFileName, int xpos, int ypos){
             case TP_ROTATION_ACCELERATION :
                 createdTurret->maxRotationAcceleration = atof(stat_value);
                 break;
-            case TP_WEAPON_DAMAGE :
-                createdTurret->weapon.projectileDamage = atof(stat_value);
-                break;
-            case TP_WEAPON_SPEED :
-                createdTurret->weapon.projectileSpeed = atof(stat_value);
-                break;
-            case TP_WEAPON_DELAY :
-                createdTurret->weapon.delay = atof(stat_value);
-                break;
-            case TP_WEAPON_TYPE :
-                createdTurret->weapon.type = getWeaponTypeFromString(stat_value);
-                break;
             case TP_WEAPON_RANGE :
-                createdTurret->weapon.range = atoi(stat_value);
+                createdTurret->delay = atof(stat_value);
+                break;    
+            case TP_WEAPON_DELAY :
+                createdTurret->range = atof(stat_value);
                 break;
             case TP_NONE :
                 break;

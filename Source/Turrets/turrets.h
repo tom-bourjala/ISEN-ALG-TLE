@@ -3,16 +3,6 @@
 #include "../Game/game.h"
 
 typedef struct{
-    int delay;
-    int range;
-    int projectileSpeed;
-    int projectileDamage;
-    int x;
-    int y;
-    weaponType type;
-} turret_weapon;
-
-typedef struct{
     char *textureName;
     SDL_Texture *texture;
 } turret_base;
@@ -41,7 +31,9 @@ typedef struct{
     int y;
     int width;
     int height;
-    turret_weapon weapon;
+    int delay;
+    int range;
+    char *projectileName;
     turret_base base;
     turret_support support;
     turret_canon canon;
