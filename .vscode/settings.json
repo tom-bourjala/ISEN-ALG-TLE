@@ -5,6 +5,7 @@
         "smartlist.h": "c",
         "dirent.h": "c",
         "stdio.h": "c",
-        "animationmanager.h": "c"
+        "animationmanager.h": "c",
+        "projectilemanager.h": "c"
     }
 }
