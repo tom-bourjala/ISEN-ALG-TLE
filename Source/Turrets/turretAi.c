@@ -80,6 +80,7 @@ void updateTurretRotation(GameObject turretObject){
                 turret->rotation += turret->maxRotationSpeed * (isEnemyBypassingClockwise(turretObject, *closestTarget) ? 1.0 : -1.0);
             }
         }
-        turret->rotation = fmod(turret->rotation, M_PI);
+        if(turret->rotation > M_PI) turret->rotation -= 2.0*M_PI;
+        if(turret->rotation < -M_PI) turret->rotation += 2.0*M_PI;
     }
 }

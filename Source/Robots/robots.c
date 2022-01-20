@@ -91,8 +91,8 @@ robot *newRobot(Game GAME,char *robotFileName, int xpos, int ypos){
 
     createdRobot->x = xpos;
     createdRobot->y = ypos;
-    createdRobot->speedx = 1.3;
-    createdRobot->speedy = 0.3;
+    createdRobot->speedx = 4.3;
+    createdRobot->speedy = 0.6;
     createdRobot->rotation = 0.0;
 
     return createdRobot;
@@ -101,9 +101,9 @@ robot *newRobot(Game GAME,char *robotFileName, int xpos, int ypos){
 void robotUpdate(void *self){
     GameObject *thisGameObject = self;
     robot *this = thisGameObject->actor;
-    if(this->y>=1500 || this->y<=0)
+    if(this->y>=800 || this->y<=0)
         this->speedy = -this->speedy; 
-    if(this->x>=1500 || this->x<=0)
+    if(this->x>=800 || this->x<=0)
         this->speedx = -this->speedx; 
 
     this->x+=this->speedx;
