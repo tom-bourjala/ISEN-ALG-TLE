@@ -5,7 +5,7 @@
 #include <time.h>
 #include "textureManager.h"
 #include "animationManager.h"
-
+#include "projectileManager.h"
 #include "../List/SmartList.h"
 
 #ifndef GAME_H
@@ -21,6 +21,7 @@ typedef struct
     SDL_Renderer *renderer;
     textureManager *textureManager;
     animationManager *animationManager;
+    projectileManager *projectileManager;
     list *gameObjects;
     bool isRunning;
 } Game;
@@ -41,13 +42,5 @@ struct GameObject{
 };
 
 typedef enum{BALLISTIC, PLASMA, EXPLOSIVE} weaponType;
-weaponType getWeaponTypeFromString(char *fileParamString);
-
-typedef struct{
-    int damage;
-    weaponType type;
-    GameObject *parent;
-    GameObject *target;
-} hit;
 
 #endif

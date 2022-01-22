@@ -1,8 +1,26 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include "game.h"
+// #include "game.h"
 #include "../List/SmartList.h"
+
+typedef struct{
+    void (*delete)(void *self);
+    int damage;
+    float x;
+    float y;
+    weaponType type;
+    GameObject *parent;
+    GameObject *target;
+} hit;
+
+typedef struct
+{
+    void (*empty)(void);
+    void (*newProjectile)(Game *GAME, char *projectileFileName, float xpos, float ypos, float rotation, GameObject *parent);
+    list *projectiles;
+    list *hits;
+} projectileManager;
 
 typedef struct{
     void (*update)(void *self);
@@ -20,6 +38,7 @@ typedef struct{
     int perforance;
     bool isFriendly;
     projectileRenderer projectileRenderer;
+    projectileManager *manager;
     weaponType type;
     GameObject *parent;
 } projectile;
@@ -33,3 +52,5 @@ typedef struct{
     int currentFrame;
     char *animationId;
 } projectileRenderer;
+
+projectileManager *initProjectileManager();

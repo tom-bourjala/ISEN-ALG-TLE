@@ -65,6 +65,7 @@ void freeAnimation(void *animationToKill){
 
 void clean(){
     GAME->textureManager->empty();
+    GAME->projectileManager->empty();
     forEach(GAME->animationManager->animList, freeAnimation);
     emptyList(GAME->animationManager->animList);
     free(GAME->animationManager->animList);
@@ -103,6 +104,7 @@ Game *initGame(const char* title, int width, int height, bool fullscreen){
     GAME->clean = clean;
     GAME->textureManager = initTexManager(GAME->renderer);
     GAME->animationManager = initAnimManager();
+    GAME->projectileManager = initProjectileManager();
     GAME->gameObjects = newList(COMPARE_PTR);
     appendInList(GAME->gameObjects, newGameObject_Turret(GAME, "debug.turret", 300, 300));
     appendInList(GAME->gameObjects, newGameObject_Turret(GAME, "debug.turret", 500, 600));
@@ -111,11 +113,4 @@ Game *initGame(const char* title, int width, int height, bool fullscreen){
     appendInList(GAME->gameObjects, newGameObject_Robot(GAME, "debug.robot", 600, 500));
     appendInList(GAME->gameObjects, newGameObject_Robot(GAME, "debug.robot", 200, 150));
     return GAME;
-}
-
-weaponType getWeaponTypeFromString(char *fileParamString){
-    if(!strcmp("BALLISTIC", fileParamString)) return BALLISTIC;
-    if(!strcmp("PLASMA", fileParamString)) return PLASMA;
-    if(!strcmp("EXPLOSIVE", fileParamString)) return EXPLOSIVE;
-    return 0;
 }

@@ -1,17 +1,47 @@
+#include <SDL2/SDL.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
 #include <math.h>
 #include "../Robots/robots.h"
+#include "../Turrets/turrets.h"
 #include "projectileManager.h"
-#include "../Game/game.h"
+#include "game.h"
+
+#ifndef PROJECTILEMANAGER_H
+#define PROJECTILEMANAGER_H
+
 #define max(a,b) (a>=b?a:b)
 #define min(a,b) (a<=b?a:b)
+#define ABS(X)  ((X>=0)? X : -(x) ) 
+#define ROUND(X)  (X>=0)? (int) (X + 0.5) : (int)-(ABS(X) +0.5)
 
 typedef enum{P_TEX_REF, P_TEX_ANIM_FRAMES,P_WIDTH, P_HEIGHT, P_WEAPON_DAMAGE, P_WEAPON_SPEED, P_WEAPON_PERFORANCE, P_WEAPON_TYPE, P_NONE} projectileConfigFileParam;
 
-projectileConfigParam getProjectileConfigFileParamFromString(char *fileParamString){
+projectileManager *PROJECTILE_MANAGER = NULL;
+
+
+void hitDelete(void *self){
+    hit *this = self;
+    deleteInList(PROJECTILE_MANAGER->hits, this);
+    free(this);
+}
+
+void newHit(int damage, float x, float y, weaponType type, GameObject *parent, GameObject *target){
+    hit *createdHit = malloc(sizeof(hit));
+    createdHit->delete = hitDelete;
+    createdHit->parent = parent;
+    createdHit->target = target;
+    createdHit->damage = damage;
+    createdHit->x = x;
+    createdHit->y = y;
+    createdHit->parent = parent;
+    createdHit->delete = hitDelete;
+    pushInList(PROJECTILE_MANAGER->hits, createdHit);
+}
+
+projectileConfigFileParam getProjectileConfigFileParamFromString(char *fileParamString){
     if(!strcmp("TEX_REF", fileParamString)) return P_TEX_REF;
     if(!strcmp("TEX_ANIM_FRAMES", fileParamString)) return P_TEX_ANIM_FRAMES;
     if(!strcmp("WEAPON_DAMAGE", fileParamString)) return P_WEAPON_DAMAGE;
@@ -23,7 +53,14 @@ projectileConfigParam getProjectileConfigFileParamFromString(char *fileParamStri
     return P_NONE;
 }
 
-projectile *newProjectile(Game GAME,char *projectileFileName, int xpos, int ypos, float rotation, bool isFriendly){
+weaponType getWeaponTypeFromString(char *fileParamString){
+    if(!strcmp("BALLISTIC", fileParamString)) return BALLISTIC;
+    if(!strcmp("PLASMA", fileParamString)) return PLASMA;
+    if(!strcmp("EXPLOSIVE", fileParamString)) return EXPLOSIVE;
+    return 0;
+}
+
+projectile *newProjectile(Game GAME,char *projectileFileName, float xpos, float ypos, float rotation, bool isFriendly){
     projectile *createdProjectile = malloc(sizeof(projectile));
     
     static int id = 0;
@@ -37,9 +74,10 @@ projectile *newProjectile(Game GAME,char *projectileFileName, int xpos, int ypos
     char stat_name[255];
     char stat_value[255];
     createdProjectile->isFriendly = false;
+    this->projectileRenderer.animationId = NULL;
     while(fgets(line_cache, 255, projectile_file) != NULL){
         sscanf(line_cache,"%[^ ] = %[^\n]", stat_name, stat_value);
-        switch(getRobotConfigFileParamFromString(stat_name)){
+        switch(getProjectileConfigFileParamFromString(stat_name)){
             case P_TEX_REF:
                 createdProjectile->projectileRenderer.texref = malloc(sizeof(char)*(strlen(stat_value)+1));
                 strcpy(createdProjectile->texref, stat_value);
@@ -71,7 +109,7 @@ projectile *newProjectile(Game GAME,char *projectileFileName, int xpos, int ypos
     }
     fclose(projectile_file);
     createdProjectile->projectileRenderer.texref = malloc(sizeof(char)*50);
-    sprintf(createdProjectile->projectileRenderer.animationId, "p_%s.png", createdProjectile->projectileRenderer.texref);
+    sprintf(createdProjectile->projectileRenderer.texref, "p_%s.png", createdProjectile->projectileRenderer.texref);
     createdProjectile->projectileRenderer.texture = GAME.textureManager->getTexture(createdProjectile->projectileRenderer.texref);
     createdProjectile->projectileRenderer.currentFrame = 0;
     
@@ -106,12 +144,12 @@ void projectileUpdate(void *self){
             float distNormal = sqrt(pow(normalPointX - (actor->x + actor->width/2),2) + pow(normalPointY - (actor->y + actor->height/2),2));
             float r = min(actor->width, actor->height)/2;
             if(normalPointX >= min(this->x, endPosX) && normalPointX <= max(this->x, endPosX) && normalPointY >= min(this->y, endPosY) && normalPointY <= max(this->y, endPosY)){
-                if(distNormal < r){
-                    //Gérer/Génére le hit
+                if(distNormal < r && actor->isAlive()){
+                    newHit(this->damage, normalPointX, normalPointY, this->type, this->parent, target);
                     this->perforance--;
                     if(this->perforance == 0){
-                        //DELETE BULLET
-                        //RETURN
+                        this->delete();
+                        return;
                     }
                 }
             }
@@ -121,48 +159,57 @@ void projectileUpdate(void *self){
     SDL_GetCurrentDisplayMode(0, DM);
     int wWidth = DM->w;
     int wHeight = DM->h;
-    if(endPosX < 0 || endPosX > wWidth || endPosY < 0 || endPosY > wWidth){
-        //KILL
-        //RETURN
+    if(endPosX < -this->projectileRenderer.width || endPosX > wWidth + this->projectileRenderer.width || endPosY < -this->projectileRenderer.height || endPosY > wHeight + this->projectileRenderer.height){
+        this->delete();
+        return;
     }
     this->x+=this->speedx;
     this->y+=this->speedy;
 }
 
-void robotRender(void *self){
-    GameObject *thisGameObject = self;
-    projectile *this = thisGameObject->actor;
-    SDL_Rect rect={this->x,this->y,this->width,this->height};
-
-    SDL_Rect srcrect={this->walk.currentFrame*64,0,64,64};
-    SDL_RenderCopyEx(thisGameObject->game->renderer, this->walk.texture,&srcrect,&rect,-this->rotation*90/(M_PI/2) + 180,NULL,SDL_FLIP_NONE);
+void projectileRender(void *self){
+    projectile *this = self;
+    GameObject *parent = this->parent;
+    SDL_Rect rect={ROUND(this->x)+(this->width/2),ROUND(this->y),this->projectileRenderer.width, this->projectileRenderer.height};
+    SDL_Rect srcrect={this->projectileRenderer.currentFrame*this->projectileRenderer.width, 0, this->projectileRenderer.height, this->projectileRenderer.width};
+    SDL_RenderCopyEx(parent->game->renderer, this->projectileRenderer.texture,&srcrect,&rect,-this->rotation*90/(M_PI/2) + 180,NULL,SDL_FLIP_NONE);
 }
 
-void robotDelete(void *self){
-    GameObject *thisGameObject = self;
-    projectile *this = thisGameObject->actor;
-    free(this->name);
-    free(this->texref);  
-    free(this->walk.textureName); 
+void projectileDelete(void *self){
+    projectile *this = self;
+    free(this->projectileRenderer.texref);  
+    free(this->projectileRenderer.textureName);
+    if(this->projectileRenderer.animationId) free(this->projectileRenderer.animationId);
+    deleteInList(PROJECTILE_MANAGER->projectiles, this);
     free(this);
 }
 
-GameObject *newGameObject_Robot(Game *GAME, char *projectileFileName, int xpos, int ypos){
-    GameObject *gameObject = malloc(sizeof(GameObject));
-    gameObject->actor = newRobot(*GAME, projectileFileName, xpos, ypos);
-    gameObject->type = GOT_Robot;
-    gameObject->game = GAME;
-    gameObject->update = projectileUpdate;
-    gameObject->render = robotRender;
-    gameObject->delete = robotDelete;
-    gameObject->isAlive = robotIsAlive;
-    return gameObject;
+void createProjectile(Game *GAME, char *projectileFileName, float xpos, float ypos, float rotation, GameObject *parent){
+    projectile *createdProjectile = newProjectile(GAME, projectileFileName, xpos, ypos, rotation, true);
+    createdProjectile->parent = parent;
+    createdProjectile->update = projectileUpdate;
+    createdProjectile->render = projectileRender;
+    createdProjectile->delete = projectileDelete;
+    pushInList(PROJECTILE_MANAGER->projectiles, createProjectile);
 }
 
-TEX_REF
-WEAPON_DAMAGE
-WEAPON_SPEED
-WEAPON_DELAY
-WEAPON_RANGE
-WEAPON_PERFORANCE
-WEAPON_TYPE
+
+void clearAndFree(){
+    forEach(PROJECTILE_MANAGER->projectiles, projectileDelete);
+    forEach(PROJECTILE_MANAGER->hits, hitDelete);
+    free(PROJECTILE_MANAGER->projectiles);
+    free(PROJECTILE_MANAGER->hits);
+    free(PROJECTILE_MANAGER);
+}
+
+projectileManager *initProjectileManager(){
+    projectileManager *projectileManager = malloc(sizeof(projectileManager));
+    projectileManager->empty = clearAndFree;
+    projectileManager->newProjectile = createProjectile;
+    projectileManager->newHit = newHit;
+    projectileManager->projectiles = newList(COMPARE_PTR);
+    projectileManager->hits = newList(COMPARE_PTR);
+    return projectileManager;
+}
+
+#endif
