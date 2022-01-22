@@ -3,6 +3,9 @@
 #include <stdbool.h>
 #include "../Game/game.h"
 
+#ifndef ROBOT_H
+#define ROBOT_H
+
 typedef struct{
     char *textureName;
     SDL_Texture *texture;
@@ -30,3 +33,5 @@ typedef struct{
 } robot;
 
 GameObject *newGameObject_Robot(Game *GAME, char *robotFileName, int xpos, int ypos);
+
+#endif
