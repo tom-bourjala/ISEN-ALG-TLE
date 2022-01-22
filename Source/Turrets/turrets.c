@@ -61,10 +61,10 @@ turret *newTurret(Game GAME,char *turretFileName, int xpos, int ypos){
             case TP_ROTATION_ACCELERATION :
                 createdTurret->maxRotationAcceleration = atof(stat_value);
                 break;
-            case TP_WEAPON_RANGE :
+            case TP_WEAPON_DELAY :
                 createdTurret->delay = atof(stat_value);
                 break;    
-            case TP_WEAPON_DELAY :
+            case TP_WEAPON_RANGE:
                 createdTurret->range = atof(stat_value);
                 break;
             case TP_NONE :
@@ -100,9 +100,7 @@ void turretUpdate(void *self){
     GameObject *thisGameObject = self;
     turret *this = thisGameObject->actor;
     // this->rotation = fmod(this->rotation + 0.01,M_PI*2.0);
-    updateTurretRotation(*thisGameObject);
-    if(!thisGameObject->game->animationManager->getAnim(this->canon.animationId))
-        thisGameObject->game->animationManager->addAnim(this->canon.animationId, &this->canon.currentFrame, this->canon.nOfFrames, 10);
+    updateTurretAi(thisGameObject);
 }
 
 void turretRender(void *self){

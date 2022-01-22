@@ -3,4 +3,4 @@
 #include <stdbool.h>
 #include "../Game/game.h"
 
-void updateTurretRotation(GameObject turret);
+void updateTurretAi(GameObject *turret);

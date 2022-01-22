@@ -6,7 +6,6 @@
  * 
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include "SmartList.h"
@@ -14,12 +13,11 @@
 int COMPARE_PTR(void *data1, void *data2){
     return data1 == data2 ? 0 : 1;
 }
-/**
- * @brief init chain item
- * 
- * @param[in] data pointer to data to stock in item
- * @return chainItem pointer to allocated memory for intialized chain item 
- */
+
+void PRINT_POINTER_DEBUG(void *self){
+    printf("\033[1;31mSmartList_DEBUG : ITEM DATA %p\n\033[0m", self);
+}
+
 chainItem *newChainItem(void *data){
     chainItem *newItem = malloc(sizeof(chainItem));
     newItem->data = data;
@@ -35,6 +33,15 @@ list *newList(compareTwoPointersFunction comparatorFunction){
     theNewList->length = 0;
     theNewList->comparator = comparatorFunction;
     return theNewList;
+}
+
+void forEach(list *list, void (*function)(void *data)){
+    chainItem *item = list->first; 
+    while(item != NULL){
+        chainItem *next = item->next;
+        function(item->data);
+        item = next;
+    }
 }
 
 chainItem *getItemAtIndex(list list, int index){
@@ -126,6 +133,7 @@ int searchIndexInList(list list, void *data){
     while(item != NULL){
         if(list.comparator(item->data, data) == 0) return index;
         item = item->next;
+        index++;
     }
     printf("\033[1;31mSmartList_ERROR : Inconsistant search results between searchItemInList and searchIndexInList(%p)\n\033[0m", data);
     return -404;
@@ -145,13 +153,4 @@ void deleteInList(list *list, void *data){
 
 void emptyList(list *list){
     while(list->length > 0) deleteItemAtIndex(list, 0);
-}
-
-void forEach(list *list, void (*function)(void *data)){
-    chainItem *item = list->first; 
-    while(item != NULL){
-        chainItem *next = item->next;
-        function(item->data);
-        item = next;
-    }
 }

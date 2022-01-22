@@ -1,8 +1,13 @@
+#include <SDL2/SDL.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-// #include "game.h"
 #include "../List/SmartList.h"
+
+#ifndef PROJECTILEMANAGER_H
+#define PROJECTILEMANAGER_H
+
+typedef enum{BALLISTIC, PLASMA, EXPLOSIVE} weaponType;
 
 typedef struct{
     void (*delete)(void *self);
@@ -10,17 +15,31 @@ typedef struct{
     float x;
     float y;
     weaponType type;
-    GameObject *parent;
-    GameObject *target;
+    void *parent;
+    void *target;
 } hit;
 
 typedef struct
 {
     void (*empty)(void);
-    void (*newProjectile)(Game *GAME, char *projectileFileName, float xpos, float ypos, float rotation, GameObject *parent);
+    void (*newProjectile)(void *GAME, char *projectileFileName, float xpos, float ypos, float rotation, void *parent);
+    void (*newHit)(int damage, float x, float y, weaponType type, void *parent, void *target);
+    void (*updateProjectiles)(void);
+    void (*renderProjectiles)(void);
+    void (*applyHits)(void);
     list *projectiles;
     list *hits;
 } projectileManager;
+
+typedef struct{
+    char* texref;
+    SDL_Texture *texture;
+    int width;
+    int height;
+    int nOfFrames;
+    int currentFrame;
+    char *animationId;
+} projectileRenderer;
 
 typedef struct{
     void (*update)(void *self);
@@ -40,17 +59,8 @@ typedef struct{
     projectileRenderer projectileRenderer;
     projectileManager *manager;
     weaponType type;
-    GameObject *parent;
+    void *parent;
 } projectile;
 
-typedef struct{
-    char* texref;
-    SDL_Texture *texture;
-    int width;
-    int height;
-    int nOfFrames;
-    int currentFrame;
-    char *animationId;
-} projectileRenderer;
-
 projectileManager *initProjectileManager();
+#endif

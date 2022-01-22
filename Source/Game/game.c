@@ -8,8 +8,6 @@
 #include "../Turrets/turrets.h"
 #include "../Robots/robots.h"
 
-
-
 Game *GAME = NULL;
 
 void handleEvents(){
@@ -37,6 +35,8 @@ void updateAnimation(void *targetAnim){
 void update(){
     forEach(GAME->gameObjects, updateGameObject);
     forEach(GAME->animationManager->animList, updateAnimation);
+    GAME->projectileManager->updateProjectiles();
+    GAME->projectileManager->applyHits();
 }
 
 void renderGameObject(void *object){
@@ -50,6 +50,7 @@ void render(){
     //Render EFFECTS
     //Render OBJECTS
     forEach(GAME->gameObjects, renderGameObject);
+    GAME->projectileManager->renderProjectiles();
     //Render UI
     SDL_RenderPresent(GAME->renderer);
 }

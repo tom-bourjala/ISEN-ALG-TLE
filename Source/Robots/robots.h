@@ -27,6 +27,8 @@ typedef struct{
     int life;
     int shield;
     int maxShield;
+    int delay;
+    int range;
     bool isFriendly;
     robot_walk walk;
     char *projectileName;

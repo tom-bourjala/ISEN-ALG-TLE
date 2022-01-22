@@ -4,12 +4,11 @@
 #include <math.h>
 #include <limits.h>
 #include "../Game/game.h"
+#include "../Game/projectileManager.h"
 #include "../List/SmartList.h"
 #include "../Robots/robots.h"
 #include "../Turrets/turrets.h"
 #include "turretAi.h"
-
-
 
 GameObject *getClosestEnemy(GameObject turretObject){
     list *GameObjects = turretObject.game->gameObjects;
@@ -36,7 +35,8 @@ GameObject *getClosestEnemyInRange(GameObject turretObject){
     turret *turret = turretObject.actor;
     robot *actor = closestTarget->actor;
     float distanceIB = sqrt(pow((actor->x + actor->width/2) - (turret->x + turret->width/2),2) + pow((actor->y + actor->height/2) - (turret->y + turret->height/2),2));
-    if(distanceIB <= turret->weapon.range)
+    // printf("IB=%f, R=%d\n", distanceIB, turret->range);
+    if(distanceIB <= turret->range)
         return closestTarget;
     else
         return NULL;
@@ -60,25 +60,32 @@ float getDeltaBetweenTwoAngles(float a1, float a2){
     return delta;
 }
 
-void updateTurretRotation(GameObject turretObject){
-    turret *turret = turretObject.actor;
-    GameObject *closestTarget = getClosestEnemy(turretObject);
+void tryShoot(GameObject *turretObject){
+    turret *this = turretObject->actor;
+    if(!turretObject->game->animationManager->getAnim(this->canon.animationId)){
+        turretObject->game->animationManager->addAnim(this->canon.animationId, &this->canon.currentFrame, this->canon.nOfFrames, 10);
+        turretObject->game->projectileManager->newProjectile(turretObject->game, "debug.projectile", this->x, this->y, this->rotation, turretObject);
+    }
+}
+
+void updateTurretAi(GameObject *turretObject){
+    turret *turret = turretObject->actor;
+    GameObject *closestTarget = getClosestEnemyInRange(*turretObject);
     if(closestTarget){
         robot *robot = closestTarget->actor;
         float currentTurretRotation = turret->rotation;
         float TargetFireAngle = atan2(turret->x + turret->width/2 - (robot->x + robot->width/2), turret->y + turret->height/2 - (robot->y + robot->height/2));
         float delta = getDeltaBetweenTwoAngles(currentTurretRotation, TargetFireAngle);
-        printf("CurrentRotation = %f, TargetIdealAngle = %f, delta = %f\n", currentTurretRotation, TargetFireAngle, delta);
-        printf("Rh = %d, Rw = %d, Th = %d, Tw = %d\n", robot->height,robot->width,turret->height,turret->width);
-        if(fabs(delta) < turret->maxRotationSpeed)
+        // printf("CurrentRotation = %f, TargetIdealAngle = %f, delta = %f\n", currentTurretRotation, TargetFireAngle, delta);
+        // printf("Rh = %d, Rw = %d, Th = %d, Tw = %d\n", robot->height,robot->width,turret->height,turret->width);
+        if(fabs(delta) < turret->maxRotationSpeed){
             turret->rotation = TargetFireAngle;
-        else {
-            if(fabs(delta) < M_PI/2.0){
+            tryShoot(turretObject);
+        } else {
+            if(fabs(delta) < M_PI/2.0)
                 turret->rotation += turret->maxRotationSpeed * (delta >= 0 ? -1.0 : 1.0);
-            }
-            else{
-                turret->rotation += turret->maxRotationSpeed * (isEnemyBypassingClockwise(turretObject, *closestTarget) ? 1.0 : -1.0);
-            }
+            else
+                turret->rotation += turret->maxRotationSpeed * (isEnemyBypassingClockwise(*turretObject, *closestTarget) ? 1.0 : -1.0);
         }
         if(turret->rotation > M_PI) turret->rotation -= 2.0*M_PI;
         if(turret->rotation < -M_PI) turret->rotation += 2.0*M_PI;

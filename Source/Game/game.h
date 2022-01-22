@@ -11,6 +11,7 @@
 #ifndef GAME_H
 #define GAME_H
 
+
 typedef struct
 {
     void (*handleEvents)(void);
@@ -40,7 +41,5 @@ struct GameObject{
     GameObjectType type;
     void *actor;
 };
-
-typedef enum{BALLISTIC, PLASMA, EXPLOSIVE} weaponType;
 
 #endif
