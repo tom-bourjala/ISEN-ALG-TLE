@@ -126,14 +126,13 @@ projectile *newProjectile(void *game,char *projectileFileName, float xpos, float
     createdProjectile->x = xpos;
     createdProjectile->y = ypos;
     createdProjectile->rotation = rotation;
-    createdProjectile->speedx = createdProjectile->speed * cos(rotation);
-    createdProjectile->speedy = -createdProjectile->speed * sin(rotation);
+    createdProjectile->speedx = -createdProjectile->speed * sin(rotation);
+    createdProjectile->speedy = -createdProjectile->speed * cos(rotation);
 
     return createdProjectile;
 }
 
 void projectileUpdate(void *self){
-    printf("%p UPDATE\n", self);
     projectile *this = self;
     GameObject *parent = this->parent;
     float endPosX = this->speedx+this->x;
@@ -178,10 +177,9 @@ void projectileUpdate(void *self){
 }
 
 void projectileRender(void *self){
-    printf("%p RENDERING\n", self);
     projectile *this = self;
     GameObject *parent = this->parent;
-    SDL_Rect rect={ROUND(this->x)+(this->projectileRenderer.width/2),ROUND(this->y),this->projectileRenderer.width + 5, this->projectileRenderer.height + 40};
+    SDL_Rect rect={ROUND(this->x)+(this->projectileRenderer.width/2),ROUND(this->y),this->projectileRenderer.width, this->projectileRenderer.height};
     SDL_Rect srcrect={this->projectileRenderer.currentFrame*this->projectileRenderer.width, 0, this->projectileRenderer.width, this->projectileRenderer.height};
     SDL_RenderCopyEx(parent->game->renderer, this->projectileRenderer.texture,&srcrect,&rect,-this->rotation*90/(M_PI/2) + 180,NULL,SDL_FLIP_NONE);
 }
@@ -194,7 +192,6 @@ void projectileDelete(void *self){
     if(searchDataInList(*PROJECTILE_MANAGER->projectiles, this))
         exit(3);
     free(this);
-    printf("%p DELETED\n", self);
 }
 
 void createProjectile(void *GAME, char *projectileFileName, float xpos, float ypos, float rotation, void *parent){
