@@ -18,6 +18,12 @@ void handleEvents(){
     case SDL_QUIT:
         GAME->isRunning = false;
         break;
+    case SDL_KEYDOWN:
+        switch(event.key.keysym.sym)
+        {
+            case SDLK_d:
+                printf("ok\n");
+        }
     
     default:
         break;
