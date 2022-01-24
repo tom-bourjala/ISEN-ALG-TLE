@@ -11,7 +11,7 @@
 #ifndef GAME_H
 #define GAME_H
 
-typedef enum {DEBUG_NULL,DEBUG_HITBOX} DEBUG;
+typedef enum {DEBUG_NULL,DEBUG_HITBOX} debug;
 
 typedef struct
 {
@@ -26,6 +26,7 @@ typedef struct
     projectileManager *projectileManager;
     list *gameObjects;
     bool isRunning;
+    debug key_debug;
 } Game;
 
 Game *initGame(const char* title, int width, int height, bool fullscreen);

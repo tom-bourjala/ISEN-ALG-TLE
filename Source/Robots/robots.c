@@ -4,6 +4,8 @@
 #include <math.h>
 #include "robots.h"
 #include "../Game/game.h"
+#include "../Game/rendererAddons.h"
+
 
 typedef enum{ROB_NAME, ROB_TEX_REF, ROB_PROJECTILE_NAME, ROB_WIDTH, ROB_HEIGHT, ROB_TEX_ANIM_FRAMES, ROB_LIFE, ROB_WEAPON_DELAY, ROB_WEAPON_RANGE, ROB_IS_FRIENDLY, ROB_NONE} robotConfigFileParam;
 
@@ -113,6 +115,13 @@ void robotRender(void *self){
 
     SDL_Rect srcrect={this->walk.currentFrame*64,0,64,64};
     SDL_RenderCopyEx(thisGameObject->game->renderer, this->walk.texture,&srcrect,&rect,-this->rotation*90/(M_PI/2) + 180,NULL,SDL_FLIP_NONE);
+    if(thisGameObject->game->key_debug==DEBUG_HITBOX)
+    {
+        int maximum_seg = rect.w>rect.h ? rect.w : rect.h ;
+        SDL_Color rouge = {255,0,0,255};
+        SDL_SetRenderDrawColor(thisGameObject->game->renderer,rouge.r,rouge.g,rouge.b,rouge.a);
+        DrawCircle(thisGameObject->game->renderer,rect.x+rect.w/2,rect.y+rect.h/2,maximum_seg/2);
+    }
 }
 
 void robotDelete(void *self){

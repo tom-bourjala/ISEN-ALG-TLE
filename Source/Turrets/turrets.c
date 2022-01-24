@@ -5,6 +5,7 @@
 #include "turrets.h"
 #include "turretAi.h"
 #include "../Game/game.h"
+#include "../Game/rendererAddons.h"
 
 typedef enum{TP_NAME, TP_TEX_REF, TP_WIDTH, TP_HEIGHT, TP_TEX_ANIM_FRAMES, TP_ROTATION_SPEED, TP_ROTATION_ACCELERATION, TP_WEAPON_DELAY, TP_WEAPON_RANGE, TP_NONE} turretConfigFileParam;
 

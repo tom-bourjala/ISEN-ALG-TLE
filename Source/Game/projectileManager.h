@@ -26,6 +26,7 @@ typedef struct
     void (*newHit)(int damage, float x, float y, weaponType type, void *parent, void *target);
     void (*updateProjectiles)(void);
     void (*renderProjectiles)(void);
+    void (*renderProjectilesHitbox)(void);
     void (*applyHits)(void);
     list *projectiles;
     list *hits;

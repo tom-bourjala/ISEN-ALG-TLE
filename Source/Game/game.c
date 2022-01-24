@@ -12,21 +12,26 @@ Game *GAME = NULL;
 
 void handleEvents(){
     SDL_Event event;
-    SDL_PollEvent(&event);
-    switch (event.type)
+    while(SDL_PollEvent(&event))
     {
-    case SDL_QUIT:
-        GAME->isRunning = false;
-        break;
-    case SDL_KEYDOWN:
-        switch(event.key.keysym.sym)
+        switch (event.type)
         {
-            case SDLK_d:
-                printf("ok\n");
+        case SDL_QUIT:
+            GAME->isRunning = false;
+            break;
+        case SDL_KEYDOWN:
+            switch(event.key.keysym.sym)
+            {
+                case SDLK_F12:
+                    GAME->key_debug=DEBUG_HITBOX-GAME->key_debug;
+                    break;
+            }
+            break;
+        case SDL_KEYUP:
+            break;
+        default:
+            break;
         }
-    
-    default:
-        break;
     }
 }
 
@@ -57,6 +62,10 @@ void render(){
     //Render OBJECTS
     forEach(GAME->gameObjects, renderGameObject);
     GAME->projectileManager->renderProjectiles();
+    if(GAME->key_debug==DEBUG_HITBOX)
+    {
+        GAME->projectileManager->renderProjectilesHitbox();
+    }
     //Render UI
     SDL_RenderPresent(GAME->renderer);
 }
@@ -113,11 +122,11 @@ Game *initGame(const char* title, int width, int height, bool fullscreen){
     GAME->animationManager = initAnimManager();
     GAME->projectileManager = initProjectileManager();
     GAME->gameObjects = newList(COMPARE_PTR);
-    appendInList(GAME->gameObjects, newGameObject_Turret(GAME, "debug.turret", 300, 300));
-    appendInList(GAME->gameObjects, newGameObject_Turret(GAME, "debug.turret", 500, 600));
+    //appendInList(GAME->gameObjects, newGameObject_Turret(GAME, "debug.turret", 300, 300));
+    appendInList(GAME->gameObjects, newGameObject_Turret(GAME, "debug.turret", 600, 400));
     appendInList(GAME->gameObjects, newGameObject_Robot(GAME, "debug.robot", 400, 100));
-    appendInList(GAME->gameObjects, newGameObject_Robot(GAME, "debug.robot", 100, 500));
+    /*appendInList(GAME->gameObjects, newGameObject_Robot(GAME, "debug.robot", 100, 500));
     appendInList(GAME->gameObjects, newGameObject_Robot(GAME, "debug.robot", 600, 500));
-    appendInList(GAME->gameObjects, newGameObject_Robot(GAME, "debug.robot", 200, 150));
+    appendInList(GAME->gameObjects, newGameObject_Robot(GAME, "debug.robot", 200, 150));*/
     return GAME;
 }
