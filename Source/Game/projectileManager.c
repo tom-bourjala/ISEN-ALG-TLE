@@ -44,6 +44,9 @@ void applyHit(void *self){
     GameObject *targetObject = this->target;
     robot *target = targetObject->actor;
     target->life -= this->damage;
+    if(targetObject->game->key_debug == DEBUG_HITBOX){
+        
+    }
     if(!targetObject->isAlive(targetObject)){
         targetObject->delete(targetObject);
     }
@@ -184,25 +187,11 @@ void projectileRender(void *self){
     SDL_RenderCopyEx(parent->game->renderer, this->projectileRenderer.texture,&srcrect,&rect,-this->rotation*90/(M_PI/2) + 180,NULL,SDL_FLIP_NONE);
 }
 
-void projectileRenderHitbox(void *self){
-    projectile *this = self;
-    GameObject *parent = this->parent;
-    SDL_Rect rect={ROUND(this->x)+(this->projectileRenderer.width/2),ROUND(this->y),this->projectileRenderer.width, this->projectileRenderer.height};
-    //SDL_Rect srcrect={this->projectileRenderer.currentFrame*this->projectileRenderer.width, 0, this->projectileRenderer.width, this->projectileRenderer.height};
-    //SDL_RenderCopyEx(parent->game->renderer, this->projectileRenderer.texture,&srcrect,&rect,-this->rotation*90/(M_PI/2) + 180,NULL,SDL_FLIP_NONE);
-    SDL_Color jaune = {255,234,0,255};
-    SDL_SetRenderDrawColor(parent->game->renderer,jaune.r,jaune.g,jaune.b,jaune.a);    
-    DrawCircle(parent->game->renderer,rect.x+rect.w/2, rect.y+rect.h/2, rect.h);
-    //SDL_RenderDrawLine(parent->game->renderer, rect.x,rect.y,rect.x+rect.w,rect.y+rect.h);
-}
-
 void projectileDelete(void *self){
     projectile *this = self;
     free(this->projectileRenderer.texref);
     if(this->projectileRenderer.animationId) free(this->projectileRenderer.animationId);
     deleteInList(PROJECTILE_MANAGER->projectiles, this);
-    if(searchDataInList(*PROJECTILE_MANAGER->projectiles, this))
-        exit(3);
     free(this);
 }
 
@@ -232,10 +221,6 @@ void renderProjectiles(){
     forEach(PROJECTILE_MANAGER->projectiles, projectileRender);
 }
 
-void renderProjectilesHitbox(){
-    forEach(PROJECTILE_MANAGER->projectiles, projectileRenderHitbox);
-}
-
 void applyHits(){
     forEach(PROJECTILE_MANAGER->hits, applyHit);
 }
@@ -249,7 +234,6 @@ projectileManager *initProjectileManager(){
     manager->hits = newList(COMPARE_PTR);
     manager->updateProjectiles = updateProjectiles;
     manager->renderProjectiles = renderProjectiles;
-    manager->renderProjectilesHitbox = renderProjectilesHitbox;
     manager->applyHits = applyHits;
     PROJECTILE_MANAGER = manager;
     return manager;

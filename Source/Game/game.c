@@ -62,10 +62,6 @@ void render(){
     //Render OBJECTS
     forEach(GAME->gameObjects, renderGameObject);
     GAME->projectileManager->renderProjectiles();
-    if(GAME->key_debug==DEBUG_HITBOX)
-    {
-        GAME->projectileManager->renderProjectilesHitbox();
-    }
     //Render UI
     SDL_RenderPresent(GAME->renderer);
 }
@@ -124,9 +120,9 @@ Game *initGame(const char* title, int width, int height, bool fullscreen){
     GAME->gameObjects = newList(COMPARE_PTR);
     //appendInList(GAME->gameObjects, newGameObject_Turret(GAME, "debug.turret", 300, 300));
     appendInList(GAME->gameObjects, newGameObject_Turret(GAME, "debug.turret", 600, 400));
-    appendInList(GAME->gameObjects, newGameObject_Robot(GAME, "debug.robot", 400, 100));
-    /*appendInList(GAME->gameObjects, newGameObject_Robot(GAME, "debug.robot", 100, 500));
-    appendInList(GAME->gameObjects, newGameObject_Robot(GAME, "debug.robot", 600, 500));
-    appendInList(GAME->gameObjects, newGameObject_Robot(GAME, "debug.robot", 200, 150));*/
+    // appendInList(GAME->gameObjects, newGameObject_Robot(GAME, "debug.robot", 400, 100));
+    appendInList(GAME->gameObjects, newGameObject_Robot(GAME, "debug.robot", 100, 500));
+    // appendInList(GAME->gameObjects, newGameObject_Robot(GAME, "debug.robot", 600, 500));
+    // appendInList(GAME->gameObjects, newGameObject_Robot(GAME, "debug.robot", 200, 150));
     return GAME;
 }
