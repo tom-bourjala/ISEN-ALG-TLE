@@ -11,6 +11,7 @@
 #ifndef GAME_H
 #define GAME_H
 
+typedef enum {DEBUG_NULL,DEBUG_HITBOX} DEBUG;
 
 typedef struct
 {
