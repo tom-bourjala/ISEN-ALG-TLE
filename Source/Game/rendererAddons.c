@@ -3,6 +3,54 @@
 #include <stdlib.h>
 #include "rendererAddons.h"
 
+
+void DebugUpdate(void *self){
+   GameObject *thisGameObject = self;
+   debugObject *this = thisGameObject->actor;
+   this->TTL--;
+   if(this->TTL <= 0 || thisGameObject->game->key_debug == DEBUG_NULL)
+      thisGameObject->delete(thisGameObject);
+}
+
+void DebugRender(void *self) {
+   GameObject *thisGameObject = self;
+   debugObject *this = thisGameObject->actor;
+   SDL_Color rouge = {255,0,0,255};
+   SDL_SetRenderDrawColor(thisGameObject->game->renderer,rouge.r,rouge.g,rouge.b,rouge.a);
+   DrawCircle(thisGameObject->game->renderer,this->x,this->y,10);
+}
+
+void DebugDelete(void *self){
+    GameObject *thisGameObject = self;
+    debugObject *this = thisGameObject->actor;
+    deleteInList(thisGameObject->game->gameObjects, thisGameObject);
+    free(this);
+    free(thisGameObject);
+}
+
+bool DebugIsAlive(void *self){
+    GameObject *thisGameObject = self;
+    debugObject *this = thisGameObject->actor;
+    return this->TTL > 0;
+}
+
+GameObject *newGameObject_Debug(Game *GAME, int xpos, int ypos, int TTL, debugObjectType type){
+   debugObject *newDebugObject = malloc(sizeof(debugObject));
+   newDebugObject->TTL = TTL;
+   newDebugObject->type = type;
+   newDebugObject->x = xpos;
+   newDebugObject->y = ypos;
+   GameObject *newGameObject = malloc(sizeof(GameObject));
+   newGameObject->game = GAME;
+   newGameObject->isAlive = DebugIsAlive;
+   newGameObject->delete = DebugDelete;
+   newGameObject->render = DebugRender;
+   newGameObject->update = DebugUpdate;
+   newGameObject->type = GOT_DEBUG;
+   newGameObject->actor = newDebugObject;
+   return newGameObject;
+}
+
 void DrawCircle(SDL_Renderer * renderer, int32_t centreX, int32_t centreY, int32_t radius)
 {
    const int32_t diameter = (radius * 2);

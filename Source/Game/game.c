@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <time.h>
 #include "game.h"
+#include "rendererAddons.h"
 #include "../Turrets/turrets.h"
 #include "../Robots/robots.h"
 
@@ -23,7 +24,8 @@ void handleEvents(){
             switch(event.key.keysym.sym)
             {
                 case SDLK_F12:
-                    GAME->key_debug=DEBUG_HITBOX-GAME->key_debug;
+                    if(GAME->key_debug==DEBUG_HITBOX) GAME->key_debug = DEBUG_NULL;
+                    else GAME->key_debug = DEBUG_HITBOX;
                     break;
             }
             break;
@@ -44,6 +46,7 @@ void updateAnimation(void *targetAnim){
 }
 
 void update(){
+
     forEach(GAME->gameObjects, updateGameObject);
     forEach(GAME->animationManager->animList, updateAnimation);
     GAME->projectileManager->updateProjectiles();
@@ -118,10 +121,12 @@ Game *initGame(const char* title, int width, int height, bool fullscreen){
     GAME->animationManager = initAnimManager();
     GAME->projectileManager = initProjectileManager();
     GAME->gameObjects = newList(COMPARE_PTR);
+    GAME->key_debug = DEBUG_NULL;
     //appendInList(GAME->gameObjects, newGameObject_Turret(GAME, "debug.turret", 300, 300));
     appendInList(GAME->gameObjects, newGameObject_Turret(GAME, "debug.turret", 600, 400));
     // appendInList(GAME->gameObjects, newGameObject_Robot(GAME, "debug.robot", 400, 100));
     appendInList(GAME->gameObjects, newGameObject_Robot(GAME, "debug.robot", 100, 500));
+    appendInList(GAME->gameObjects, newGameObject_Debug(GAME, 200, 200, 100, DO_Hit));
     // appendInList(GAME->gameObjects, newGameObject_Robot(GAME, "debug.robot", 600, 500));
     // appendInList(GAME->gameObjects, newGameObject_Robot(GAME, "debug.robot", 200, 150));
     return GAME;

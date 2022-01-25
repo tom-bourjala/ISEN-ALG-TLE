@@ -6,6 +6,8 @@
         "dirent.h": "c",
         "stdio.h": "c",
         "animationmanager.h": "c",
-        "projectilemanager.h": "c"
+        "projectilemanager.h": "c",
+        "rendereraddons.h": "c",
+        "turrets.h": "c"
     }
 }

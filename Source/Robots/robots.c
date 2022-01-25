@@ -129,7 +129,8 @@ void robotDelete(void *self){
     robot *this = thisGameObject->actor;
     free(this->name);
     free(this->texref);  
-    free(this->walk.textureName); 
+    free(this->walk.textureName);
+    deleteInList(thisGameObject->game->gameObjects, thisGameObject);
     free(this);
 }
 

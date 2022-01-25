@@ -125,6 +125,7 @@ void turretDelete(void *self){
     free(this->support.textureName);
     free(this->canon.textureName);
     free(this->canon.animationId);
+    deleteInList(thisGameObject->game->gameObjects, thisGameObject);
     free(this);
 }
 

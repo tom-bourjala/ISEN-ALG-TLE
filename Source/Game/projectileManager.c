@@ -44,9 +44,8 @@ void applyHit(void *self){
     GameObject *targetObject = this->target;
     robot *target = targetObject->actor;
     target->life -= this->damage;
-    if(targetObject->game->key_debug == DEBUG_HITBOX){
-        
-    }
+    if(targetObject->game->key_debug == DEBUG_HITBOX)
+        appendInList(targetObject->game->gameObjects, newGameObject_Debug(targetObject->game, this->x, this->y, 600, DO_Hit));
     if(!targetObject->isAlive(targetObject)){
         targetObject->delete(targetObject);
     }
@@ -143,26 +142,18 @@ void projectileUpdate(void *self){
     list *GameObjects = parent->game->gameObjects;
     for(int index = 0; index < GameObjects->length; index++){
         GameObject *target = getDataAtIndex(*GameObjects, index);
-        if(target->type == GOT_Robot){
+        if(target->type == GOT_Robot && target->isAlive(target)){
             robot *actor = target->actor;
-            float distStartPointCenter = sqrt(pow(this->x - (actor->x + actor->width/2),2) + pow(this->y - (actor->y + actor->height/2),2));
-            float alphaDiv = this->speed * distStartPointCenter;
-            float alpha = acos((endPosX*(actor->x + actor->width/2) + endPosY * (actor->y + actor->height/2))/alphaDiv);
-            float tang = distStartPointCenter * cos(alpha);
-            float tangX = tang * cos(alpha);
-            float tangY = tang * sin(alpha);
-            float normalPointX = tangX+this->x;
-            float normalPointY = tangY+this->y;
-            float distNormal = sqrt(pow(normalPointX - (actor->x + actor->width/2),2) + pow(normalPointY - (actor->y + actor->height/2),2));
+            float targetX = actor->x + actor->width/2;
+            float targetY = actor->y + actor->height/2;
+            float distEndPointCenter = sqrt(pow(endPosX - targetX,2) + pow(endPosY- targetY,2));
             float r = min(actor->width, actor->height)/2;
-            if(normalPointX >= min(this->x, endPosX) && normalPointX <= max(this->x, endPosX) && normalPointY >= min(this->y, endPosY) && normalPointY <= max(this->y, endPosY)){
-                if(distNormal < r && target->isAlive(target)){
-                    newHit(this->damage, normalPointX, normalPointY, this->type, this->parent, target);
-                    this->perforance--;
-                    if(this->perforance == 0){
-                        this->delete(this);
-                        return;
-                    }
+            if(distEndPointCenter < r){
+                newHit(this->damage, endPosX, endPosY, this->type, this->parent, target);
+                this->perforance--;
+                if(this->perforance == 0){
+                    this->delete(this);
+                    return;
                 }
             }
         }
