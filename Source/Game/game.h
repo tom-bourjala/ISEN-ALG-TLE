@@ -6,12 +6,14 @@
 #include "textureManager.h"
 #include "animationManager.h"
 #include "projectileManager.h"
+#include "../Maps/mapManager.h"
 #include "../List/SmartList.h"
 
 #ifndef GAME_H
 #define GAME_H
 
-typedef enum {DEBUG_NULL,DEBUG_HITBOX} debug;
+typedef enum {DEBUG_NULL, DEBUG_HITBOX, DEBUG_PATH, DEBUG_EL} debug;
+typedef enum {GS_LMM, GS_MM, GS_LGL, GS_INGL} gameStatus;
 
 typedef struct
 {
@@ -24,9 +26,11 @@ typedef struct
     textureManager *textureManager;
     animationManager *animationManager;
     projectileManager *projectileManager;
+    mapManager *mapManager;
     list *gameObjects;
     bool isRunning;
     debug key_debug;
+    gameStatus status;
 } Game;
 
 Game *initGame(const char* title, int width, int height, bool fullscreen);
