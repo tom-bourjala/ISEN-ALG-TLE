@@ -58,8 +58,9 @@ chainItem *getItemAtIndex(list list, int index){
 void *getDataAtIndex(list list, int index){
     if(index < 0)
         printf("\033[1;31mSmartList_ERROR : Get Data at negative index\n\033[0m");
-    void *data = getItemAtIndex(list, index)->data;
-    return data;
+    chainItem *item = getItemAtIndex(list, index);
+    if(item) return getItemAtIndex(list, index)->data;
+    else return NULL;
 }
 
 /**
