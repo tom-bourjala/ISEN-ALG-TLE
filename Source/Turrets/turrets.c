@@ -99,7 +99,7 @@ turret *newTurret(Game GAME,char *turretFileName, int xpos, int ypos){
 
 void turretUpdate(void *self){
     GameObject *thisGameObject = self;
-    turret *this = thisGameObject->actor;
+    // turret *this = thisGameObject->actor;
     // this->rotation = fmod(this->rotation + 0.01,M_PI*2.0);
     updateTurretAi(thisGameObject);
 }
@@ -130,8 +130,8 @@ void turretDelete(void *self){
 }
 
 bool turretIsAlive(void *self){
-    GameObject *thisGameObject = self;
-    turret *this = thisGameObject->actor;
+    // GameObject *thisGameObject = self;
+    // turret *this = thisGameObject->actor;
     return true;
 }
 
