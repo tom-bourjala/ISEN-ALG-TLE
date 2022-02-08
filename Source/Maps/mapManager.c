@@ -27,6 +27,36 @@ typedef struct{
     int y;
 } nodeChildLinkToSolve;
 
+void updatePreviews(){
+    // list *textures = newList(compareNames);
+    // DIR* repertory = opendir("./assets/maps");
+    // struct dirent* readfile = NULL;
+    // if(!repertory){
+    //     printf("\033[1;31m MapManager_ERROR Previews : Can't open maps directory\n");
+    //     perror("ERROR:");
+    //     printf("\033[0m");
+    //     exit(3);
+    // }
+    // while ((readfile = readdir(repertory)) != NULL)
+    // {
+    //     if(strcmp(readfile->d_name, ".") && strcmp(readfile->d_name, "..")){
+    //         printf("Loading Texture - '%s'...\n", readfile->d_name);
+            
+    //         texture *loaded_texture = malloc(sizeof(texture));
+    //         loaded_texture->name = malloc(sizeof(char) * strlen(readfile->d_name) + 1);
+    //         strcpy(loaded_texture->name, readfile->d_name);
+
+    //         char texturePath[255];
+    //         sprintf(texturePath, "./assets/tex/%s", loaded_texture->name);
+    //         loaded_texture->texture = IMG_LoadTexture(renderer, texturePath);
+    //         if(!loaded_texture->texture) printf("\033[1;31m%s\n\033[0m", SDL_GetError());
+    //         appendInList(textures, loaded_texture);
+    //     }
+    // }
+    // closedir(repertory);
+    // return textures;
+}
+
 void loadMapMetadataFromFiles(map *map){
     char path[50];
     sprintf(path, "./assets/maps/%s.map", map->id);
@@ -152,12 +182,12 @@ void renderMap(){
         char debugTex[255];
         sprintf(debugTex, "map_%s_datagrid.png", Map->id);
         SDL_Texture *tex = game->textureManager->getTexture(debugTex);
-        SDL_SetTextureAlphaMod(tex, 100);
+        SDL_SetTextureAlphaMod(tex, 200);
         SDL_RenderCopyEx(game->renderer, tex,NULL,&rect,0,NULL,SDL_FLIP_NONE);
         SDL_SetTextureAlphaMod(tex, 255);
         SDL_SetRenderDrawColor(game->renderer, 0,0,255,255);
-        for(int x = 0; x<Map->dataGrid.w; x++) for(int y = 0; y<Map->dataGrid.h; y++)
-            if(Map->dataGrid.grid[y][x].type == MCT_PATH_NS) SDL_RenderDrawPoint(game->renderer, x, y);
+        // for(int x = 0; x<Map->dataGrid.w; x++) for(int y = 0; y<Map->dataGrid.h; y++)
+        //     if(Map->dataGrid.grid[y][x].type == MCT_PATH_NS) SDL_RenderDrawPoint(game->renderer, x, y);
         for(int startIndex = 0; startIndex < Map->starts->length; startIndex++)
             for(int seed = 0; seed < 8; seed++){
                 map_node *node = getDataAtIndex(*Map->starts, startIndex);
@@ -191,6 +221,7 @@ mapManager *initMapManager(void *game){
     manager->unloadMap = unloadCurrentMap;
     manager->render = renderMap;
     manager->previews = newList(COMPARE_PTR);
+    manager->updatePreviews = updatePreviews;
     manager->parent = game;
     MAP_MANAGER = manager;
     return manager;

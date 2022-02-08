@@ -12,6 +12,7 @@
 typedef struct{
     char *id;
     char *name;
+    char *description;
     SDL_Texture *texture;
 } mapPreview;
 
@@ -21,6 +22,7 @@ typedef struct
     void (*loadMap)(const char *id, const int width, const int height);
     void (*unloadMap)(void);
     void (*render)(void);
+    void (*updatePreviews)(void);
     list *previews;
     void *parent;
 } mapManager;
