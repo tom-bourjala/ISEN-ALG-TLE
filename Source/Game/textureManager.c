@@ -49,6 +49,10 @@ SDL_Texture *getTexture(char *name){
     texture *request = malloc(sizeof(texture));
     request->name = name;
     texture *data = searchDataInList(*TEXTURE_MANAGER->texList, request);
+    if(!data){
+        printf("\033[1;31m TextureManager error : %s not found.\n\033[0m", name);
+        return NULL;
+    }
     return data->texture;
 }
 

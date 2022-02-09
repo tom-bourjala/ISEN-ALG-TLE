@@ -17,22 +17,20 @@ void handleEvents(){
     {
         switch (event.type)
         {
-        case SDL_QUIT:
-            GAME->isRunning = false;
-            break;
-        case SDL_KEYDOWN:
-            switch(event.key.keysym.sym)
-            {
-                case SDLK_F12:
-                    if(GAME->key_debug==DEBUG_HITBOX) GAME->key_debug = DEBUG_NULL;
-                    else GAME->key_debug = DEBUG_HITBOX;
-                    break;
-            }
-            break;
-        case SDL_KEYUP:
-            break;
-        default:
-            break;
+            case SDL_QUIT:
+                GAME->isRunning = false;
+                break;
+            case SDL_KEYDOWN:
+                switch(event.key.keysym.sym)
+                {
+                    case SDLK_F12:
+                        GAME->key_debug++;
+                        if(GAME->key_debug==DEBUG_EL) GAME->key_debug = DEBUG_NULL;
+                        break;
+                }
+                break;
+            default:
+                break;
         }
     }
 }
@@ -61,6 +59,7 @@ void render(){
     SDL_SetRenderDrawColor(GAME->renderer, 55, 55, 55, 255);
     SDL_RenderClear(GAME->renderer);
     //Render MAP
+    GAME->mapManager->render();
     //Render EFFECTS
     //Render OBJECTS
     forEach(GAME->gameObjects, renderGameObject);
@@ -81,6 +80,7 @@ void freeAnimation(void *animationToKill){
 void clean(){
     GAME->textureManager->empty();
     GAME->projectileManager->empty();
+    GAME->mapManager->unloadMap();
     forEach(GAME->animationManager->animList, freeAnimation);
     emptyList(GAME->animationManager->animList);
     free(GAME->animationManager->animList);
@@ -112,7 +112,7 @@ Game *initGame(const char* title, int width, int height, bool fullscreen){
     } else {
         GAME->isRunning = false;
         printf("\033[1;31mSDL Subsystems Initialising FAILED : %s\033[0m\n", SDL_GetError());
-    } 
+    }
     GAME->handleEvents = handleEvents;
     GAME->update = update;
     GAME->render = render;
@@ -120,14 +120,16 @@ Game *initGame(const char* title, int width, int height, bool fullscreen){
     GAME->textureManager = initTexManager(GAME->renderer);
     GAME->animationManager = initAnimManager();
     GAME->projectileManager = initProjectileManager();
+    GAME->mapManager = initMapManager(GAME);
     GAME->gameObjects = newList(COMPARE_PTR);
     GAME->key_debug = DEBUG_NULL;
-    //appendInList(GAME->gameObjects, newGameObject_Turret(GAME, "debug.turret", 300, 300));
+    GAME->status = GS_INGL;
+    appendInList(GAME->gameObjects, newGameObject_Turret(GAME, "debug.turret", 300, 300));
     appendInList(GAME->gameObjects, newGameObject_Turret(GAME, "debug.turret", 600, 400));
-    // appendInList(GAME->gameObjects, newGameObject_Robot(GAME, "debug.robot", 400, 100));
+    appendInList(GAME->gameObjects, newGameObject_Robot(GAME, "debug.robot", 400, 100));
     appendInList(GAME->gameObjects, newGameObject_Robot(GAME, "debug.robot", 100, 500));
     appendInList(GAME->gameObjects, newGameObject_Debug(GAME, 200, 200, 100, DO_Hit));
-    // appendInList(GAME->gameObjects, newGameObject_Robot(GAME, "debug.robot", 600, 500));
-    // appendInList(GAME->gameObjects, newGameObject_Robot(GAME, "debug.robot", 200, 150));
+    appendInList(GAME->gameObjects, newGameObject_Robot(GAME, "debug.robot", 600, 500));
+    appendInList(GAME->gameObjects, newGameObject_Robot(GAME, "debug.robot", 200, 150));
     return GAME;
 }

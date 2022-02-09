@@ -8,6 +8,10 @@
         "animationmanager.h": "c",
         "projectilemanager.h": "c",
         "rendereraddons.h": "c",
-        "turrets.h": "c"
+        "turrets.h": "c",
+        "texturemanager.h": "c",
+        "mapdatamanagement.h": "c",
+        "robots.h": "c",
+        "game.h": "c"
     }
 }
