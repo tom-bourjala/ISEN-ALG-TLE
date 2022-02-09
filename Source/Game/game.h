@@ -6,6 +6,7 @@
 #include "textureManager.h"
 #include "animationManager.h"
 #include "projectileManager.h"
+#include "../UI/UI_mainMenu.h"
 #include "../Maps/mapManager.h"
 #include "../List/SmartList.h"
 
@@ -27,10 +28,13 @@ typedef struct
     animationManager *animationManager;
     projectileManager *projectileManager;
     mapManager *mapManager;
+    UI_menu *menu;
     list *gameObjects;
     bool isRunning;
     debug key_debug;
     gameStatus status;
+    int mouseX;
+    int mouseY;
 } Game;
 
 Game *initGame(const char* title, int width, int height, bool fullscreen);

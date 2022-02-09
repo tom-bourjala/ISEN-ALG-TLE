@@ -15,8 +15,14 @@ void handleEvents(){
     SDL_Event event;
     while(SDL_PollEvent(&event))
     {
+        SDL_GetMouseState(&GAME->mouseX, &GAME->mouseY);
         switch (event.type)
         {
+            case SDL_MOUSEBUTTONDOWN:
+            case SDL_MOUSEBUTTONUP:
+                if(event.button.button == SDL_BUTTON_LEFT)
+                    GAME->menu->handleEvent(event.button.type == SDL_MOUSEBUTTONDOWN);
+                break;
             case SDL_QUIT:
                 GAME->isRunning = false;
                 break;
@@ -49,6 +55,7 @@ void update(){
     forEach(GAME->animationManager->animList, updateAnimation);
     GAME->projectileManager->updateProjectiles();
     GAME->projectileManager->applyHits();
+    GAME->menu->update();
 }
 
 void renderGameObject(void *object){
@@ -58,13 +65,19 @@ void renderGameObject(void *object){
 void render(){
     SDL_SetRenderDrawColor(GAME->renderer, 55, 55, 55, 255);
     SDL_RenderClear(GAME->renderer);
+
     //Render MAP
     GAME->mapManager->render();
+
     //Render EFFECTS
+
     //Render OBJECTS
     forEach(GAME->gameObjects, renderGameObject);
     GAME->projectileManager->renderProjectiles();
+
     //Render UI
+    GAME->menu->render();
+
     SDL_RenderPresent(GAME->renderer);
 }
 
@@ -81,6 +94,7 @@ void clean(){
     GAME->textureManager->empty();
     GAME->projectileManager->empty();
     GAME->mapManager->unloadMap();
+    GAME->menu->clear();
     forEach(GAME->animationManager->animList, freeAnimation);
     emptyList(GAME->animationManager->animList);
     free(GAME->animationManager->animList);
@@ -121,6 +135,7 @@ Game *initGame(const char* title, int width, int height, bool fullscreen){
     GAME->animationManager = initAnimManager();
     GAME->projectileManager = initProjectileManager();
     GAME->mapManager = initMapManager(GAME);
+    UI_initMainMenu(GAME);
     GAME->gameObjects = newList(COMPARE_PTR);
     GAME->key_debug = DEBUG_NULL;
     GAME->status = GS_INGL;
