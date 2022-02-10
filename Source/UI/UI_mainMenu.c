@@ -39,6 +39,7 @@ void onClickPrintf(void *self){
 int zero(void *GAME){
     return 0;
 }
+
 void UI_initMainMenu(void *GAME)
 {
     Game *game = GAME;
@@ -47,10 +48,13 @@ void UI_initMainMenu(void *GAME)
     UI_anchor *A_MIDDLE = UI_newAnchor(game->menu, getx_middle, gety_middle);
     UI_anchor *A_DOWN = UI_newAnchor(game->menu, getx_down, gety_down);
     UI_anchor *ZZ = UI_newAnchor(game->menu, zero, zero);
-    char **textPtr = malloc(sizeof(char*));
-    *textPtr = "BUTTON";
+    char ***textPtr = malloc(sizeof(char*));
+    *textPtr = malloc(sizeof(char*));
+    **textPtr = malloc(sizeof(char) * 255);
+    strcpy(**textPtr, "OK");
     UI_newStaticTextureObject(game->menu, (SDL_Rect) {0,0,1920,1080}, ZZ, "menu_background.png");
-    UI_newButton(game->menu, *textPtr, A_UP, onClickPrintf);
-    UI_newButton(game->menu, *textPtr, A_MIDDLE, onClickPrintf);
-    UI_newButton(game->menu, *textPtr, A_DOWN, onClickPrintf);
+    UI_newButton(game->menu, *textPtr, UI_BT_SQUARE, A_UP, onClickPrintf);
+    UI_newButton(game->menu, *textPtr, UI_BT_MIDE, A_MIDDLE, onClickPrintf);
+    UI_newButton(game->menu, *textPtr, UI_BT_LONG, A_DOWN, onClickPrintf);
+    // UI_newSwitch(game->menu, A_MIDDLE, onClickPrintf, onClickPrintf);
 }

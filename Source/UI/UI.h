@@ -14,7 +14,7 @@ void UI_RenderTextureObject(void *self);
 void UI_FreeTextureObject(void *self);
 
 
-UI_text *UI_newText(UI_menu *parent, char *text, UI_anchor *anchor, UI_textAlign align, UI_textJustify justify, SDL_Color color, char *fontName, int size_font);
+UI_text *UI_newText(UI_menu *parent, char **text, UI_anchor *anchor, UI_textAlign align, UI_textJustify justify, SDL_Color color, char *fontName, int size_font);
 void UI_UpdateText(void *self);
 void UI_RenderText(void *self);
 void UI_FreeText(void *self);

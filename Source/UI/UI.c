@@ -83,12 +83,12 @@ void UI_FreeTextureObject(void *self){
     free(this);
 }
 
-UI_text *UI_newText(UI_menu *parent, char *text, UI_anchor *anchor, UI_textAlign align, UI_textJustify justify, SDL_Color color, char *fontName, int size_font)
+UI_text *UI_newText(UI_menu *parent, char **text, UI_anchor *anchor, UI_textAlign align, UI_textJustify justify, SDL_Color color, char *fontName, int size_font)
 {
     UI_text *text_object = malloc(sizeof(UI_text));
     text_object->text = text;
-    text_object->textCache = malloc(sizeof(char) * (strlen(text_object->text)+1));
-    strcpy(text_object->textCache, text_object->text);
+    text_object->textCache = malloc(sizeof(char) * (strlen("DEFAULT")+1));
+    strcpy(text_object->textCache, "DEFAULT");
     text_object->anchor = anchor;
     text_object->textAlign=align;
     text_object->textJustify=justify;
@@ -96,27 +96,28 @@ UI_text *UI_newText(UI_menu *parent, char *text, UI_anchor *anchor, UI_textAlign
     text_object->hidden = false;
     text_object->menu = parent;
     text_object->font = TTF_OpenFont(fontName, size_font); //TODO Log error
+    if(!text_object->font) printf("TTF OpenFont : %s\n", TTF_GetError());
     UI_UpdateText(text_object);
-    appendInList(parent->texts, text_object); 
+    appendInList(parent->texts, text_object);
     return text_object;
 }
 
 void UI_UpdateText(void *self){
     UI_text *this = self;
     Game *game = this->menu->game;
-    if(!strcmp(this->text, this->textCache)){
+    if(strcmp(*this->text, this->textCache)){
         free(this->textCache);
-        this->textCache = malloc(sizeof(char) * (strlen(this->text)+1));
-        strcpy(this->textCache, this->text);
-        TTF_SizeText(this->font, this->text, &this->rect.w, &this->rect.h);
-        SDL_Surface *surface = TTF_RenderText_Solid(this->font, this->text, this->color); 
+        this->textCache = malloc(sizeof(char) * (strlen(*this->text)+1));
+        strcpy(this->textCache, *this->text);
+        TTF_SizeText(this->font, *this->text, &this->rect.w, &this->rect.h);
+        SDL_Surface *surface = TTF_RenderText_Solid(this->font, *this->text, this->color); 
         this->texture = SDL_CreateTextureFromSurface(game->renderer, surface);
         SDL_FreeSurface(surface);
     }
     int xA = this->anchor->getX(game);
     int yA = this->anchor->getY(game);
-    this->rect.x = xA * (this->textAlign/2)*this->rect.w;
-    this->rect.y = yA * (this->textJustify/2)*this->rect.h;
+    this->rect.x = xA - ((float) this->textAlign/2)*this->rect.w;
+    this->rect.y = yA - ((float) this->textJustify/2)*this->rect.h - 6;
 }
 
 void UI_RenderText(void *self)
@@ -151,8 +152,13 @@ UI_actionArea *UI_newActionArea(UI_menu *parent, SDL_Rect rect, UI_anchor *ancho
 void UI_UpdateActionArea(void *self){
     UI_actionArea *this = self;
     Game *game = this->menu->game;
+    int x = game->mouseX;
+    int y = game->mouseY;
     this->rect.x = this->anchor->getX(game);
     this->rect.y = this->anchor->getY(game);
+    if(!this->disabled)
+        if((x>=this->rect.x && x<=this->rect.x+this->rect.w) && (y>=this->rect.y && y<=this->rect.y+this->rect.h))
+            game->currentCursor = game->cursorHand;
 }
 
 void UI_actionAreaHandleMouseEvent(UI_actionArea *area, bool isDown){

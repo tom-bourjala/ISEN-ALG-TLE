@@ -33,6 +33,9 @@ typedef struct
     bool isRunning;
     debug key_debug;
     gameStatus status;
+    SDL_Cursor *currentCursor;
+    SDL_Cursor *cursorArrow;
+    SDL_Cursor *cursorHand;
     int mouseX;
     int mouseY;
 } Game;

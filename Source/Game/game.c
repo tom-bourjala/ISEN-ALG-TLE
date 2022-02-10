@@ -13,9 +13,9 @@ Game *GAME = NULL;
 
 void handleEvents(){
     SDL_Event event;
+    SDL_GetMouseState(&GAME->mouseX, &GAME->mouseY);
     while(SDL_PollEvent(&event))
     {
-        SDL_GetMouseState(&GAME->mouseX, &GAME->mouseY);
         switch (event.type)
         {
             case SDL_MOUSEBUTTONDOWN:
@@ -50,12 +50,13 @@ void updateAnimation(void *targetAnim){
 }
 
 void update(){
-
+    GAME->currentCursor = GAME->cursorArrow;
     forEach(GAME->gameObjects, updateGameObject);
     forEach(GAME->animationManager->animList, updateAnimation);
     GAME->projectileManager->updateProjectiles();
     GAME->projectileManager->applyHits();
     GAME->menu->update();
+    SDL_SetCursor(GAME->currentCursor);
 }
 
 void renderGameObject(void *object){
@@ -101,6 +102,8 @@ void clean(){
     SDL_DestroyRenderer(GAME->renderer);
     SDL_DestroyWindow(GAME->window);
     IMG_Quit();
+    SDL_FreeCursor(GAME->cursorArrow);
+    SDL_FreeCursor(GAME->cursorHand);
     SDL_Quit();
     printf("SDL Cleaned...\n");
     forEach(GAME->gameObjects, deleteGameObject);
@@ -113,6 +116,7 @@ Game *initGame(const char* title, int width, int height, bool fullscreen){
     int flags = 0;
     if(fullscreen) flags = SDL_WINDOW_FULLSCREEN;
     GAME = malloc(sizeof(Game));
+    
     if(SDL_Init(SDL_INIT_EVERYTHING) == 0){
         printf("SDL Subsystems Initialised...\n");
         GAME->window = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, flags);
@@ -123,10 +127,12 @@ Game *initGame(const char* title, int width, int height, bool fullscreen){
         else printf("\033[1;31mFailed to create renderer : %s\033[0m\n", SDL_GetError());
         GAME->isRunning = true;
         if(!IMG_Init(IMG_INIT_PNG)) printf("\033[1;31mIMG INIT: %s\033[0m\n", IMG_GetError());
+        if(TTF_Init()) printf("\033[1;31mTTF INIT: %s\033[0m\n", TTF_GetError());
     } else {
         GAME->isRunning = false;
         printf("\033[1;31mSDL Subsystems Initialising FAILED : %s\033[0m\n", SDL_GetError());
     }
+
     GAME->handleEvents = handleEvents;
     GAME->update = update;
     GAME->render = render;
@@ -139,6 +145,10 @@ Game *initGame(const char* title, int width, int height, bool fullscreen){
     GAME->gameObjects = newList(COMPARE_PTR);
     GAME->key_debug = DEBUG_NULL;
     GAME->status = GS_INGL;
+    GAME->cursorHand = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND);
+    GAME->cursorArrow = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
+    GAME->currentCursor = GAME->cursorArrow;
+
     appendInList(GAME->gameObjects, newGameObject_Turret(GAME, "debug.turret", 300, 300));
     appendInList(GAME->gameObjects, newGameObject_Turret(GAME, "debug.turret", 600, 400));
     appendInList(GAME->gameObjects, newGameObject_Robot(GAME, "debug.robot", 400, 100));
@@ -146,5 +156,6 @@ Game *initGame(const char* title, int width, int height, bool fullscreen){
     appendInList(GAME->gameObjects, newGameObject_Debug(GAME, 200, 200, 100, DO_Hit));
     appendInList(GAME->gameObjects, newGameObject_Robot(GAME, "debug.robot", 600, 500));
     appendInList(GAME->gameObjects, newGameObject_Robot(GAME, "debug.robot", 200, 150));
+
     return GAME;
 }

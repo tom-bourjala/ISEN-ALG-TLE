@@ -54,7 +54,7 @@ typedef enum{UI_TJ_UP, UI_TJ_CENTER, UI_TJ_DOWN} UI_textJustify;
 
 typedef struct
 {
-    char *text;
+    char **text;
     char *textCache;
     UI_anchor *anchor;
     UI_textAlign textAlign;
@@ -66,6 +66,8 @@ typedef struct
     UI_menu *menu;
     SDL_Rect rect;
 }UI_text;
+
+typedef enum{UI_BT_SQUARE, UI_BT_MIDE, UI_BT_LONG, UI_BT_SWITCH} UI_buttonType;
 
 typedef struct
 {
@@ -79,6 +81,9 @@ typedef struct
     bool isPressed;
     UI_menu *menu;
     UI_anchor *anchor;
+    UI_buttonType type;
+    void (*onSetOn)(void *entry);
+    void (*onSetOff)(void *entry);
 }UI_button;
 
 typedef struct
