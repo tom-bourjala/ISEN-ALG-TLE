@@ -95,6 +95,7 @@ void clean(){
     GAME->textureManager->empty();
     GAME->projectileManager->empty();
     GAME->mapManager->unloadMap();
+    GAME->languageManager->clear();
     GAME->menu->clear();
     forEach(GAME->animationManager->animList, freeAnimation);
     emptyList(GAME->animationManager->animList);
@@ -141,6 +142,8 @@ Game *initGame(const char* title, int width, int height, bool fullscreen){
     GAME->animationManager = initAnimManager();
     GAME->projectileManager = initProjectileManager();
     GAME->mapManager = initMapManager(GAME);
+    GAME->languageManager = initLanguageManager();
+    GAME->languageManager->loadLang("fr_FR");
     UI_initMainMenu(GAME);
     GAME->gameObjects = newList(COMPARE_PTR);
     GAME->key_debug = DEBUG_NULL;

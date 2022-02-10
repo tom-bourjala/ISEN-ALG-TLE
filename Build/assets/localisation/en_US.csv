@@ -1,0 +1,13 @@
+main_menu_play;PLAY
+main_menu_settings;SETTINGS
+main_menu_quit;QUIT
+play_menu_campaign;CAMPAIGN
+play_menu_endless;ENDLESS
+play_menu_sandbox;SANDBOX
+play_menu_back;BACK
+options_menu_video_resolution;SCREEN SIZE
+options_menu_video_fullscreen;FULLSCREEN
+options_menu_sound_master;MASTER
+options_menu_sound_music;MUSIC
+options_menu_sound_effects;EFFECTS
+options_menu_sound_dialogues;DIALOGUES

@@ -17,6 +17,7 @@ int main(int argc, const char * argv[]) {
     int frameTime;
 
     while(game->isRunning){
+        printf("%s\n", *game->languageManager->getTradById("play_menu_back"));
         frameStart = SDL_GetTicks();
         
         game->handleEvents();

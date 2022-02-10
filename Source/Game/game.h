@@ -9,6 +9,7 @@
 #include "../UI/UI_mainMenu.h"
 #include "../Maps/mapManager.h"
 #include "../List/SmartList.h"
+#include "../Language/lang.h"
 
 #ifndef GAME_H
 #define GAME_H
@@ -28,6 +29,7 @@ typedef struct
     animationManager *animationManager;
     projectileManager *projectileManager;
     mapManager *mapManager;
+    langManager *languageManager;
     UI_menu *menu;
     list *gameObjects;
     bool isRunning;
