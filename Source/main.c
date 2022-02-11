@@ -8,10 +8,6 @@
 
 Game *game = NULL;
 
-void a()
-{
-}
-
 int main(int argc, const char * argv[]) {
     int FPS = 60;
     int frameDelta = 1000 / FPS;
@@ -21,14 +17,7 @@ int main(int argc, const char * argv[]) {
     int frameTime;
 
     while(game->isRunning){
-        printf("%s\n", *game->languageManager->getTradById("play_menu_back"));
         frameStart = SDL_GetTicks();
-        float *value = malloc(sizeof(value));
-        *value = 0.5;
-        UI_anchor *anchor = UI_newAnchor(game->menu,50,50);
-        UI_Slider *new_slider = UI_newSlider(game->menu,value,50,10,5,1,anchor,true,a);
-        free(value);
-        UI_FreeAnchor(anchor);
         game->handleEvents();
         game->update();
         game->render();

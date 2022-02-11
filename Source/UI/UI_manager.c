@@ -54,11 +54,16 @@ void UI_MenuHandleEvent(bool isDown){
         UI_button *button = getDataAtIndex(*MENU->buttons, index);
         UI_ButtonHandleMouseEvent(button, isDown); 
     }
+    for(int index = 0; index < MENU->sliders->length; index++){
+        UI_slider *slider = getDataAtIndex(*MENU->sliders, index);
+        UI_SliderHandleMouseEvent(slider, isDown); 
+    }
 }
 
 void UI_MenuRender(){
     forEach(MENU->textureObjects, UI_RenderTextureObject);
     forEach(MENU->texts, UI_RenderText);
+    forEach(MENU->sliders, UI_renderSlider);
 }
 
 UI_menu *UI_initMenu(void *game){

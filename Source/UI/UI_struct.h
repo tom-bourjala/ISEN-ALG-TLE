@@ -99,6 +99,6 @@ typedef struct
     bool updateOnRelease;
     void (*onUpdate)(void *entry);
     UI_menu *menu;
-}UI_Slider;
+}UI_slider;
 
 #endif
