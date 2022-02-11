@@ -43,6 +43,7 @@ void loadLang(char *langId)
     {
         sscanf(line_cache,"%[^;];%[^\n]", strId, strTrad);
         char **trad = getTradById(strId);
+
         *trad = realloc(*trad,sizeof(char)*(strlen(strTrad)+1));
         strcpy(*trad, strTrad);
     }

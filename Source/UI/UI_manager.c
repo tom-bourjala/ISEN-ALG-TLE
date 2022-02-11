@@ -14,6 +14,7 @@ void UI_MenuUpdate(){
     //Update Buttons
     forEach(MENU->buttons, UI_updateButton);
     //Update Sliders
+    forEach(MENU->sliders, UI_updateSlider);
 }
 
 void UI_MenuClear(){
@@ -37,7 +38,10 @@ void UI_MenuClear(){
     forEach(MENU->buttons, UI_FreeButton);
     emptyList(MENU->buttons);
     free(MENU->buttons);
-
+    //Free Sliders
+    forEach(MENU->sliders, UI_FreeSlider);
+    emptyList(MENU->sliders);
+    free(MENU->sliders);
     free(MENU);
 }
 

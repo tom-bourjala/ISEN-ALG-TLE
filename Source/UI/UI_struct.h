@@ -90,9 +90,13 @@ typedef struct
 {
     float *value;
     int width;
-    UI_anchor *anchor;
+    float unitWidth;
+    float unitHeight;
+    float sizeCoef;
+    UI_anchor *anchorCL;
     bool hidden;
     bool isPressed;
+    bool updateOnRelease;
     void (*onUpdate)(void *entry);
     UI_menu *menu;
 }UI_Slider;
