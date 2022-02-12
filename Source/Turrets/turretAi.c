@@ -34,7 +34,7 @@ GameObject *getClosestEnemyInRange(GameObject turretObject){
     if(!closestTarget) return NULL;
     turret *turret = turretObject.actor;
     robot *actor = closestTarget->actor;
-    float distanceIB = sqrt(pow((actor->x - (turret->x + turret->width/2),2) + pow((actor->y - (turret->y + turret->height/2),2));
+    float distanceIB = sqrt(pow(actor->x - (turret->x + turret->width/2),2) + pow(actor->y - (turret->y + turret->height/2),2));
     // printf("IB=%f, R=%d\n", distanceIB, turret->range);
     if(distanceIB <= turret->range)
         return closestTarget;
