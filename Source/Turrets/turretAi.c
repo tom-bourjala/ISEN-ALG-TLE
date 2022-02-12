@@ -19,7 +19,7 @@ GameObject *getClosestEnemy(GameObject turretObject){
         GameObject *target = getDataAtIndex(*GameObjects, index);
         if(target->type == GOT_Robot){
             robot *actor = target->actor;
-            float distanceIB = sqrt(pow((actor->x + actor->width/2) - (turret->x + turret->width/2),2) + pow((actor->y + actor->height/2) - (turret->y + turret->height/2),2));
+            float distanceIB = sqrt(pow(actor->x - (turret->x + turret->width/2),2) + pow(actor->y - (turret->y + turret->height/2),2));
             if(distanceIB <= minDist){
                 minDist = distanceIB;
                 closestTarget = target;
@@ -34,7 +34,7 @@ GameObject *getClosestEnemyInRange(GameObject turretObject){
     if(!closestTarget) return NULL;
     turret *turret = turretObject.actor;
     robot *actor = closestTarget->actor;
-    float distanceIB = sqrt(pow((actor->x + actor->width/2) - (turret->x + turret->width/2),2) + pow((actor->y + actor->height/2) - (turret->y + turret->height/2),2));
+    float distanceIB = sqrt(pow((actor->x - (turret->x + turret->width/2),2) + pow((actor->y - (turret->y + turret->height/2),2));
     // printf("IB=%f, R=%d\n", distanceIB, turret->range);
     if(distanceIB <= turret->range)
         return closestTarget;
@@ -45,7 +45,7 @@ GameObject *getClosestEnemyInRange(GameObject turretObject){
 bool isEnemyBypassingClockwise(GameObject turretObject, GameObject target){
     turret *turret = turretObject.actor;
     robot *robot = target.actor;
-    float turretAngleFromTarget = atan2(robot->x + robot->width/2 - (turret->x + turret->width/2), robot->y + robot->height/2 - (turret->y + turret->height/2));
+    float turretAngleFromTarget = atan2(robot->x - (turret->x + turret->width/2), robot->y - (turret->y + turret->height/2));
     float targetMovingAngle = atan2(robot->speedx, robot->speedy);
     float turretAbsoluteMovingAngle = targetMovingAngle - turretAngleFromTarget;
     if(turretAbsoluteMovingAngle > M_PI) turretAbsoluteMovingAngle -= 2.0*M_PI;
@@ -74,7 +74,7 @@ void updateTurretAi(GameObject *turretObject){
     if(closestTarget){
         robot *robot = closestTarget->actor;
         float currentTurretRotation = turret->rotation;
-        float TargetFireAngle = atan2(turret->x + turret->width/2 - (robot->x + robot->width/2), turret->y + turret->height/2 - (robot->y + robot->height/2));
+        float TargetFireAngle = atan2(turret->x + (turret->width/2) - robot->x, turret->y + (turret->height/2) - robot->y);
         float delta = getDeltaBetweenTwoAngles(currentTurretRotation, TargetFireAngle);
         // printf("CurrentRotation = %f, TargetIdealAngle = %f, delta = %f\n", currentTurretRotation, TargetFireAngle, delta);
         // printf("Rh = %d, Rw = %d, Th = %d, Tw = %d\n", robot->height,robot->width,turret->height,turret->width);
