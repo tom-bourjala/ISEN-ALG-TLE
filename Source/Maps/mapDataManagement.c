@@ -87,3 +87,9 @@ map_node *getNodeAt(list nodes, int x, int y){
     free(searchNode);
     return result;
 }
+
+map_cell *getCellFromDataGrid(map_dataGrid dataGrid, int x, int y){
+    map_cell *line = *(dataGrid.grid + y);
+    map_cell *cell = line + x;
+    return cell;
+}

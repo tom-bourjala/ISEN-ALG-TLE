@@ -12,13 +12,6 @@
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 
-
-map_cell *getCellFromDataGrid(map_dataGrid dataGrid, int x, int y){
-    map_cell *line = *(dataGrid.grid + y);
-    map_cell *cell = line + x;
-    return cell;
-}
-
 void cpyDatagrid(map_dataGrid *dataGrid, map_dataGrid *srcDataGrid){
     dataGrid->w = srcDataGrid->w;
     dataGrid->h = srcDataGrid->h;

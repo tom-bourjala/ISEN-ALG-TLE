@@ -57,6 +57,7 @@ struct map_node
 
 int compareNodes(void *data1, void *data2);
 void freeDatagrid(map_dataGrid *dataGrid);
+map_cell *getCellFromDataGrid(map_dataGrid dataGrid, int x, int y);
 map_node *getNodeAt(list nodes, int x, int y);
 map_dataGrid getDataGridFromDataMap(char *dataMapFileName, int width, int height);
 
