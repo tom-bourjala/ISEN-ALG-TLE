@@ -35,7 +35,6 @@ void newHit(int damage, float x, float y, weaponType type, void *parent, void *t
     createdHit->x = x;
     createdHit->y = y;
     createdHit->parent = parent;
-    createdHit->delete = hitDelete;
     pushInList(PROJECTILE_MANAGER->hits, createdHit);
 }
 
@@ -147,7 +146,7 @@ void projectileUpdate(void *self){
             float targetX = actor->x + actor->width/2;
             float targetY = actor->y + actor->height/2;
             float distEndPointCenter = sqrt(pow(endPosX - targetX,2) + pow(endPosY- targetY,2));
-            float r = min(actor->width, actor->height)/2;
+            float r = actor->radius;
             if(distEndPointCenter < r){
                 newHit(this->damage, endPosX, endPosY, this->type, this->parent, target);
                 this->perforance--;

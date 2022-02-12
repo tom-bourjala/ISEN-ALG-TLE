@@ -7,7 +7,7 @@
 #include "../Game/rendererAddons.h"
 
 
-typedef enum{ROB_NAME, ROB_TEX_REF, ROB_PROJECTILE_NAME, ROB_WIDTH, ROB_HEIGHT, ROB_TEX_ANIM_FRAMES, ROB_LIFE, ROB_WEAPON_DELAY, ROB_WEAPON_RANGE, ROB_IS_FRIENDLY, ROB_NONE} robotConfigFileParam;
+typedef enum{ROB_NAME, ROB_TEX_REF, ROB_PROJECTILE_NAME, ROB_WIDTH, ROB_HEIGHT, ROB_SPEED, ROB_TEX_ANIM_FRAMES, ROB_LIFE, ROB_WEAPON_DELAY, ROB_WEAPON_RANGE, ROB_IS_FRIENDLY, ROB_NONE} robotConfigFileParam;
 
 
 robotConfigFileParam getRobotConfigFileParamFromString(char *fileParamString){
@@ -21,10 +21,11 @@ robotConfigFileParam getRobotConfigFileParamFromString(char *fileParamString){
     if(!strcmp("IS_FRIENDLY", fileParamString)) return ROB_IS_FRIENDLY;
     if(!strcmp("PROJECTILE", fileParamString)) return ROB_PROJECTILE_NAME;
     if(!strcmp("LIFE", fileParamString)) return ROB_LIFE;
+    if(!strcmp("SPEED", fileParamString)) return ROB_SPEED;
     return ROB_NONE;
 }
 
-robot *newRobot(Game GAME,char *robotFileName, int xpos, int ypos){
+robot *newRobot(Game GAME, char *robotFileName, map_node *spawnNode, int seed){
     robot *createdRobot = malloc(sizeof(robot));
     
     static int id = 0;
@@ -74,6 +75,8 @@ robot *newRobot(Game GAME,char *robotFileName, int xpos, int ypos){
                 createdRobot->projectileName = malloc(sizeof(char)*(strlen(stat_value)+1));
                 strcpy(createdRobot->projectileName, stat_value);
                 break;
+            case ROB_SPEED:
+                createdRobot->maxSpeed = atof(stat_value);
             case ROB_NONE :
                 break;
         }
@@ -83,27 +86,27 @@ robot *newRobot(Game GAME,char *robotFileName, int xpos, int ypos){
     sprintf(createdRobot->walk.textureName, "rob_%s_%s_walk.png", createdRobot->isFriendly ? "friendly" : "hostile", createdRobot->texref);
     createdRobot->walk.texture = GAME.textureManager->getTexture(createdRobot->walk.textureName);
     createdRobot->walk.currentFrame = 0;
-
-    createdRobot->x = xpos;
-    createdRobot->y = ypos;
+    createdRobot->seed = seed;
+    if(spawnNode.x == 0) createdRobot->x = -createdRobot->width*2;
+    else createdRobot->x = spawnNode.x;
+    if(spawnNode.y == 0) createdRobot->y = -createdRobot->height*2);
+    else if(spawnNode.y == GAME.mapManager->currentMap->height - 1) createdRobot->y = spawnNode.y + (createdRobot->height*2);
+    else createdRobot->y = spawnNode.y;
+    createdRobot->targetNode = spawnNode;
     createdRobot->speedx = 4.3;
     createdRobot->speedy = 0.6;
     createdRobot->rotation = 0.0;
-
+    createdRobot->radius = (createdRobot->width + createdRobot->height)/2;
     return createdRobot;
 }
 
 void robotUpdate(void *self){
     GameObject *thisGameObject = self;
     robot *this = thisGameObject->actor;
-    if(this->y>=800 || this->y<=0)
-        this->speedy = -this->speedy; 
-    if(this->x>=800 || this->x<=0)
-        this->speedx = -this->speedx; 
-
+    updateRobotPathAi(thisGameObject);
     this->x+=this->speedx;
     this->y+=this->speedy;
-
+    if(this->x)
     this->rotation = atan2(this->speedx, this->speedy);
     this->walk.currentFrame = (this->walk.currentFrame + 1) % this->walk.nOfFrames;
 }
@@ -111,16 +114,14 @@ void robotUpdate(void *self){
 void robotRender(void *self){
     GameObject *thisGameObject = self;
     robot *this = thisGameObject->actor;
-    SDL_Rect rect={this->x,this->y,this->width,this->height};
-
+    SDL_Rect rect={this->x - (this->width/2), this->y - (this->height/2),this->width,this->height};
     SDL_Rect srcrect={this->walk.currentFrame*64,0,64,64};
     SDL_RenderCopyEx(thisGameObject->game->renderer, this->walk.texture,&srcrect,&rect,-this->rotation*90/(M_PI/2) + 180,NULL,SDL_FLIP_NONE);
     if(thisGameObject->game->key_debug==DEBUG_HITBOX)
     {
-        int maximum_seg = rect.w>rect.h ? rect.w : rect.h ;
         SDL_Color rouge = {255,0,0,255};
         SDL_SetRenderDrawColor(thisGameObject->game->renderer,rouge.r,rouge.g,rouge.b,rouge.a);
-        DrawCircle(thisGameObject->game->renderer,rect.x+rect.w/2,rect.y+rect.h/2,maximum_seg/2);
+        DrawCircle(thisGameObject->game->renderer, rect.x, rect.y, this->radius);
     }
 }
 

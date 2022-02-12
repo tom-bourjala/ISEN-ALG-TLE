@@ -17,6 +17,7 @@ typedef struct{
     char* name;
     char* texref;
     int id;
+    int seed;
     float rotation;
     float x;
     float y;
@@ -24,16 +25,19 @@ typedef struct{
     int height;
     float speedx;
     float speedy;
+    float maxSpeed;
     int life;
     int shield;
     int maxShield;
     int delay;
     int range;
+    int radius;
     bool isFriendly;
     robot_walk walk;
+    map_node *targetNode;
     char *projectileName;
 } robot;
 
-GameObject *newGameObject_Robot(Game *GAME, char *robotFileName, int xpos, int ypos);
+robot *newRobot(Game GAME, char *robotFileName, map_node *spawnNode, int seed);
 
 #endif
