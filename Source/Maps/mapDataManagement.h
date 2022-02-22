@@ -43,11 +43,21 @@ typedef struct
     map_node *end;
 } map;
 
+
+typedef struct 
+{
+    int x1;
+    int y1;
+    int x2;
+    int y2;
+} map_startData;
+
 struct map_node
 {
     int x;
     int y;
     map_nodeType type;
+    map_startData *startData;
     map_node *next;
     map_node *nextAlt;
     map *parent;
