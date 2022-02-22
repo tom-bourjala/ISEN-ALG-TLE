@@ -57,6 +57,31 @@ void updatePreviews(){
     // return textures;
 }
 
+
+map_startData *generateStartData(map_node *start, map *map){
+    map_startData *startData = malloc(sizeof(map_startData));
+    map_cell *cell = getCellFromDataGrid(map->dataGrid, start->x, start->y);
+    int x = start->x;
+    int y = start->y;
+    while(cell->type == MCT_PATH || cell->type == MCT_PATH_NS){
+        if(start->x <= 0) cell = getCellFromDataGrid(map->dataGrid, x,--y);
+        else cell = getCellFromDataGrid(map->dataGrid, --x, y);
+    }
+    startData->x1 = x;
+    startData->y1 = y;
+    x = start->x;
+    y = start->y;
+    cell = getCellFromDataGrid(map->dataGrid, start->x, start->y);
+    while(cell->type == MCT_PATH || cell->type == MCT_PATH_NS){
+        if(start->x <= 0) cell = getCellFromDataGrid(map->dataGrid, x, ++y);
+        else cell = getCellFromDataGrid(map->dataGrid, ++x, y);
+    }
+    startData->x2 = x;
+    startData->y2 = y;
+    // printf("s(%d, %d) 1(%d, %d) 2(%d,%d) \n", start->x, start->y, startData->x1, startData->y1, startData->x2, startData->y2);
+    return startData;
+}
+
 void loadMapMetadataFromFiles(map *map){
     char path[50];
     sprintf(path, "./assets/maps/%s.map", map->id);
@@ -104,11 +129,15 @@ void loadMapMetadataFromFiles(map *map){
         currentNode->x = readValue[0] * ratioX;
         currentNode->y = readValue[1] * ratioY;
         switch (readValue[2]) {
-            case MNT_START: appendInList(map->starts, currentNode);
+            case MNT_START: 
+                appendInList(map->starts, currentNode);
+                currentNode->startData = generateStartData(currentNode, map);
                 break;
-            case MNT_END: map->end = currentNode;
+            case MNT_END: 
+                map->end = currentNode;
+            default:
+                currentNode->startData = NULL;
                 break;
-            default: break;
         }
 
         if(readValue[3] != -1) {
@@ -142,6 +171,7 @@ void loadMapMetadataFromFiles(map *map){
     emptyList(childLinkToSolve);
     free(childLinkToSolve);
 }
+
 
 void loadMapFromFiles(const char *id, const int width, const int height){
     if(MAP_MANAGER->currentMap) MAP_MANAGER->unloadMap();
