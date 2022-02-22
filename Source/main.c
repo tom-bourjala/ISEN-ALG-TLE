@@ -3,6 +3,9 @@
 #include <time.h>
 #include "./Game/game.h"
 #include "./List/SmartList.h"
+#include "./Turrets/turrets.h"
+#include "./Robots/robots.h"
+
 #define MAIN_C
 
 
@@ -13,10 +16,20 @@ int main(int argc, const char * argv[]) {
     int frameDelta = 1000 / FPS;
     game = initGame("The Last Engineer", 1900, 1000, false);
     game->mapManager->loadMap("debug", 1900, 1000);
+    
+    list *starts = game->mapManager->currentMap->starts;
     Uint32 frameStart;
     int frameTime;
+    for(int x = 0; x < 50; x++){
+        appendInList(game->gameObjects, newGameObject_Robot(game, "debug.robot", getDataAtIndex(*starts, 0), 0));
+        appendInList(game->gameObjects, newGameObject_Robot(game, "debug.robot", getDataAtIndex(*starts, 0), 1));
+        appendInList(game->gameObjects, newGameObject_Robot(game, "debug.robot", getDataAtIndex(*starts, 1), 0));
+        appendInList(game->gameObjects, newGameObject_Robot(game, "debug.robot", getDataAtIndex(*starts, 1), 1));
 
+    }
+    
     while(game->isRunning){
+
         frameStart = SDL_GetTicks();
         game->handleEvents();
         game->update();
