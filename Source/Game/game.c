@@ -143,7 +143,6 @@ Game *initGame(const char* title, int width, int height, bool fullscreen){
     GAME->projectileManager = initProjectileManager();
     GAME->mapManager = initMapManager(GAME);
     GAME->languageManager = initLanguageManager();
-    GAME->languageManager->loadLang("fr_FR");
     UI_initMainMenu(GAME);
     GAME->gameObjects = newList(COMPARE_PTR);
     GAME->key_debug = DEBUG_NULL;
@@ -151,14 +150,5 @@ Game *initGame(const char* title, int width, int height, bool fullscreen){
     GAME->cursorHand = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND);
     GAME->cursorArrow = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
     GAME->currentCursor = GAME->cursorArrow;
-
-    appendInList(GAME->gameObjects, newGameObject_Turret(GAME, "debug.turret", 300, 300));
-    appendInList(GAME->gameObjects, newGameObject_Turret(GAME, "debug.turret", 600, 400));
-    appendInList(GAME->gameObjects, newGameObject_Robot(GAME, "debug.robot", 400, 100));
-    appendInList(GAME->gameObjects, newGameObject_Robot(GAME, "debug.robot", 100, 500));
-    appendInList(GAME->gameObjects, newGameObject_Debug(GAME, 200, 200, 100, DO_Hit));
-    appendInList(GAME->gameObjects, newGameObject_Robot(GAME, "debug.robot", 600, 500));
-    appendInList(GAME->gameObjects, newGameObject_Robot(GAME, "debug.robot", 200, 150));
-
     return GAME;
 }
