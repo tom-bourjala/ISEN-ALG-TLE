@@ -19,6 +19,7 @@ typedef struct{
     int id;
     int seed;
     float rotation;
+    float rotationCache;
     float x;
     float y;
     int width;
@@ -35,9 +36,10 @@ typedef struct{
     bool isFriendly;
     robot_walk walk;
     map_node *targetNode;
+    map_node *lastNode;
     char *projectileName;
 } robot;
 
-robot *newRobot(Game GAME, char *robotFileName, map_node *spawnNode, int seed);
+GameObject *newGameObject_Robot(Game *GAME, char *robotFileName, map_node *spawnNode, int seed);
 
 #endif

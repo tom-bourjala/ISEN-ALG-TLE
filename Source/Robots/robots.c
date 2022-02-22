@@ -2,7 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <time.h>
 #include "robots.h"
+#include "robotAi.h"
 #include "../Game/game.h"
 #include "../Game/rendererAddons.h"
 
@@ -25,7 +27,7 @@ robotConfigFileParam getRobotConfigFileParamFromString(char *fileParamString){
     return ROB_NONE;
 }
 
-robot *newRobot(Game GAME, char *robotFileName, map_node *spawnNode, int seed){
+robot *newRobot(Game GAME, char *robotFileName, int x, int y, map_node *spawnNode, int seed){
     robot *createdRobot = malloc(sizeof(robot));
     
     static int id = 0;
@@ -87,16 +89,15 @@ robot *newRobot(Game GAME, char *robotFileName, map_node *spawnNode, int seed){
     createdRobot->walk.texture = GAME.textureManager->getTexture(createdRobot->walk.textureName);
     createdRobot->walk.currentFrame = 0;
     createdRobot->seed = seed;
-    if(spawnNode.x == 0) createdRobot->x = -createdRobot->width*2;
-    else createdRobot->x = spawnNode.x;
-    if(spawnNode.y == 0) createdRobot->y = -createdRobot->height*2);
-    else if(spawnNode.y == GAME.mapManager->currentMap->height - 1) createdRobot->y = spawnNode.y + (createdRobot->height*2);
-    else createdRobot->y = spawnNode.y;
-    createdRobot->targetNode = spawnNode;
-    createdRobot->speedx = 4.3;
-    createdRobot->speedy = 0.6;
+    createdRobot->x = x;
+    createdRobot->y = y;
+    createdRobot->targetNode = spawnNode->next->next;
+    createdRobot->lastNode = spawnNode->next;
+    createdRobot->speedx = 0.0;
+    createdRobot->speedy = 0.0;
     createdRobot->rotation = 0.0;
-    createdRobot->radius = (createdRobot->width + createdRobot->height)/2;
+    createdRobot->rotationCache = 0.0;
+    createdRobot->radius = (createdRobot->width + createdRobot->height)/8;
     return createdRobot;
 }
 
@@ -106,8 +107,8 @@ void robotUpdate(void *self){
     updateRobotPathAi(thisGameObject);
     this->x+=this->speedx;
     this->y+=this->speedy;
-    if(this->x)
-    this->rotation = atan2(this->speedx, this->speedy);
+    this->rotationCache = this->rotation;
+    this->rotation = (atan2f(this->targetNode->x - this->lastNode->x, this->targetNode->y - this->lastNode->y)*0.4) + (this->rotationCache*0.6);
     this->walk.currentFrame = (this->walk.currentFrame + 1) % this->walk.nOfFrames;
 }
 
@@ -117,11 +118,11 @@ void robotRender(void *self){
     SDL_Rect rect={this->x - (this->width/2), this->y - (this->height/2),this->width,this->height};
     SDL_Rect srcrect={this->walk.currentFrame*64,0,64,64};
     SDL_RenderCopyEx(thisGameObject->game->renderer, this->walk.texture,&srcrect,&rect,-this->rotation*90/(M_PI/2) + 180,NULL,SDL_FLIP_NONE);
-    if(thisGameObject->game->key_debug==DEBUG_HITBOX)
+    if(thisGameObject->game->key_debug != DEBUG_NULL)
     {
         SDL_Color rouge = {255,0,0,255};
         SDL_SetRenderDrawColor(thisGameObject->game->renderer,rouge.r,rouge.g,rouge.b,rouge.a);
-        DrawCircle(thisGameObject->game->renderer, rect.x, rect.y, this->radius);
+        DrawCircle(thisGameObject->game->renderer, this->x, this->y, this->radius);
     }
 }
 
@@ -141,9 +142,77 @@ bool robotIsAlive(void *self){
     return this->life > 0;
 }
 
-GameObject *newGameObject_Robot(Game *GAME, char *robotFileName, int xpos, int ypos){
+float distTwoPoints(int x1, int y1, int x2, int y2){
+    return sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2));
+}
+
+bool isSpawnAllowed(int x, int y, int r, list *GameObjects){
+    for(int index = 0; index < GameObjects->length; index++){
+        GameObject *object = getDataAtIndex(*GameObjects, index);
+        if(object->type == GOT_Robot){
+            robot *targetRobot = object->actor; 
+            if(distTwoPoints(x, y, targetRobot->x, targetRobot->y) < targetRobot->radius + r)
+                return false;
+        }
+    }
+    return true;
+}
+
+GameObject *newGameObject_Robot(Game *GAME, char *robotFileName, map_node *spawnNode, int seed){
+    int spawnSamplingRate = 10;
+    robot *robot = newRobot(*GAME, robotFileName, 0, 0, spawnNode, seed);
+    int Sx1, Sy1, Sx2, Sy2;
+    int decreasingMode;
+    if(spawnNode->startData->x1 && spawnNode->startData->x2){
+        Sx1 = spawnNode->startData->x1 + robot->width;
+        Sx2 = spawnNode->startData->x2 - robot->width;
+        if(spawnNode->startData->y1 && spawnNode->startData->y2){
+            decreasingMode = 1;
+            Sy1 = spawnNode->startData->y1 - robot->height;
+            Sy2 = spawnNode->startData->y2 - robot->height;
+            robot->speedx = 0.0;
+            robot->speedy = robot->maxSpeed;
+        }else{
+            decreasingMode = 2;
+            Sy1 = spawnNode->startData->y1 + robot->height;
+            Sy2 = spawnNode->startData->y2 + robot->height;
+            robot->speedx = 0.0;
+            robot->speedy = -robot->maxSpeed;
+        }
+    }else{
+        decreasingMode = 0;
+        Sx1 = spawnNode->startData->x1 - robot->width;
+        Sx2 = spawnNode->startData->x2 - robot->width;
+        Sy1 = spawnNode->startData->y1 + robot->height;
+        Sy2 = spawnNode->startData->y2 - robot->height;
+        robot->speedx = robot->maxSpeed;
+        robot->speedy = 0.0;
+    }
+    int spawnX = (Sx1 + Sx2)/2; 
+    int spawnY = (Sy1 + Sy2)/2;
+    int decreaseLevel = 0, decreaseTryNumber = 0;
+    while(!isSpawnAllowed(spawnX, spawnY, robot->radius, GAME->gameObjects)){
+        if(decreaseTryNumber >= spawnSamplingRate){
+            decreaseTryNumber = 0;
+            decreaseLevel += robot->radius / 2;
+        }
+        srand(time(NULL)+rand());
+        if(decreasingMode){
+            spawnX = Sx1 + (rand()%(Sx2-Sx1));
+            if(decreasingMode == 1) spawnY = Sy1 + decreaseLevel;
+            else spawnY = Sy1 - decreaseLevel;
+        }else {
+            spawnX = Sx1 - decreaseLevel;
+            spawnY = Sy1 + (rand()%(Sy2-Sy1));
+        }
+        decreaseTryNumber++;
+        // printf("TRY %d,%d\n", spawnX, spawnY);
+    }
+    // printf("1(%d,%d) 2(%d,%d) S(%d,%d)\n", Sx1, Sy1, Sx2, Sy2, spawnX, spawnY);
+    robot->x = spawnX;
+    robot->y = spawnY;
     GameObject *gameObject = malloc(sizeof(GameObject));
-    gameObject->actor = newRobot(*GAME, robotFileName, xpos, ypos);
+    gameObject->actor = robot;
     gameObject->type = GOT_Robot;
     gameObject->game = GAME;
     gameObject->update = robotUpdate;

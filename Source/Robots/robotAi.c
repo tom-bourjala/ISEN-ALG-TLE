@@ -20,7 +20,7 @@ typedef struct{
 } vectRot;
 
 float distBetweenTwoPoints(float x1, float y1, float x2, float y2){
-    return sqrt(pow((x1 + actor->width/2.0) - (turret->x + turret->width/2.0),2) + pow((actor->y + actor->height/2.0) - (turret->y + turret->height/2.0),2));
+    return sqrt(pow(x1 - x2,2) + pow(y1 - y2,2));
 }
 
 float modulo2Pi(float angle){
@@ -31,8 +31,8 @@ float modulo2Pi(float angle){
 
 vectAi vectRotToVectAi(vectRot rot){
     vectAi ai;
-    ai.vx = rot.v*cos(rot.teta);
-    ai.vy = rot.v*sin(rot.teta);
+    ai.vx = rot.v*sin(rot.teta);
+    ai.vy = rot.v*cos(rot.teta);
     return ai;
 }
 
@@ -50,6 +50,14 @@ vectAi crunchVectAi(vectAi vect, float max){
 }
 
 void freeVectRot(void *self){vectRot *vect = self; free(vect);}
+void freeVectAi(void *self){vectAi *vect = self; free(vect);}
+
+bool isRobotInFrontOfTarget(robot target, robot toTest){
+    float alpha = atan2f(target.x - toTest.x, target.y - toTest.y);
+    float currentVect = atan2f(target.speedx, target.speedy);
+    float delta = fabs(modulo2Pi(alpha - currentVect));
+    return delta < (M_PI + 1);
+}
 
 vectAi getVectAllyProximity(GameObject *robotObj){
     list *gameObjects = robotObj->game->gameObjects;
@@ -61,9 +69,9 @@ vectAi getVectAllyProximity(GameObject *robotObj){
                 robot *targetRobot = targetObj->actor;
                 robot *currentRobot = robotObj->actor;
                 float distBetweenAlly = distBetweenTwoPoints(currentRobot->x, currentRobot->y, targetRobot->x, targetRobot->y);
-                if(distBetweenAlly < 2*currentRobot->radius){
+                if(distBetweenAlly < (2*currentRobot->radius) + (2*targetRobot->radius) && targetRobot != currentRobot && isRobotInFrontOfTarget(*targetRobot, *currentRobot)){
                     vectRot *ev = malloc(sizeof(vectRot));
-                    ev->v = pow((1.0/distBetweenAlly),5);
+                    ev->v = ((currentRobot->radius + targetRobot->radius)/distBetweenAlly)*currentRobot->maxSpeed;
                     ev->teta = modulo2Pi(atan2f(targetRobot->x - currentRobot->x, targetRobot->y - currentRobot->y) + M_PI);
                     appendInList(escapeVectors, ev);
                 }
@@ -74,8 +82,8 @@ vectAi getVectAllyProximity(GameObject *robotObj){
     for(int index = 0; index < escapeVectors->length; index++){
         vectRot *vectRot = getDataAtIndex(*escapeVectors, index);
         vectAi vectAi = vectRotToVectAi(*vectRot);
-        result.vx += vectAi.x;
-        result.vy += vectAi.y; 
+        result.vx += vectAi.vx;
+        result.vy += vectAi.vy; 
     }
     if(escapeVectors->length){
         result.vx /= escapeVectors->length;
@@ -87,11 +95,62 @@ vectAi getVectAllyProximity(GameObject *robotObj){
     return result;
 }
 
+vectAi getVectSwarmProximity(GameObject *robotObj){
+    list *gameObjects = robotObj->game->gameObjects;
+    list *syncVectors = newList(COMPARE_PTR);
+    for(int index = 0; index < gameObjects->length; index++){
+        GameObject *targetObj = getDataAtIndex(*gameObjects, index);
+        if(targetObj->type == GOT_Robot){
+            if(targetObj->isAlive(targetObj)){
+                robot *targetRobot = targetObj->actor;
+                robot *currentRobot = robotObj->actor;
+                float distBetweenAlly = distBetweenTwoPoints(currentRobot->x, currentRobot->y, targetRobot->x, targetRobot->y);
+                if(distBetweenAlly < 3*currentRobot->radius && isRobotInFrontOfTarget(*targetRobot, *currentRobot)){
+                    vectAi *vAi = malloc(sizeof(vectAi));
+                    vAi->vx = targetRobot->speedx;
+                    vAi->vy = targetRobot->speedy;
+                    appendInList(syncVectors, vAi);
+                }
+            }
+        }
+    }
+    vectAi result = {0.0,0.0};
+    for(int index = 0; index < syncVectors->length; index++){
+        vectAi *vectAiPtr = getDataAtIndex(*syncVectors, index);
+        vectAi vectAi = *vectAiPtr;
+        result.vx += vectAi.vx;
+        result.vy += vectAi.vy; 
+    }
+    if(syncVectors->length){
+        result.vx /= syncVectors->length;
+        result.vy /= syncVectors->length;
+    }
+    forEach(syncVectors, freeVectRot);
+    emptyList(syncVectors);
+    free(syncVectors);
+    return result;
+}
+
+vectAi getVectDirectNode(GameObject *robotObj){
+    robot *currentRobot = robotObj->actor;
+    vectAi result = vectRotToVectAi((vectRot){currentRobot->maxSpeed*5, atan2f(currentRobot->targetNode->x - currentRobot->x,currentRobot->targetNode->y - currentRobot->y)});
+    return result;
+}
+
+vectAi getVectTargetNode(GameObject *robotObj){
+    robot *currentRobot = robotObj->actor;
+    if(!currentRobot->lastNode->nextAlt){
+        vectAi result = vectRotToVectAi((vectRot){currentRobot->maxSpeed*0.6, atan2f(currentRobot->targetNode->x - currentRobot->lastNode->x,currentRobot->targetNode->y - currentRobot->lastNode->y)});
+        return result;
+    } else return getVectDirectNode(robotObj);
+}
+
+
 vectAi getVectBorderProximity(GameObject *robotObj){
     robot *currentRobot = robotObj->actor;
     map_dataGrid dataGrid = robotObj->game->mapManager->currentMap->dataGrid;
     list *escapeVectors = newList(COMPARE_PTR);
-    int samplingRate = 6;
+    int samplingRate = 2;
     int currentX = round(currentRobot->x);
     int currentY = round(currentRobot->y);
     for(int x = currentX - (currentRobot->radius * 2); x < currentX + (currentRobot->radius * 2); x++){
@@ -102,7 +161,7 @@ vectAi getVectBorderProximity(GameObject *robotObj){
                     if(cell->type != MCT_PATH && cell->type != MCT_PATH_NS){
                         float distInBetween = distBetweenTwoPoints(currentRobot->x, currentRobot->y, x, y);
                         vectRot *ev = malloc(sizeof(vectRot));
-                        ev->v = pow((1.0/distInBetween),5);
+                        ev->v = pow((currentRobot->radius/distInBetween),samplingRate*2);
                         ev->teta = modulo2Pi(atan2f(x - currentRobot->x, y - currentRobot->y) + M_PI);
                         appendInList(escapeVectors, ev);
                     }
@@ -111,15 +170,20 @@ vectAi getVectBorderProximity(GameObject *robotObj){
         }
     }
     vectAi result = {0.0,0.0};
-    for(int index = 0; index < escapeVectors->length; index++){
-        vectRot *vectRot = getDataAtIndex(*escapeVectors, index);
-        vectAi vectAi = vectRotToVectAi(*vectRot);
-        result.vx += vectAi.x;
-        result.vy += vectAi.y; 
-    }
-    if(escapeVectors->length){
-        result.vx /= escapeVectors->length;
-        result.vy /= escapeVectors->length;
+    if(escapeVectors->length > samplingRate*samplingRate*samplingRate){
+        result = getVectDirectNode(robotObj);
+    }else{
+        for(int index = 0; index < escapeVectors->length; index++){
+            vectRot *vectRot = getDataAtIndex(*escapeVectors, index);
+            vectAi vectAi = vectRotToVectAi(*vectRot);
+            result.vx += vectAi.vx;
+            result.vy += vectAi.vy;
+        }
+
+        if(escapeVectors->length){
+            result.vx /= escapeVectors->length;
+            result.vy /= escapeVectors->length;
+        }
     }
     forEach(escapeVectors, freeVectRot);
     emptyList(escapeVectors);
@@ -127,25 +191,40 @@ vectAi getVectBorderProximity(GameObject *robotObj){
     return result;
 }
 
-vectAi getVectTargetNode(GameObject *robotObj){
-    robot *currentRobot = robotObj->actor;
-    vectAi result = vectRotToVectAi((vectRot){currentRobot->maxSpeed, atan2f(currentRobot->x - currentRobot->targetNode->x, currentRobot->y - currentRobot->targetNode->y)});
-    return result;
+bool isRobotAfterTargetNode(robot robot){
+    int x = robot.x;
+    int y = robot.y;
+    int Ax = robot.targetNode->x;
+    int Ay = robot.targetNode->y;
+    vectRot ori;
+    ori.teta = modulo2Pi(atan2f(robot.targetNode->x - robot.lastNode->x, robot.targetNode->y - robot.lastNode->y) + (M_PI * 0.5));
+    ori.v = 100;
+    vectAi oriRef = vectRotToVectAi(ori);
+    int Bx = Ax + oriRef.vx;
+    int By = Ay + oriRef.vy;
+    printf("r(%d,%d) x1(%d,%d) x2(%d,%d)\n", x,y,Ax,Ay,Bx,By);
+    printf("%d\n", (Bx - Ax) * (y - Ay) - (By - Ay) * (x - Ax));
+    return (Bx - Ax) * (y - Ay) - (By - Ay) * (x - Ax) >= 0;
 }
 
 void updateRobotPathAi(GameObject *robotObj){
     robot *robot = robotObj->actor;
-    vectAi allyProximity = getVectAllyProximity(robotObj);
-    vectAi borderProximity = getVectBorderProximity(robotObj);
-    vectAi targetNode = getVectTargetNode(robotObj);
-    vectAi newSpeedVect;
-    newSpeedVect.vx = allyProximity.x + borderProximity.x + targetNode.x + robot->speedx;
-    newSpeedVect.vy = allyProximity.y + borderProximity.y + targetNode.y + robot->speedy;
-    newSpeedVect = crunchVectAi(newSpeedVect);
-    robot->speedx = newSpeedVect.vx;
-    robot->speedy = newSpeedVect.vy;
-    if(distBetweenTwoPoints(robot->x + robot->speedx, robot->y + robot->speedy, robot->targetNode->x, robot->targetNode->y) >= robot->radius*3){
-        if(robot->targetNode->next){
+    if(robot->targetNode->next && robot->x > 0 && robot->y > 0 && robot->y < robotObj->game->mapManager->currentMap->height){
+        vectAi allyProximity = getVectAllyProximity(robotObj);
+        vectAi borderProximity = getVectBorderProximity(robotObj);
+        vectAi swarmProximity = getVectSwarmProximity(robotObj);
+        vectAi targetNode = getVectTargetNode(robotObj);
+        vectAi newSpeedVect;
+        newSpeedVect.vx = allyProximity.vx + borderProximity.vx + swarmProximity.vx + targetNode.vx;
+        newSpeedVect.vy = allyProximity.vy + borderProximity.vy + swarmProximity.vy + targetNode.vy;
+        printf("ally(%.2fx, %.2fy) border(%.2fx, %.2fy) node(%.2fx, %.2fy => %.2fpx)\n", allyProximity.vx, allyProximity.vy, borderProximity.vx, borderProximity.vy, targetNode.vx, targetNode.vy, distBetweenTwoPoints(robot->x + robot->speedx, robot->y + robot->speedy, robot->targetNode->x, robot->targetNode->y));
+        vectAi A = (vectAi){-5,5};
+        vectAi B = vectRotToVectAi(vectAiToVectRot(A));
+        newSpeedVect = crunchVectAi(newSpeedVect, robot->maxSpeed);
+        robot->speedx = newSpeedVect.vx;
+        robot->speedy = newSpeedVect.vy;
+        if(isRobotAfterTargetNode(*robot)){
+            robot->lastNode = robot->targetNode;
             if(robot->targetNode->nextAlt){
                 if(robot->seed % 2) robot->targetNode = robot->targetNode->nextAlt;
                 else robot->targetNode = robot->targetNode->next;
@@ -153,4 +232,5 @@ void updateRobotPathAi(GameObject *robotObj){
             }else robot->targetNode = robot->targetNode->next;
         }
     }
+    printf("R: %.2fsx, %.2fsy (%.2fx,%.2fy)\n", robot->speedx, robot->speedy, robot->x, robot->y);
 }
