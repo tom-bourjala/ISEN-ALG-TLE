@@ -199,8 +199,6 @@ bool isRobotAfterTargetNode(robot robot){
     vectAi oriRef = vectRotToVectAi(ori);
     int Bx = Ax + oriRef.vx;
     int By = Ay + oriRef.vy;
-    printf("r(%d,%d) x1(%d,%d) x2(%d,%d)\n", x,y,Ax,Ay,Bx,By);
-    printf("%d\n", (Bx - Ax) * (y - Ay) - (By - Ay) * (x - Ax));
     return (Bx - Ax) * (y - Ay) - (By - Ay) * (x - Ax) >= 0;
 }
 
@@ -214,7 +212,6 @@ void updateRobotPathAi(GameObject *robotObj){
         vectAi newSpeedVect;
         newSpeedVect.vx = allyProximity.vx + borderProximity.vx + swarmProximity.vx + targetNode.vx;
         newSpeedVect.vy = allyProximity.vy + borderProximity.vy + swarmProximity.vy + targetNode.vy;
-        printf("ally(%.2fx, %.2fy) border(%.2fx, %.2fy) node(%.2fx, %.2fy => %.2fpx)\n", allyProximity.vx, allyProximity.vy, borderProximity.vx, borderProximity.vy, targetNode.vx, targetNode.vy, distBetweenTwoPoints(robot->x + robot->speedx, robot->y + robot->speedy, robot->targetNode->x, robot->targetNode->y));
         vectAi A = (vectAi){-5,5};
         vectAi B = vectRotToVectAi(vectAiToVectRot(A));
         newSpeedVect = crunchVectAi(newSpeedVect, robot->maxSpeed);
@@ -229,5 +226,4 @@ void updateRobotPathAi(GameObject *robotObj){
             }else robot->targetNode = robot->targetNode->next;
         }
     }
-    printf("R: %.2fsx, %.2fsy (%.2fx,%.2fy)\n", robot->speedx, robot->speedy, robot->x, robot->y);
 }
