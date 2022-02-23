@@ -98,8 +98,7 @@ void clean(){
     GAME->languageManager->clear();
     GAME->menu->clear();
     forEach(GAME->animationManager->animList, freeAnimation);
-    emptyList(GAME->animationManager->animList);
-    free(GAME->animationManager->animList);
+    freeList(GAME->animationManager->animList);
     SDL_DestroyRenderer(GAME->renderer);
     SDL_DestroyWindow(GAME->window);
     IMG_Quit();
@@ -108,8 +107,7 @@ void clean(){
     SDL_Quit();
     printf("SDL Cleaned...\n");
     forEach(GAME->gameObjects, deleteGameObject);
-    emptyList(GAME->gameObjects);
-    free(GAME->gameObjects);
+    freeList(GAME->gameObjects);
     free(GAME);
 }
 
