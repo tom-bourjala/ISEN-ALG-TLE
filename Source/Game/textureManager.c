@@ -65,8 +65,7 @@ void clearTexture(void *data){
 
 void clearTextures(){
     forEach(TEXTURE_MANAGER->texList, clearTexture);
-    emptyList(TEXTURE_MANAGER->texList);
-    free(TEXTURE_MANAGER->texList);
+    freeList(TEXTURE_MANAGER->texList);
     free(TEXTURE_MANAGER);
 }
 

@@ -168,8 +168,7 @@ void loadMapMetadataFromFiles(map *map){
         else parent->next = child;
         free(nclts);
     }
-    emptyList(childLinkToSolve);
-    free(childLinkToSolve);
+    freeList(childLinkToSolve);
 }
 
 

@@ -90,8 +90,7 @@ vectAi getVectAllyProximity(GameObject *robotObj){
         result.vy /= escapeVectors->length;
     }
     forEach(escapeVectors, freeVectRot);
-    emptyList(escapeVectors);
-    free(escapeVectors);
+    freeList(escapeVectors);
     return result;
 }
 
@@ -126,8 +125,7 @@ vectAi getVectSwarmProximity(GameObject *robotObj){
         result.vy /= syncVectors->length;
     }
     forEach(syncVectors, freeVectRot);
-    emptyList(syncVectors);
-    free(syncVectors);
+    freeList(syncVectors);
     return result;
 }
 
@@ -186,8 +184,7 @@ vectAi getVectBorderProximity(GameObject *robotObj){
         }
     }
     forEach(escapeVectors, freeVectRot);
-    emptyList(escapeVectors);
-    free(escapeVectors);
+    freeList(escapeVectors);
     return result;
 }
 

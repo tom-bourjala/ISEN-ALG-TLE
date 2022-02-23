@@ -110,8 +110,7 @@ void connectNodeMap(list *nodes, list *starts, bool skipOdd){
                     list *newStarts = newList(compareNodes);
                     appendInList(newStarts, node->next);
                     connectNodeMap(nodes, newStarts, true);
-                    emptyList(newStarts);
-                    free(newStarts);
+                    freeList(newStarts);
                     node = node->nextAlt;
                 } else {
                     node = node->next;

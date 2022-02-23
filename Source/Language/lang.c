@@ -58,8 +58,7 @@ void langClear(){
         free(b->id);
         free(b);
     }
-    emptyList(LANG_MANAGER->binds);
-    free(LANG_MANAGER->binds);
+    freeList(LANG_MANAGER->binds);
 }
 
 langManager *initLanguageManager() {

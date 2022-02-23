@@ -20,28 +20,22 @@ void UI_MenuUpdate(){
 void UI_MenuClear(){
     //Free Anchors
     forEach(MENU->anchors, UI_FreeAnchor);
-    emptyList(MENU->anchors);
-    free(MENU->anchors);
+    freeList(MENU->anchors);
     //Free TextureObjects
     forEach(MENU->textureObjects, UI_FreeTextureObject);
-    emptyList(MENU->textureObjects);
-    free(MENU->textureObjects);
+    freeList(MENU->textureObjects);
     //Free Action Area
     forEach(MENU->actionAreas, UI_FreeActionArea);
-    emptyList(MENU->actionAreas);
-    free(MENU->actionAreas);
+    freeList(MENU->actionAreas);
     //Free Text
     forEach(MENU->texts, UI_FreeText);
-    emptyList(MENU->texts);
-    free(MENU->texts);
+    freeList(MENU->texts);
     //Free Buttons
     forEach(MENU->buttons, UI_FreeButton);
-    emptyList(MENU->buttons);
-    free(MENU->buttons);
+    freeList(MENU->buttons);
     //Free Sliders
     forEach(MENU->sliders, UI_FreeSlider);
-    emptyList(MENU->sliders);
-    free(MENU->sliders);
+    freeList(MENU->sliders);
     free(MENU);
 }
 
