@@ -32,11 +32,14 @@ list *newList(compareTwoPointersFunction comparatorFunction){
     theNewList->last = NULL;
     theNewList->length = 0;
     theNewList->comparator = comparatorFunction;
+    theNewList->memLength = 2;
+    theNewList->indexMap = malloc(sizeof(chainItem *)*2);
+    theNewList->indexMap[0] = NULL;
     return theNewList;
 }
 
 void forEach(list *list, void (*function)(void *data)){
-    chainItem *item = list->first; 
+    chainItem *item = list->first;
     while(item != NULL){
         chainItem *next = item->next;
         function(item->data);
@@ -44,15 +47,21 @@ void forEach(list *list, void (*function)(void *data)){
     }
 }
 
+void updateIndexMap(list *list, int indexOfChange){
+    if(indexOfChange < 0) indexOfChange = 0;
+    if(list->length > list->memLength){
+        list->memLength *= 2;
+        list->indexMap = realloc(list->indexMap, list->memLength*sizeof(chainItem *));
+    }
+    for(int i = indexOfChange; i < list->length; i++){
+        if(i == 0) list->indexMap[i] = list->first;
+        else list->indexMap[i] = list->indexMap[i-1]->next;
+    }
+}
+
 chainItem *getItemAtIndex(list list, int index){
     if(index < 0 || index > list.length - 1) return NULL;
-    chainItem *target = list.first;
-    int n = 0;
-    while(target != NULL && n < index){
-        target = target->next;
-        n++;
-    }
-    return target;
+    return list.indexMap[index];
 }
 
 void *getDataAtIndex(list list, int index){
@@ -85,6 +94,7 @@ void putItemAtIndex(list *list, chainItem *item, int index){
     if(index == 0) list->first = item;
     if(index == list->length-1) list->last = item;
     list->length++;
+    updateIndexMap(list, index-1);
 }
 
 void deleteItemAtIndex(list *list, int index){
@@ -100,6 +110,7 @@ void deleteItemAtIndex(list *list, int index){
     if(index == list->length-1) list->last = item->previous;
     list->length--;
     free(item);
+    updateIndexMap(list, index);
 }
 
 void pushInList(list *list, void *data){
@@ -127,23 +138,20 @@ chainItem *searchItemInList(list list, void *data){
 }
 
 int searchIndexInList(list list, void *data){
-    chainItem *result = searchItemInList(list, data);
-    if(result == NULL) return -404;
-    chainItem *item = list.first; 
+    chainItem *item = list.first;
     int index = 0;
     while(item != NULL){
         if(list.comparator(item->data, data) == 0) return index;
         item = item->next;
         index++;
     }
-    printf("\033[1;31mSmartList_ERROR : Inconsistant search results between searchItemInList and searchIndexInList(%p)\n\033[0m", data);
     return -404;
 }
 
 void *searchDataInList(list list, void *data){
     chainItem *result = searchItemInList(list, data);
     if(result == NULL) return NULL;
-    return searchItemInList(list, data)->data;
+    return result->data;
 }
 
 void deleteInList(list *list, void *data){
@@ -154,4 +162,10 @@ void deleteInList(list *list, void *data){
 
 void emptyList(list *list){
     while(list->length > 0) deleteItemAtIndex(list, 0);
+}
+
+void freeList(list *list){
+    emptyList(list);
+    free(list->indexMap);
+    free(list);
 }

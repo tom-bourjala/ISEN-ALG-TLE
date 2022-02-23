@@ -38,11 +38,15 @@ struct chainItem{
  */
 typedef struct{
     /** Length of list*/
-    int length;                             
+    int length;
+    /** Size of list in memory*/
+    int memLength;
+    /** Map of index*/
+    chainItem **indexMap;
     /** First item of the list*/
-    chainItem *first;                       
+    chainItem *first;
     /** Last item of the list*/
-    chainItem *last;                        
+    chainItem *last;
     /** Function to compare data on the list*/
     compareTwoPointersFunction comparator;
 } list;
@@ -146,4 +150,12 @@ void forEach(list *list, void (*function)(void *data));
  */
 
 void emptyList(list *list);
+
+/**
+ * @brief Delete All Items in the list and free it
+ * 
+ * @param list 
+ */
+
+void freeList(list *list);
 #endif
