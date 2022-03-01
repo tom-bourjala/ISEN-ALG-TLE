@@ -20,13 +20,12 @@ int main(int argc, const char * argv[]) {
     list *starts = game->mapManager->currentMap->starts;
     Uint32 frameStart;
     int frameTime;
-    for(int x = 0; x < 50; x++){
-        appendInList(game->gameObjects, newGameObject_Robot(game, "debug.robot", getDataAtIndex(*starts, 0), 0));
-        appendInList(game->gameObjects, newGameObject_Robot(game, "debug.robot", getDataAtIndex(*starts, 0), 1));
-        appendInList(game->gameObjects, newGameObject_Robot(game, "debug.robot", getDataAtIndex(*starts, 1), 0));
-        appendInList(game->gameObjects, newGameObject_Robot(game, "debug.robot", getDataAtIndex(*starts, 1), 1));
-
-    }
+    // for(int x = 0; x < 100; x++){
+    //     appendInList(game->gameObjects, newGameObject_Robot(game, "debug.robot", getDataAtIndex(*starts, 0), 0));
+    //     appendInList(game->gameObjects, newGameObject_Robot(game, "debug.robot", getDataAtIndex(*starts, 0), 1));
+    //     appendInList(game->gameObjects, newGameObject_Robot(game, "debug.robot", getDataAtIndex(*starts, 1), 0));
+    //     appendInList(game->gameObjects, newGameObject_Robot(game, "debug.robot", getDataAtIndex(*starts, 1), 1));
+    // }
     
     while(game->isRunning){
 
