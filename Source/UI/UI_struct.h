@@ -67,18 +67,23 @@ typedef struct
     SDL_Rect rect;
 }UI_text;
 
-typedef enum{UI_BT_SQUARE, UI_BT_MIDE, UI_BT_LONG, UI_BT_SWITCH} UI_buttonType;
+typedef enum{UI_ARROW, UI_B_BACK, UI_B_BIG, UI_B_MAIN, UI_B_DIAG, UI_B_DEFAULT, UI_B_LONG, UI_CHECK_DEFAULT, UI_CHECK_SMALL, UI_CHECK_ROUND, UI_CHECK_SQUARE} UI_buttonType;
 
 typedef struct
 {
     UI_text *text;
     UI_textureObject *textureObject;
+    UI_textureObject *hoverTextureObject;
     UI_actionArea *actionArea;
     SDL_Texture *textureIdle;
     SDL_Texture *textureHover;
     SDL_Texture *texturePress;
-    bool hidden;
+    SDL_Texture *textureDisabled;
+    bool isHidden;
     bool isPressed;
+    bool isSticky;
+    bool isDisabled;
+    float sizeFactor;
     UI_menu *menu;
     UI_anchor *anchor;
     UI_buttonType type;
@@ -94,6 +99,11 @@ typedef struct
     float unitHeight;
     float sizeCoef;
     UI_anchor *anchorCL;
+    SDL_Texture *textureGrabber;
+    SDL_Texture *textureGrabberIdle;
+    SDL_Texture *textureGrabberEnabled;
+    SDL_Texture *textureEmpty;
+    SDL_Texture *textureFull;
     bool hidden;
     bool isPressed;
     bool updateOnRelease;

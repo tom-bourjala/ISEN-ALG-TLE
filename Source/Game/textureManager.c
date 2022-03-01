@@ -27,7 +27,7 @@ list *loadAllTextures(SDL_Renderer *renderer){
     }
     while ((readfile = readdir(repertory)) != NULL)
     {
-        if(strcmp(readfile->d_name, ".") && strcmp(readfile->d_name, "..")){
+        if(strcmp(readfile->d_name, ".") && strcmp(readfile->d_name, "..") && strcmp(readfile->d_name, "UI")){
             printf("Loading Texture - '%s'...\n", readfile->d_name);
             
             texture *loaded_texture = malloc(sizeof(texture));
@@ -42,6 +42,33 @@ list *loadAllTextures(SDL_Renderer *renderer){
         }
     }
     closedir(repertory);
+    
+    repertory = opendir("./assets/tex/UI");
+    readfile = NULL;
+    if(!repertory){
+        printf("\033[1;31m TextureManager_ERROR : Can't open UI texture directory\n");
+        perror("ERROR:");
+        printf("\033[0m");
+        exit(3);
+    }
+    while ((readfile = readdir(repertory)) != NULL)
+    {
+        if(strcmp(readfile->d_name, ".") && strcmp(readfile->d_name, "..")){
+            printf("Loading UI - '%s'...\n", readfile->d_name);
+            
+            texture *loaded_texture = malloc(sizeof(texture));
+            loaded_texture->name = malloc(sizeof(char) * strlen(readfile->d_name) + 1);
+            strcpy(loaded_texture->name, readfile->d_name);
+
+            char texturePath[255];
+            sprintf(texturePath, "./assets/tex/UI/%s", loaded_texture->name);
+            loaded_texture->texture = IMG_LoadTexture(renderer, texturePath);
+            if(!loaded_texture->texture) printf("\033[1;31m%s\n\033[0m", SDL_GetError());
+            appendInList(textures, loaded_texture);
+        }
+    }
+    closedir(repertory);
+
     return textures;
 }
 

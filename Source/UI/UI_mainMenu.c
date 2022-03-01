@@ -51,13 +51,16 @@ void UI_initMainMenu(void *GAME)
     char ***textPtr = malloc(sizeof(char*));
     *textPtr = malloc(sizeof(char*));
     **textPtr = malloc(sizeof(char) * 255);
-    strcpy(**textPtr, "OK");
+    strcpy(**textPtr, "");
     // UI_newStaticTextureObject(game->menu, (SDL_Rect) {0,0,1920,1080}, ZZ, "menu_background.png");
-    // UI_newButton(game->menu, *textPtr, UI_BT_SQUARE, A_UP, onClickPrintf);
+    // UI_newButton(game->menu, *textPtr, UI_B_BIG, A_UP, false, onClickPrintf, NULL, NULL, 3)->isDisabled = true;
+    // UI_newButton(game->menu, *textPtr, UI_CHECK_SMALL, A_UP, false, onClickPrintf, NULL, NULL)->isDisabled = true;
+    // UI_newButton(game->menu, *textPtr, UI_B_BIG, A_MIDDLE, true, onClickPrintf, NULL, NULL, 3);
+
     // // UI_newButton(game->menu, *textPtr, UI_BT_MIDE, A_MIDDLE, onClickPrintf);
     // UI_newButton(game->menu, *textPtr, UI_BT_LONG, A_DOWN, onClickPrintf);
-    // float *value = malloc(sizeof(float));
-    // *value = 0;
-    // UI_newSlider(game->menu, value, 40, 3, A_MIDDLE, true, onClickPrintf);
+    float *value = malloc(sizeof(float));
+    *value = 0.5;
+    UI_newSlider(game->menu, value, 40, 3, A_MIDDLE, true, onClickPrintf);
     // // UI_newSwitch(game->menu, A_MIDDLE, onClickPrintf, onClickPrintf);
 }

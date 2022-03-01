@@ -68,10 +68,9 @@ void UI_RenderTextureObject(void *self)
 {
     UI_textureObject *this = self;
     Game *game = this->menu->game;
-    int texHeight, texWidth;
-    SDL_QueryTexture(this->texture, NULL, NULL, &texWidth, &texHeight);
-    SDL_Rect srcrect={this->currentFrame*texWidth,0,texWidth,texHeight};
-    SDL_RenderCopy(game->renderer,this->texture,&srcrect,&this->rect);
+    if(!this->hidden){
+        SDL_RenderCopyEx(game->renderer,this->texture,NULL,&this->rect, 0, NULL, SDL_FLIP_NONE);
+    }
 }
 
 void UI_FreeTextureObject(void *self){
