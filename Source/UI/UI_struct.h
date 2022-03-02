@@ -14,6 +14,8 @@ typedef struct
     list *actionAreas;
     list *textureObjects;
     list *anchors;
+    list *panels;
+    list *panelButtons;
     void *game;
     void (*update)();
     void (*clear)();
@@ -110,5 +112,36 @@ typedef struct
     void (*onUpdate)(void *entry);
     UI_menu *menu;
 }UI_slider;
+
+typedef enum{UI_PT_A,UI_PT_B,UI_PT_DIAG} UI_panelType;
+
+typedef struct
+{
+    UI_anchor *anchorLT;
+    int width;
+    int height;
+    SDL_Texture *textureIdle;
+    SDL_Texture *textureEnabled;
+    SDL_Texture *textureDisabled;
+    SDL_Texture *textureCurrent;
+    bool isDisabled;
+    bool isActive;
+    bool isHidden;
+    UI_menu *menu;
+    UI_panelType type;
+    int sizeFactor;
+}UI_panel;
+
+typedef struct{
+    SDL_Texture *textureIdle;
+    SDL_Texture *textureEnabled;
+    SDL_Texture *textureDisabled;
+    SDL_Texture *textureCurrent;
+    bool isDisabled;
+    bool isActive;
+    SDL_Rect rect;
+    int orientation;
+    int sizeFactor;
+}UI_buttonPanel;
 
 #endif

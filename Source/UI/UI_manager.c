@@ -15,6 +15,8 @@ void UI_MenuUpdate(){
     forEach(MENU->buttons, UI_updateButton);
     //Update Sliders
     forEach(MENU->sliders, UI_updateSlider);
+    //Update Panels
+    forEach(MENU->panels, UI_updatePanel);
 }
 
 void UI_MenuClear(){
@@ -36,6 +38,9 @@ void UI_MenuClear(){
     //Free Sliders
     forEach(MENU->sliders, UI_FreeSlider);
     freeList(MENU->sliders);
+    //Free Panels
+    forEach(MENU->panels, UI_FreePanel);
+    freeList(MENU->panels);
     free(MENU);
 }
 
@@ -55,6 +60,8 @@ void UI_MenuHandleEvent(bool isDown){
 }
 
 void UI_MenuRender(){
+    forEach(MENU->panels, UI_renderPanel);
+    //forEach(MENU->, UI_renderPanel);
     forEach(MENU->textureObjects, UI_RenderTextureObject);
     forEach(MENU->texts, UI_RenderText);
     forEach(MENU->sliders, UI_renderSlider);
@@ -73,6 +80,8 @@ UI_menu *UI_initMenu(void *game){
     newMenu->actionAreas = newList(COMPARE_PTR);
     newMenu->textureObjects = newList(COMPARE_PTR);
     newMenu->anchors = newList(COMPARE_PTR);
+    newMenu->panels = newList(COMPARE_PTR);
+    newMenu->panelButtons = newList(COMPARE_PTR);
     MENU = newMenu;
     return newMenu;
 }
