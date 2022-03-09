@@ -128,10 +128,31 @@ UI_panelButton *UI_newButtonPanel(UI_panel *parent,SDL_Rect rect,int orientation
     newButtonPanel->orientation = orientation;
     newButtonPanel->sizeFactor = parent->sizeFactor;
     newButtonPanel->parent = parent;
-    newButtonPanel->textureIdle = game->textureManager->getTexture("UI_tab_idle.png");
-    newButtonPanel->textureEnabled = game->textureManager->getTexture("UI_tab_enabled.png");
-    newButtonPanel->textureDisabled = game->textureManager->getTexture("UI_tab_disabled.png");
-    newButtonPanel->textureCurrent = NULL;
+    switch (orientation) {
+        case 0:
+            newButtonPanel->textureIdle = game->textureManager->getTexture("UI_tab_n_idle.png");
+            newButtonPanel->textureEnabled = game->textureManager->getTexture("UI_tab_n_enabled.png");
+            newButtonPanel->textureDisabled = game->textureManager->getTexture("UI_tab_n_disabled.png");
+            break;
+        case 1:
+            newButtonPanel->textureIdle = game->textureManager->getTexture("UI_tab_e_idle.png");
+            newButtonPanel->textureEnabled = game->textureManager->getTexture("UI_tab_e_enabled.png");
+            newButtonPanel->textureDisabled = game->textureManager->getTexture("UI_tab_e_disabled.png");
+            break;
+        case 2:
+            newButtonPanel->textureIdle = game->textureManager->getTexture("UI_tab_s_idle.png");
+            newButtonPanel->textureEnabled = game->textureManager->getTexture("UI_tab_s_enabled.png");
+            newButtonPanel->textureDisabled = game->textureManager->getTexture("UI_tab_s_disabled.png");
+            break;
+        case 3:
+            newButtonPanel->textureIdle = game->textureManager->getTexture("UI_tab_w_idle.png");
+            newButtonPanel->textureEnabled = game->textureManager->getTexture("UI_tab_w_enabled.png");
+            newButtonPanel->textureDisabled = game->textureManager->getTexture("UI_tab_w_disabled.png");
+            break;
+        default:
+            break;
+    }
+    newButtonPanel->textureCurrent = newButtonPanel->textureIdle;
     appendInList(parent->menu->panelButtons,newButtonPanel);
     return newButtonPanel;
 }
@@ -146,24 +167,24 @@ SDL_Rect getPanelButtonRect(UI_panelButton panelButton)
     {
         case 0:
             pRect.x = Ax + panelButton.rect.x;
-            pRect.y = Ay - panelButton.rect.h + panelButton.sizeFactor;
+            pRect.y = Ay - panelButton.rect.h + (2*panelButton.sizeFactor);
             pRect.h = panelButton.rect.h;
             pRect.w = panelButton.rect.w;
             break;
         case 1:
-            pRect.x = Ax + panelButton.parent->width - panelButton.sizeFactor;
+            pRect.x = Ax + panelButton.parent->width - (2*panelButton.sizeFactor);
             pRect.y = Ay + panelButton.rect.x;
             pRect.h = panelButton.rect.w;
             pRect.w = panelButton.rect.h;
             break;
         case 2:
             pRect.x = Ax + panelButton.rect.x;
-            pRect.y = Ay + panelButton.parent->height - panelButton.sizeFactor;
+            pRect.y = Ay + panelButton.parent->height - (2*panelButton.sizeFactor);
             pRect.h = panelButton.rect.h;
             pRect.w = panelButton.rect.w;
             break;
         case 3:
-            pRect.x = Ax - panelButton.rect.h + panelButton.sizeFactor;
+            pRect.x = Ax - panelButton.rect.h + (2*panelButton.sizeFactor);
             pRect.y = Ay + panelButton.rect.x;
             pRect.h = panelButton.rect.w;
             pRect.w = panelButton.rect.h;
@@ -197,65 +218,76 @@ void UI_renderButtonPanel(void *self)
         int y = this->parent->anchorLT->getY(game);
  
         SDL_Rect pRect = getPanelButtonRect(*this);
-        SDL_Rect src_rect = (SDL_Rect){7,7,2,2};
+
+        //BACKGROUND
         SDL_Rect dst_rect = pRect;
-        float angle;
         switch(this->orientation)
         {
             case 0:
                 dst_rect.h = pRect.h - this->sizeFactor;
-                angle = 0;
                 break;
             case 1:
                 dst_rect.x = pRect.x + this->sizeFactor;
                 dst_rect.w = pRect.w - this->sizeFactor;
-                angle = -M_PI/2;
                 break;
             case 2:
                 dst_rect.y = pRect.y + this->sizeFactor;
                 dst_rect.h = pRect.h - this->sizeFactor;
-                angle = M_PI;
                 break;
             case 3:
-                dst_rect.x = pRect.x - this->sizeFactor;
-                angle = M_PI/2;
+                dst_rect.w = pRect.w - this->sizeFactor;
                 break;
         }
+
+        SDL_Rect src_rect = (SDL_Rect){7,7,2,2};
         SDL_RenderCopy(game->renderer, this->textureCurrent, &src_rect,&dst_rect);
         int z=8*this->sizeFactor;
 
-        dst_rect=(SDL_Rect){pRect.x,pRect.y,pRect.w,z};
-        src_rect=(SDL_Rect){7,0,2,8};
-        SDL_RenderCopyEx(game->renderer, this->textureCurrent,&src_rect,&dst_rect,angle,NULL,0);
-        
-        dst_rect=(SDL_Rect){pRect.x+pRect.w-z,pRect.y,z,pRect.h};
-        src_rect=(SDL_Rect){8,7,8,2};
-        SDL_RenderCopyEx(game->renderer, this->textureCurrent,&src_rect,&dst_rect,angle,NULL,0);
-        
-        dst_rect=(SDL_Rect){pRect.x,pRect.y+pRect.h-z,pRect.w,z};
-        src_rect=(SDL_Rect){7,8,2,8};
-        SDL_RenderCopyEx(game->renderer, this->textureCurrent,&src_rect,&dst_rect,angle,NULL,0);
-        
-        dst_rect=(SDL_Rect){pRect.x,pRect.y,z,pRect.h};
-        src_rect=(SDL_Rect){0,7,8,2};
-        SDL_RenderCopyEx(game->renderer, this->textureCurrent,&src_rect,&dst_rect,angle,NULL,0);
+        SDL_Rect UpLineDest = {pRect.x+z,pRect.y,pRect.w-(2*z),z};
+        SDL_Rect UpLineSrc = {7,0,2,8};
+        SDL_Rect RightLineDest = {pRect.x+pRect.w-z,pRect.y+z,z,pRect.h-(2*z)};
+        SDL_Rect RightLineSrc = {8,7,8,2};
+        SDL_Rect BottomLineDest = {pRect.x+z,pRect.y+pRect.h-z,pRect.w-(2*z),z};
+        SDL_Rect BottomLineSrc = {7,8,2,8};
+        SDL_Rect LeftLineDest = {pRect.x,pRect.y+z,z,pRect.h-(2*z)};
+        SDL_Rect LeftLineSrc = {0,7,8,2};
+        SDL_RenderCopy(game->renderer, this->textureCurrent,&UpLineSrc,&UpLineDest);
+        SDL_RenderCopy(game->renderer, this->textureCurrent,&RightLineSrc,&RightLineDest);
+        SDL_RenderCopy(game->renderer, this->textureCurrent,&BottomLineSrc,&BottomLineDest);
+        SDL_RenderCopy(game->renderer, this->textureCurrent,&LeftLineSrc,&LeftLineDest);
 
+
+        /*  #===#   .   .
+            ║           .
+            #           .
+            .   .   .   .   */
         dst_rect = (SDL_Rect){pRect.x,pRect.y,z,z};
         src_rect = (SDL_Rect){0,0,8,8};
-        SDL_RenderCopyEx(game->renderer, this->textureCurrent,&src_rect,&dst_rect,angle,NULL,0);
+        SDL_RenderCopy(game->renderer, this->textureCurrent,&src_rect,&dst_rect);
 
+        /*  .   .   #===#
+            .           ║
+            .           #
+            .   .   .   .   */
         dst_rect = (SDL_Rect){pRect.x+pRect.w-z,pRect.y,z,z};
         src_rect = (SDL_Rect){8,0,8,8};
-        SDL_RenderCopyEx(game->renderer, this->textureCurrent,&src_rect,&dst_rect,angle,NULL,0);
-        
+        SDL_RenderCopy(game->renderer, this->textureCurrent,&src_rect,&dst_rect);
+
+        /*  .   .   .   .
+            .           #
+            .           ║
+            .   .   #===#   */
         dst_rect = (SDL_Rect){pRect.x,pRect.y+pRect.h-z,z,z};
         src_rect = (SDL_Rect){0,8,8,8};
-        SDL_RenderCopyEx(game->renderer, this->textureCurrent,&src_rect,&dst_rect,angle,NULL,0);
+        SDL_RenderCopy(game->renderer, this->textureCurrent,&src_rect,&dst_rect);
 
+        /*  .   .   .   .
+            #           .
+            ║           .
+            #===#   .   .   */
         dst_rect = (SDL_Rect){pRect.x+pRect.w-z,pRect.y+pRect.h-z,z,z};
         src_rect = (SDL_Rect){8,8,8,8};
-        SDL_RenderCopyEx(game->renderer, this->textureCurrent,&src_rect,&dst_rect,angle,NULL,0);
-        
+        SDL_RenderCopy(game->renderer, this->textureCurrent,&src_rect,&dst_rect);
     }
 }
 

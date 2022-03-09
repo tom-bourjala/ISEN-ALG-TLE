@@ -69,8 +69,8 @@ void UI_MenuHandleEvent(bool isDown){
 }
 
 void UI_MenuRender(){
-    forEach(MENU->panelButtons, UI_renderButtonPanel);
     forEach(MENU->panels, UI_renderPanel);
+    forEach(MENU->panelButtons, UI_renderButtonPanel);
     forEach(MENU->textureObjects, UI_RenderTextureObject);
     forEach(MENU->texts, UI_RenderText);
     forEach(MENU->sliders, UI_renderSlider);
