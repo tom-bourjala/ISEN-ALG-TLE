@@ -114,6 +114,7 @@ typedef struct
 }UI_slider;
 
 typedef enum{UI_PT_A,UI_PT_B,UI_PT_DIAG} UI_panelType;
+typedef enum{UI_BT_BACK,UI_BT_BIG,UI_BT_DIAG,UI_BT,UI_BT_LONG,UI_BT_MAIN} UI_panelButtonType;
 
 typedef struct
 {
@@ -139,9 +140,12 @@ typedef struct{
     SDL_Texture *textureCurrent;
     bool isDisabled;
     bool isActive;
+    bool isHover;
+    bool isHidden;
     SDL_Rect rect;
     int orientation;
     int sizeFactor;
-}UI_buttonPanel;
+    UI_panel *parent;
+}UI_panelButton;
 
 #endif

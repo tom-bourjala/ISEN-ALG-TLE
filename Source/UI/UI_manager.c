@@ -17,6 +17,8 @@ void UI_MenuUpdate(){
     forEach(MENU->sliders, UI_updateSlider);
     //Update Panels
     forEach(MENU->panels, UI_updatePanel);
+    //Update Panel Buttons
+    forEach(MENU->panelButtons, UI_updateButtonPanel);
 }
 
 void UI_MenuClear(){
@@ -38,6 +40,9 @@ void UI_MenuClear(){
     //Free Sliders
     forEach(MENU->sliders, UI_FreeSlider);
     freeList(MENU->sliders);
+    //Free Panel Buttons
+    forEach(MENU->panelButtons, UI_FreeButtonPanel);
+    freeList(MENU->panelButtons);
     //Free Panels
     forEach(MENU->panels, UI_FreePanel);
     freeList(MENU->panels);
@@ -57,11 +62,15 @@ void UI_MenuHandleEvent(bool isDown){
         UI_slider *slider = getDataAtIndex(*MENU->sliders, index);
         UI_SliderHandleMouseEvent(slider, isDown); 
     }
+    for(int index = 0; index < MENU->panelButtons->length; index++){
+        UI_panelButton *button = getDataAtIndex(*MENU->panelButtons, index);
+        UI_panelButtonHandleMouseEvent(button, isDown); 
+    }
 }
 
 void UI_MenuRender(){
+    forEach(MENU->panelButtons, UI_renderButtonPanel);
     forEach(MENU->panels, UI_renderPanel);
-    //forEach(MENU->, UI_renderPanel);
     forEach(MENU->textureObjects, UI_RenderTextureObject);
     forEach(MENU->texts, UI_RenderText);
     forEach(MENU->sliders, UI_renderSlider);
