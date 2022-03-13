@@ -51,12 +51,13 @@ void UI_initMainMenu(void *GAME)
     char ***textPtr = malloc(sizeof(char*));
     *textPtr = malloc(sizeof(char*));
     **textPtr = malloc(sizeof(char) * 255);
-    strcpy(**textPtr, "");
+    strcpy(**textPtr, "test");
     UI_panel *newPanel = UI_newPanel(game->menu,500,500,A_UP,3,UI_PT_A);
     // newPanel->isHidden = true;
     newPanel->isActive = true;
-    SDL_Rect rect = {20,20,100,40};
-    UI_newButtonPanel(newPanel,rect,3);
+    SDL_Rect rect = {20,20,100,200};
+    char string[]="test";
+    UI_newButtonPanel(newPanel,*textPtr,rect,A_MIDDLE,0);
     // UI_newStaticTextureObject(game->menu, (SDL_Rect) {0,0,1920,1080}, ZZ, "menu_background.png");
     // UI_newButton(game->menu, *textPtr, UI_B_BIG, A_UP, false, onClickPrintf, NULL, NULL, 3)->isDisabled = true;
     // UI_newButton(game->menu, *textPtr, UI_CHECK_SMALL, A_UP, false, onClickPrintf, NULL, NULL)->isDisabled = true;
