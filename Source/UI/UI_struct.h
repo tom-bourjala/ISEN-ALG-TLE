@@ -143,6 +143,7 @@ typedef struct{
     bool isHover;
     bool isHidden;
     SDL_Rect rect;
+    UI_text *text;
     int orientation;
     int sizeFactor;
     UI_panel *parent;
