@@ -116,15 +116,20 @@ void UI_FreePanel(void *self){
 }
 
 
-UI_panelButton *UI_newButtonPanel(UI_panel *parent,SDL_Rect rect,int orientation)
+UI_panelButton *UI_newButtonPanel(UI_panel *parent,char **text,SDL_Rect rect,UI_anchor *anchor,int orientation)
 {
     UI_panelButton *newButtonPanel = (UI_panelButton*) malloc(sizeof(UI_panelButton));
     Game *game = parent->menu->game;
+    SDL_Color white = {255,255,255,255};
+    if(text) newButtonPanel->text = UI_newText(parent->menu, text, anchor, UI_TA_CENTER, UI_TJ_CENTER, white, "./assets/fonts/Kubasta.ttf", 50);
+    else newButtonPanel->text = NULL;
     newButtonPanel->isDisabled = false;
     newButtonPanel->isActive = false;
     newButtonPanel->isHover = false;
     newButtonPanel->isHidden = false;
     newButtonPanel->rect = rect;
+    newButtonPanel->text->rect.x = anchor->getX(game);
+    newButtonPanel->text->rect.y = anchor->getY(game);
     newButtonPanel->orientation = orientation;
     newButtonPanel->sizeFactor = parent->sizeFactor;
     newButtonPanel->parent = parent;
@@ -199,6 +204,10 @@ void UI_updateButtonPanel(void *self){
     if(!this->isHidden){ 
         if(!this->isDisabled){
             SDL_Rect pRect = getPanelButtonRect(*this);
+            int width,height;
+            SDL_QueryTexture(this->text->texture,NULL,NULL,&width,&height);
+            this->text->rect.x = pRect.x+pRect.w/2-width/2;
+            this->text->rect.y = pRect.y+pRect.h/2-height/2;
             bool isHover = (game->mouseX >= pRect.x && game->mouseX <= pRect.x+pRect.w) && (game->mouseY >= pRect.y && game->mouseY <= pRect.y+pRect.h);
             if(isHover)
                 game->currentCursor = game->cursorHand;
