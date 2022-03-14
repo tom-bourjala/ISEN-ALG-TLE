@@ -12,7 +12,7 @@
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 
-Uint32 getpixel(SDL_Surface *surface, int x, int y) {
+static Uint32 getpixel(SDL_Surface *surface, int x, int y) {
     int bpp = surface->format->BytesPerPixel;
     Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch + x * bpp;
     switch (bpp) {

@@ -4,7 +4,7 @@
 #include "../List/SmartList.h"
 #include "animationManager.h"
 
-animationManager *ANIMATION_MANAGER = NULL;
+static animationManager *ANIMATION_MANAGER = NULL;
 
 int compareAnimId(void *data1, void *data2){
     char *str1 = ((animation*)data1)->id;

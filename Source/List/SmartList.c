@@ -14,11 +14,11 @@ int COMPARE_PTR(void *data1, void *data2){
     return data1 == data2 ? 0 : 1;
 }
 
-void PRINT_POINTER_DEBUG(void *self){
+static void PRINT_POINTER_DEBUG(void *self){
     printf("\033[1;31mSmartList_DEBUG : ITEM DATA %p\n\033[0m", self);
 }
 
-chainItem *newChainItem(void *data){
+static chainItem *newChainItem(void *data){
     chainItem *newItem = malloc(sizeof(chainItem));
     newItem->data = data;
     newItem->previous = NULL;
@@ -47,7 +47,7 @@ void forEach(list *list, void (*function)(void *data)){
     }
 }
 
-void updateIndexMap(list *list, int indexOfChange){
+static void updateIndexMap(list *list, int indexOfChange){
     if(indexOfChange < 0) indexOfChange = 0;
     if(list->length > list->memLength){
         list->memLength *= 2;
@@ -59,7 +59,7 @@ void updateIndexMap(list *list, int indexOfChange){
     }
 }
 
-chainItem *getItemAtIndex(list list, int index){
+static chainItem *getItemAtIndex(list list, int index){
     if(index < 0 || index > list.length - 1) return NULL;
     return list.indexMap[index];
 }
@@ -128,7 +128,7 @@ void appendAtInList(list *list, void *data, int index){
     putItemAtIndex(list, newItem, index);
 }
 
-chainItem *searchItemInList(list list, void *data){
+static chainItem *searchItemInList(list list, void *data){
     chainItem *item = list.first; 
     while(item != NULL){
         if(list.comparator(item->data, data) == 0) return item;

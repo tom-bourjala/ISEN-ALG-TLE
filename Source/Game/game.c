@@ -9,7 +9,7 @@
 #include "../Turrets/turrets.h"
 #include "../Robots/robots.h"
 
-Game *GAME = NULL;
+static Game *GAME = NULL;
 
 void handleEvents(){
     SDL_Event event;

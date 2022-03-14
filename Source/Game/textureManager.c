@@ -7,7 +7,7 @@
 #include "../List/SmartList.h"
 #include "textureManager.h"
 
-textureManager *TEXTURE_MANAGER = NULL;
+static textureManager *TEXTURE_MANAGER = NULL;
 
 int compareNames(void *data1, void *data2){
     char *str1 = ((texture*)data1)->name;

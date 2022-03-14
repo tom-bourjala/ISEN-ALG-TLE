@@ -17,7 +17,7 @@
 
 typedef enum{P_TEX_REF, P_TEX_ANIM_FRAMES,P_WIDTH, P_HEIGHT, P_WEAPON_DAMAGE, P_WEAPON_SPEED, P_WEAPON_PERFORANCE, P_WEAPON_TYPE, P_NONE} projectileConfigFileParam;
 
-projectileManager *PROJECTILE_MANAGER = NULL;
+static projectileManager *PROJECTILE_MANAGER = NULL;
 
 
 void hitDelete(void *self){

@@ -10,11 +10,11 @@
 #include <string.h>
 #include <math.h>
 
-mapManager *MAP_MANAGER = NULL;
+static mapManager *MAP_MANAGER = NULL;
 
 typedef enum{MAP_NAME, MAP_DESC, MAP_NONE} mapConfigFileParam;
 
-mapConfigFileParam getMapConfigFileParamFromString(char *fileParamString){
+static mapConfigFileParam getMapConfigFileParamFromString(char *fileParamString){
     if(!strcmp("NAME", fileParamString)) return MAP_NAME;
     if(!strcmp("DESC", fileParamString)) return MAP_DESC;
     return MAP_NONE;
@@ -58,7 +58,7 @@ void updatePreviews(){
 }
 
 
-map_startData *generateStartData(map_node *start, map *map){
+static map_startData *generateStartData(map_node *start, map *map){
     map_startData *startData = malloc(sizeof(map_startData));
     map_cell *cell = getCellFromDataGrid(map->dataGrid, start->x, start->y);
     int x = start->x;
@@ -82,7 +82,7 @@ map_startData *generateStartData(map_node *start, map *map){
     return startData;
 }
 
-void loadMapMetadataFromFiles(map *map){
+static void loadMapMetadataFromFiles(map *map){
     char path[50];
     sprintf(path, "./assets/maps/%s.map", map->id);
     FILE *map_file = fopen(path,"r");
