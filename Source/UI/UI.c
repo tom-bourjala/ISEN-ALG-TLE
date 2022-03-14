@@ -109,14 +109,16 @@ void UI_UpdateText(void *self){
         this->textCache = malloc(sizeof(char) * (strlen(*this->text)+1));
         strcpy(this->textCache, *this->text);
         TTF_SizeText(this->font, *this->text, &this->rect.w, &this->rect.h);
-        SDL_Surface *surface = TTF_RenderText_Solid(this->font, *this->text, this->color); 
+        SDL_Surface *surface = TTF_RenderUTF8_Solid(this->font, *this->text, this->color); 
         this->texture = SDL_CreateTextureFromSurface(game->renderer, surface);
         SDL_FreeSurface(surface);
     }
-    int xA = this->anchor->getX(game);
-    int yA = this->anchor->getY(game);
-    this->rect.x = xA - ((float) this->textAlign/2)*this->rect.w;
-    this->rect.y = yA - ((float) this->textJustify/2)*this->rect.h - 6;
+    if(this->anchor){
+        int xA = this->anchor->getX(game);
+        int yA = this->anchor->getY(game);
+        this->rect.x = xA - ((float) this->textAlign/2)*this->rect.w;
+        this->rect.y = yA - ((float) this->textJustify/2)*this->rect.h - 6;
+    }
 }
 
 void UI_RenderText(void *self)
