@@ -44,7 +44,7 @@ void getButtonStrKey(UI_buttonType type, char *str){
 UI_button *UI_newButton(UI_menu *menu, char **text, UI_buttonType type, UI_anchor *anchor, bool isSticky, void (*onClick)(void *button), void (*onSetOn)(void *button), void (*onSetOff)(void *button), float sizeFactor){
     UI_button *newButton = malloc(sizeof(UI_button));
     SDL_Color white = {255,255,255,255};
-    if(text) newButton->text = UI_newText(menu, text, anchor, UI_TA_CENTER, UI_TJ_CENTER, white, "./assets/fonts/Kubasta.ttf", 50);
+    if(text) newButton->text = UI_newText(menu, text, anchor, UI_TA_CENTER, UI_TJ_CENTER, white, "./assets/fonts/RulerGold.ttf", 50);
     else newButton->text = NULL;
     Game *game = menu->game;
     newButton->isHidden = false;

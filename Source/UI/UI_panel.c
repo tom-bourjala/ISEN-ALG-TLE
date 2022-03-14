@@ -116,20 +116,18 @@ void UI_FreePanel(void *self){
 }
 
 
-UI_panelButton *UI_newButtonPanel(UI_panel *parent,char **text,SDL_Rect rect,UI_anchor *anchor,int orientation)
+UI_panelButton *UI_newButtonPanel(UI_panel *parent, char **text, SDL_Rect rect, int orientation)
 {
     UI_panelButton *newButtonPanel = (UI_panelButton*) malloc(sizeof(UI_panelButton));
     Game *game = parent->menu->game;
     SDL_Color white = {255,255,255,255};
-    if(text) newButtonPanel->text = UI_newText(parent->menu, text, anchor, UI_TA_CENTER, UI_TJ_CENTER, white, "./assets/fonts/Kubasta.ttf", 50);
+    if(text) newButtonPanel->text = UI_newText(parent->menu, text, NULL, UI_TA_CENTER, UI_TJ_CENTER, white, "./assets/fonts/RulerGold.ttf", 15*parent->sizeFactor);
     else newButtonPanel->text = NULL;
     newButtonPanel->isDisabled = false;
     newButtonPanel->isActive = false;
     newButtonPanel->isHover = false;
     newButtonPanel->isHidden = false;
     newButtonPanel->rect = rect;
-    newButtonPanel->text->rect.x = anchor->getX(game);
-    newButtonPanel->text->rect.y = anchor->getY(game);
     newButtonPanel->orientation = orientation;
     newButtonPanel->sizeFactor = parent->sizeFactor;
     newButtonPanel->parent = parent;
