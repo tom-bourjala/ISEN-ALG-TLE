@@ -14,6 +14,7 @@ static Game *GAME = NULL;
 void handleEvents(){
     SDL_Event event;
     SDL_GetMouseState(&GAME->mouseX, &GAME->mouseY);
+    SDL_GetWindowSize(game->window, &GAME->winWidth, &GAME->winHeight);
     while(SDL_PollEvent(&event))
     {
         switch (event.type)
@@ -68,7 +69,7 @@ void render(){
     SDL_RenderClear(GAME->renderer);
 
     //Render MAP
-    GAME->mapManager->render();
+    if(GAME->mapManager->currentMap) GAME->mapManager->render();
 
     //Render EFFECTS
 
@@ -77,7 +78,7 @@ void render(){
     GAME->projectileManager->renderProjectiles();
 
     //Render UI
-    GAME->menu->render();
+    if(GAME->menu) GAME->menu->render();
 
     SDL_RenderPresent(GAME->renderer);
 }
@@ -144,9 +145,11 @@ Game *initGame(const char* title, int width, int height, bool fullscreen){
     UI_initMainMenu(GAME);
     GAME->gameObjects = newList(COMPARE_PTR);
     GAME->key_debug = DEBUG_NULL;
-    GAME->status = GS_INGL;
+    GAME->status = GS_LoadingMainMenu;
     GAME->cursorHand = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND);
     GAME->cursorArrow = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
     GAME->currentCursor = GAME->cursorArrow;
+    GAME->winWidth = width;
+    GAME->winWidth = height;
     return GAME;
 }
