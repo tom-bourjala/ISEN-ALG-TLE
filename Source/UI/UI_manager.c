@@ -5,6 +5,7 @@
 UI_menu *MENU = NULL;
 
 void UI_MenuUpdate(){
+    if(MENU->updateScript) MENU->updateScript();
     //Update Textures
     forEach(MENU->textureObjects, UI_UpdateTextureObject);
     //Update Action Area
@@ -47,6 +48,7 @@ void UI_MenuClear(){
     forEach(MENU->panels, UI_FreePanel);
     freeList(MENU->panels);
     free(MENU);
+    MENU = NULL;
 }
 
 void UI_MenuHandleEvent(bool isDown){
@@ -77,9 +79,11 @@ void UI_MenuRender(){
 }
 
 UI_menu *UI_initMenu(void *game){
+    if(MENU) UI_MenuClear();
     UI_menu *newMenu = malloc(sizeof(UI_menu));
     newMenu->game = game;
     newMenu->update = UI_MenuUpdate;
+    newMenu->updateScript = NULL;
     newMenu->clear = UI_MenuClear;
     newMenu->handleEvent = UI_MenuHandleEvent;
     newMenu->render = UI_MenuRender;

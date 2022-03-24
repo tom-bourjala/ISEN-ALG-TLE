@@ -18,6 +18,7 @@ typedef struct
     list *panelButtons;
     void *game;
     void (*update)();
+    void (*updateScript)();
     void (*clear)();
     void (*handleEvent)(bool isDown);
     void (*render)();
