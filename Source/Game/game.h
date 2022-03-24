@@ -15,7 +15,7 @@
 #define GAME_H
 
 typedef enum {DEBUG_NULL, DEBUG_HITBOX, DEBUG_PATH, DEBUG_EL} debug;
-typedef enum {GS_LMM, GS_MM, GS_LGL, GS_INGL} gameStatus;
+typedef enum {GS_LoadingMainMenu, GS_MainMenu, GS_LoadingMap, GS_InGame} gameStatus;
 
 typedef struct
 {
@@ -40,6 +40,8 @@ typedef struct
     SDL_Cursor *cursorHand;
     int mouseX;
     int mouseY;
+    int winWidth;
+    int winHeight;
 } Game;
 
 Game *initGame(const char* title, int width, int height, bool fullscreen);
