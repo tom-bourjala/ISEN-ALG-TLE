@@ -14,7 +14,7 @@ static Game *GAME = NULL;
 void handleEvents(){
     SDL_Event event;
     SDL_GetMouseState(&GAME->mouseX, &GAME->mouseY);
-    SDL_GetWindowSize(game->window, &GAME->winWidth, &GAME->winHeight);
+    SDL_GetWindowSize(GAME->window, &GAME->winWidth, &GAME->winHeight);
     while(SDL_PollEvent(&event))
     {
         switch (event.type)

@@ -94,7 +94,9 @@ UI_text *UI_newText(UI_menu *parent, char **text, UI_anchor *anchor, UI_textAlig
     text_object->color = color;
     text_object->hidden = false;
     text_object->menu = parent;
-    text_object->font = TTF_OpenFont(fontName, size_font); //TODO Log error
+    text_object->texture = NULL;
+    text_object->rect = (SDL_Rect) {0,0,0,0};
+    text_object->font = TTF_OpenFont(fontName, size_font);
     if(!text_object->font) printf("TTF OpenFont : %s\n", TTF_GetError());
     UI_UpdateText(text_object);
     appendInList(parent->texts, text_object);
@@ -109,7 +111,8 @@ void UI_UpdateText(void *self){
         this->textCache = malloc(sizeof(char) * (strlen(*this->text)+1));
         strcpy(this->textCache, *this->text);
         TTF_SizeText(this->font, *this->text, &this->rect.w, &this->rect.h);
-        SDL_Surface *surface = TTF_RenderUTF8_Solid(this->font, *this->text, this->color); 
+        SDL_Surface *surface = TTF_RenderUTF8_Solid(this->font, *this->text, this->color);
+        if(!surface) printf("TTF RenderUTF8_Solid : %s\n", TTF_GetError());
         this->texture = SDL_CreateTextureFromSurface(game->renderer, surface);
         SDL_FreeSurface(surface);
     }
@@ -125,7 +128,10 @@ void UI_RenderText(void *self)
 {
     UI_text *this = self;
     Game *game = this->menu->game;
-    SDL_RenderCopy(game->renderer,this->texture,NULL,&this->rect);
+    if(this->texture){
+        printf("%p, %p, %p, %p\n", game->renderer,this->texture,NULL,&this->rect);
+        SDL_RenderCopy(game->renderer,this->texture,NULL,&this->rect);
+    }
 }
 
 void UI_FreeText(void *self){
