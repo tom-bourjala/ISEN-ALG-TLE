@@ -52,6 +52,7 @@ void rescaleBackground(){
 
 void onUpdate(){
     rescaleBackground();
+    //printf("%d,%d,%d,%d\n",playButton->actionArea->rect.x,playButton->actionArea->rect.y,playButton->actionArea->rect.w,playButton->actionArea->rect.h);
 }
 
 void UI_initMainMenu(void *GAME)
@@ -59,7 +60,7 @@ void UI_initMainMenu(void *GAME)
     THIS_GAME = GAME;
     Game *game = GAME;
     game->menu = UI_initMenu(GAME);
-    game->menu->update = onUpdate;
+    game->menu->updateScript = onUpdate;
     game->menu->game = GAME;
     LM_getTradById = game->languageManager->getTradById;
 
@@ -77,7 +78,7 @@ void UI_initMainMenu(void *GAME)
     UI_anchor *AP_BACK = UI_newAnchor(game->menu, A_RNULL, gety_bottomOfRow);
 
     //Main menu buttons
-    playButton = UI_newButton(THIS_GAME->menu, LM_getTradById("menu_home_play"), UI_B_MAIN, AH_MIDLE, false, onClickPrintf, NULL, NULL, 3);
+    playButton = UI_newButton(THIS_GAME->menu, LM_getTradById("menu_home_play"), UI_BT_MAIN, AH_MIDLE, false, onClickPrintf, NULL, NULL, 3);
     // settingsButton = UI_newButton(THIS_GAME->menu, LM_getTradById("menu_home_settings"), UI_BT_MAIN, AH_SETTINGS, false, onClickPrintf, NULL, NULL, 3);
     // quitButton = UI_newButton(THIS_GAME->menu, LM_getTradById("menu_home_quit"), UI_BT_MAIN, AH_QUIT, false, onClickPrintf, NULL, NULL, 3);
     // aboutButton = UI_newButton(THIS_GAME->menu, LM_getTradById("menu_home_about"), UI_BT_MAIN, AH_ABOUT, false, onClickPrintf, NULL, NULL, 3);
@@ -89,5 +90,5 @@ void UI_initMainMenu(void *GAME)
     // backButton = UI_newButton(THIS_GAME->menu, LM_getTradById("menu_back"), UI_BT_BACK, AP_BACK, false, onClickPrintf, NULL, NULL, 3);
 
     menuBackground = UI_newStaticTextureObject(game->menu, (SDL_Rect) {0,0,1920,1080}, A_NULL, "menu_background.png");
-    // menuBackground->hidden = true;
+    //menuBackground->hidden = true;
 }

@@ -79,7 +79,9 @@ UI_button *UI_newButton(UI_menu *menu, char **text, UI_buttonType type, UI_ancho
     newButton->onSetOn = onSetOn;
     newButton->onSetOff = onSetOff;
     newButton->sizeFactor = sizeFactor;
+    UI_updateButton(newButton);
     appendInList(menu->buttons, newButton);
+    
     return newButton;
 }
 

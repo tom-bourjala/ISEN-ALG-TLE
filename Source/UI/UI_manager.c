@@ -5,7 +5,10 @@
 UI_menu *MENU = NULL;
 
 void UI_MenuUpdate(){
-    if(MENU->updateScript) MENU->updateScript();
+    if(MENU->updateScript)
+    {
+        MENU->updateScript();
+    }
     //Update Textures
     forEach(MENU->textureObjects, UI_UpdateTextureObject);
     //Update Action Area

@@ -122,6 +122,8 @@ void UI_UpdateText(void *self){
         this->rect.x = xA - ((float) this->textAlign/2)*this->rect.w;
         this->rect.y = yA - ((float) this->textJustify/2)*this->rect.h - 6;
     }
+    printf("font = %p, hidden = %d, text = %p, text[0] =  %s, texture = %p, x=%d, y=%d, w=%d, h=%d\n",this->font,this->hidden,this->text,this->text[0],this->texture,this->rect.x,this->rect.y,this->rect.w,this->rect.h);
+
 }
 
 void UI_RenderText(void *self)
@@ -129,7 +131,6 @@ void UI_RenderText(void *self)
     UI_text *this = self;
     Game *game = this->menu->game;
     if(this->texture){
-        printf("%p, %p, %p, %p\n", game->renderer,this->texture,NULL,&this->rect);
         SDL_RenderCopy(game->renderer,this->texture,NULL,&this->rect);
     }
 }
