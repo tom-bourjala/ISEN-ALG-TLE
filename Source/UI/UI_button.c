@@ -44,7 +44,7 @@ void getButtonStrKey(UI_buttonType type, char *str){
 UI_button *UI_newButton(UI_menu *menu, char **text, UI_buttonType type, UI_anchor *anchor, bool isSticky, void (*onClick)(void *button), void (*onSetOn)(void *button), void (*onSetOff)(void *button), float sizeFactor){
     UI_button *newButton = malloc(sizeof(UI_button));
     SDL_Color white = {255,255,255,255};
-    if(text) newButton->text = UI_newText(menu, text, anchor, UI_TA_CENTER, UI_TJ_CENTER, white, "./assets/fonts/RulerGold.ttf", 50);
+    if(text) newButton->text = UI_newText(menu, text, anchor, UI_TA_CENTER, UI_TJ_CENTER, white, "./assets/fonts/ImprovGOLD.ttf", 50);
     else newButton->text = NULL;
     Game *game = menu->game;
     newButton->isHidden = false;
@@ -102,7 +102,9 @@ void UI_updateButton(void *self){
         this->hoverTextureObject->rect = rect;
     }
 
-    if(!this->isHidden){ 
+    if(!this->isHidden){
+        this->textureObject->hidden = false;
+        if(this->text) this->text->hidden = false;
         if(this->hoverTextureObject) this->hoverTextureObject->hidden = true;
         if(!this->isDisabled){
             bool isHover = (game->mouseX >= this->actionArea->rect.x && game->mouseX <= this->actionArea->rect.x+this->actionArea->rect.w) && (game->mouseY >= this->actionArea->rect.y && game->mouseY <= this->actionArea->rect.y+this->actionArea->rect.h);
@@ -114,6 +116,10 @@ void UI_updateButton(void *self){
         if(this->isPressed) this->textureObject->texture = this->texturePress;
         else if(this->isDisabled && this->textureDisabled) this->textureObject->texture = this->textureDisabled;
         else this->textureObject->texture = this->textureIdle;
+    }else{
+        this->textureObject->hidden = true;
+        if(this->text) this->text->hidden = true;
+        if(this->hoverTextureObject) this->hoverTextureObject->hidden = true;
     }
 }
 
