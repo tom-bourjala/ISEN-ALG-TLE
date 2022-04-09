@@ -1,6 +1,6 @@
-main_menu_play;PLAY
-main_menu_settings;SETTINGS
-main_menu_quit;QUIT
+menu_home_play;PLAY
+menu_home_settings;SETTINGS
+menu_home_quit;QUIT
 play_menu_campaign;CAMPAIGN
 play_menu_endless;ENDLESS
 play_menu_sandbox;SANDBOX
