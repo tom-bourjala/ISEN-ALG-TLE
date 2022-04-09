@@ -68,9 +68,8 @@ void UI_RenderTextureObject(void *self)
 {
     UI_textureObject *this = self;
     Game *game = this->menu->game;
-    if(!this->hidden){
+    if(!this->hidden)
         SDL_RenderCopyEx(game->renderer,this->texture,NULL,&this->rect, 0, NULL, SDL_FLIP_NONE);
-    }
 }
 
 void UI_FreeTextureObject(void *self){
@@ -122,8 +121,6 @@ void UI_UpdateText(void *self){
         this->rect.x = xA - ((float) this->textAlign/2)*this->rect.w;
         this->rect.y = yA - ((float) this->textJustify/2)*this->rect.h - 6;
     }
-    printf("font = %p, hidden = %d, text = %p, text[0] =  %s, texture = %p, x=%d, y=%d, w=%d, h=%d\n",this->font,this->hidden,this->text,this->text[0],this->texture,this->rect.x,this->rect.y,this->rect.w,this->rect.h);
-
 }
 
 void UI_RenderText(void *self)
