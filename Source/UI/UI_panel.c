@@ -24,7 +24,7 @@ UI_panel *UI_newPanel(UI_menu *menu, int width, int height, UI_anchor *anchorLT,
     newPanel->menu = menu;
     newPanel->isDisabled = false;
     newPanel->isActive = false;
-    newPanel->isHidden = false;
+    newPanel->hidden = false;
     if(type==UI_PT_DIAG)
     {
         newPanel->textureIdle = game->textureManager->getTexture("UI_panel_slide.png");
@@ -65,7 +65,7 @@ void UI_updatePanel(void *self){
 void UI_renderPanel(void *self){
     UI_panel *this = self;
     Game *game = this->menu->game;
-    if(!this->isHidden){
+    if(!this->hidden){
         int x = this->anchorLT->getX(game);
         int y = this->anchorLT->getY(game);
  
@@ -126,7 +126,7 @@ UI_panelButton *UI_newButtonPanel(UI_panel *parent, char **text, SDL_Rect rect, 
     newButtonPanel->isDisabled = false;
     newButtonPanel->isActive = false;
     newButtonPanel->isHover = false;
-    newButtonPanel->isHidden = false;
+    newButtonPanel->hidden = false;
     newButtonPanel->rect = rect;
     newButtonPanel->orientation = orientation;
     newButtonPanel->sizeFactor = parent->sizeFactor;
@@ -199,7 +199,7 @@ void UI_updateButtonPanel(void *self){
     UI_panelButton *this = self;
     Game *game = (Game*)this->parent->menu->game;
 
-    if(!this->isHidden){ 
+    if(!this->hidden){ 
         if(!this->isDisabled){
             SDL_Rect pRect = getPanelButtonRect(*this);
             int width,height;
@@ -220,7 +220,7 @@ void UI_renderButtonPanel(void *self)
 {
     UI_panelButton *this = self;
     Game *game = this->parent->menu->game;
-    if(!this->isHidden){
+    if(!this->hidden){
         int x = this->parent->anchorLT->getX(game);
         int y = this->parent->anchorLT->getY(game);
  
@@ -311,7 +311,7 @@ void UI_panelButtonHandleMouseEvent(UI_panelButton *buttonPanel, bool isDown)
     SDL_Rect pRect = getPanelButtonRect(*buttonPanel);
     bool isHover = (game->mouseX >= pRect.x && game->mouseX <= pRect.x+pRect.w) && (game->mouseY >= pRect.y && game->mouseY <= pRect.y+pRect.h);
 
-    if(!buttonPanel->isHidden && !buttonPanel->isDisabled){
+    if(!buttonPanel->hidden && !buttonPanel->isDisabled){
         if(!isDown && isHover){
             buttonPanel->isActive = !buttonPanel->isActive;
             // TODO : implement switching tab actions

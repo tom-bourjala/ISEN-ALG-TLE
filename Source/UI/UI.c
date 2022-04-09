@@ -127,7 +127,7 @@ void UI_RenderText(void *self)
 {
     UI_text *this = self;
     Game *game = this->menu->game;
-    if(this->texture){
+    if(this->texture && !this->hidden){
         SDL_RenderCopy(game->renderer,this->texture,NULL,&this->rect);
     }
 }
