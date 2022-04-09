@@ -82,7 +82,7 @@ typedef struct
     SDL_Texture *textureHover;
     SDL_Texture *texturePress;
     SDL_Texture *textureDisabled;
-    bool isHidden;
+    bool hidden;
     bool isPressed;
     bool isSticky;
     bool isDisabled;
@@ -115,7 +115,6 @@ typedef struct
 }UI_slider;
 
 typedef enum{UI_PT_A,UI_PT_B,UI_PT_DIAG} UI_panelType;
-typedef enum{UI_BT_BACK,UI_BT_BIG,UI_BT_DIAG,UI_BT,UI_BT_LONG,UI_BT_MAIN} UI_panelButtonType;
 
 typedef struct
 {
@@ -128,7 +127,7 @@ typedef struct
     SDL_Texture *textureCurrent;
     bool isDisabled;
     bool isActive;
-    bool isHidden;
+    bool hidden;
     UI_menu *menu;
     UI_panelType type;
     int sizeFactor;
@@ -142,7 +141,7 @@ typedef struct{
     bool isDisabled;
     bool isActive;
     bool isHover;
-    bool isHidden;
+    bool hidden;
     SDL_Rect rect;
     UI_text *text;
     int orientation;
