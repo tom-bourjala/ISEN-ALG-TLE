@@ -47,7 +47,7 @@ UI_button *UI_newButton(UI_menu *menu, char **text, UI_buttonType type, UI_ancho
     if(text) newButton->text = UI_newText(menu, text, anchor, UI_TA_CENTER, UI_TJ_CENTER, white, "./assets/fonts/ImprovGOLD.ttf", 50);
     else newButton->text = NULL;
     Game *game = menu->game;
-    newButton->isHidden = false;
+    newButton->hidden = false;
     newButton->menu = menu;
     char strKey[100];
     getButtonStrKey(type, strKey);
@@ -102,7 +102,7 @@ void UI_updateButton(void *self){
         this->hoverTextureObject->rect = rect;
     }
 
-    if(!this->isHidden){
+    if(!this->hidden){
         this->textureObject->hidden = false;
         if(this->text) this->text->hidden = false;
         if(this->hoverTextureObject) this->hoverTextureObject->hidden = true;
@@ -129,7 +129,7 @@ void UI_ButtonHandleMouseEvent(UI_button *button, bool isDown){
     int y = game->mouseY;
     bool isHover = (x>=button->actionArea->rect.x && x<=button->actionArea->rect.x+button->actionArea->rect.w) && (y>=button->actionArea->rect.y && y<=button->actionArea->rect.y+button->actionArea->rect.h);
      
-    if(!button->isHidden && !button->isDisabled){
+    if(!button->hidden && !button->isDisabled){
         if(button->isSticky){
             if(!isDown && isHover){
                 button->isPressed = !button->isPressed;
