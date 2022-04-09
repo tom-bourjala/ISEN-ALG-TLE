@@ -132,7 +132,8 @@ Game *initGame(const char* title, int width, int height, bool fullscreen){
         GAME->isRunning = false;
         printf("\033[1;31mSDL Subsystems Initialising FAILED : %s\033[0m\n", SDL_GetError());
     }
-
+    GAME->mouseX = 0;
+    GAME->mouseY = 0;
     GAME->handleEvents = handleEvents;
     GAME->update = update;
     GAME->render = render;
