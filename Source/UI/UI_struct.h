@@ -20,6 +20,7 @@ typedef struct
     void (*update)();
     void (*updateScript)();
     void (*clear)();
+    void (*clearScript)();
     void (*handleEvent)(bool isDown);
     void (*render)();
 }UI_menu;
@@ -147,6 +148,7 @@ typedef struct{
     int orientation;
     int sizeFactor;
     UI_panel *parent;
+    void (*onToggle)(void *self);
 }UI_panelButton;
 
 #endif

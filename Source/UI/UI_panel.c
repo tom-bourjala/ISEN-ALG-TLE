@@ -116,7 +116,7 @@ void UI_FreePanel(void *self){
 }
 
 
-UI_panelButton *UI_newButtonPanel(UI_panel *parent, char **text, SDL_Rect rect, int orientation)
+UI_panelButton *UI_newButtonPanel(UI_panel *parent, char **text, SDL_Rect rect, int orientation,void (*onToggle)(void *self))
 {
     UI_panelButton *newButtonPanel = (UI_panelButton*) malloc(sizeof(UI_panelButton));
     Game *game = parent->menu->game;
@@ -131,6 +131,7 @@ UI_panelButton *UI_newButtonPanel(UI_panel *parent, char **text, SDL_Rect rect, 
     newButtonPanel->orientation = orientation;
     newButtonPanel->sizeFactor = parent->sizeFactor;
     newButtonPanel->parent = parent;
+    newButtonPanel->onToggle = onToggle;
     switch (orientation) {
         case 0:
             newButtonPanel->textureIdle = game->textureManager->getTexture("UI_tab_n_idle.png");
@@ -314,6 +315,7 @@ void UI_panelButtonHandleMouseEvent(UI_panelButton *buttonPanel, bool isDown)
     if(!buttonPanel->hidden && !buttonPanel->isDisabled){
         if(!isDown && isHover){
             buttonPanel->isActive = !buttonPanel->isActive;
+            if(buttonPanel->onToggle) buttonPanel->onToggle(buttonPanel);
             // TODO : implement switching tab actions
             //if(buttonPanel->onSetOn && buttonPanel->isActive) buttonPanel->onSetOn(buttonPanel); 
             //if(buttonPanel->onSetOff && !buttonPanel->isActive) buttonPanel->onSetOff(buttonPanel);
