@@ -1,13 +1,29 @@
 main_menu_play;JOUER
 main_menu_settings;PARAMETRES
 main_menu_quit;QUITTER
+menu_settings_general;GENERAL
+menu_settings_display;AFFICHAGE
+menu_settings_back;RETOUR
+menu_settings_audio;AUDIO
+menu_settings_commands;COMMANDES
+menu_settings_accessibility;ACCESSIBILITE
 play_menu_campaign;CAMPAGNE
 play_menu_endless;LIBRE
 play_menu_sandbox;BAC À SABLE
 play_menu_back;RETOUR
+options_menu_video_800_600;800x600
+options_menu_video_1200_800;1200x800
+options_menu_video_1600_1000;1600x1000
+options_menu_video_1920_1080;1920x1080
 options_menu_video_resolution;RESOLUTION
 options_menu_video_fullscreen;PLEIN ECRAN
 options_menu_sound_master;GENERAL
 options_menu_sound_music;MUSIQUE
 options_menu_sound_effects;EFFETS
 options_menu_sound_dialogues;DIALOGUES
+options_menu_accessibility_language;LANGUE
+options_menu_accessibility_daltonism;DALTONISME
+options_menu_accessibility_screen_shake;TREMBLEMENTS
+options_menu_accessibility_inverse_x;INVERSER L'AXE X
+options_menu_accessibility_inverse_y;INVERSER L'AXE Y
+options_menu_accessibility_text_size;TAILLE DU TEXTE

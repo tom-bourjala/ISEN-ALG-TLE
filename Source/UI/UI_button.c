@@ -85,6 +85,11 @@ UI_button *UI_newButton(UI_menu *menu, char **text, UI_buttonType type, UI_ancho
     return newButton;
 }
 
+void UI_flipButton(UI_button *button){
+    if(button->hoverTextureObject) button->hoverTextureObject->flip = !button->hoverTextureObject->flip;
+    if(button->textureObject) button->textureObject->flip = !button->textureObject->flip;
+}
+
 void UI_updateButton(void *self){
     UI_button *this = self;
     Game *game = this->menu->game;

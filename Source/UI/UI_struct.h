@@ -40,6 +40,7 @@ typedef struct
     int nOfFrames;
     int currentFrame;
     bool hidden;
+    bool flip;
     UI_menu *menu;
 }UI_textureObject;
 

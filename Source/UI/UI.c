@@ -28,6 +28,7 @@ UI_textureObject *UI_newStaticTextureObject(UI_menu *parent, SDL_Rect rect, UI_a
     static_texture_object->menu = parent;
     static_texture_object->texture = game->textureManager->getTexture(textureName);
     static_texture_object->hidden = false;
+    static_texture_object->flip = false;
     static_texture_object->nOfFrames = 1;
     static_texture_object->currentFrame = 0;
     appendInList(parent->textureObjects, static_texture_object); 
@@ -47,6 +48,7 @@ UI_textureObject *UI_newAnimatedTextureObject(UI_menu *parent,SDL_Rect rect, UI_
     animated_texture_object->texture = game->textureManager->getTexture(textureName);
     animated_texture_object->menu = parent;
     animated_texture_object->hidden = false;
+    animated_texture_object->flip = false;
     appendInList(parent->textureObjects, animated_texture_object); 
     return animated_texture_object;
 }
@@ -69,7 +71,8 @@ void UI_RenderTextureObject(void *self)
     UI_textureObject *this = self;
     Game *game = this->menu->game;
     if(!this->hidden)
-        SDL_RenderCopyEx(game->renderer,this->texture,NULL,&this->rect, 0, NULL, SDL_FLIP_NONE);
+        if(this->flip) SDL_RenderCopyEx(game->renderer, this->texture, NULL, &this->rect, 0, NULL, SDL_FLIP_HORIZONTAL);
+        else SDL_RenderCopyEx(game->renderer,this->texture, NULL, &this->rect, 0, NULL, SDL_FLIP_NONE);
 }
 
 void UI_FreeTextureObject(void *self){
@@ -173,7 +176,7 @@ void UI_actionAreaHandleMouseEvent(UI_actionArea *area, bool isDown){
     if(!area->disabled)
         if((x>=area->rect.x && x<=area->rect.x+area->rect.w) && (y>=area->rect.y && y<=area->rect.y+area->rect.h)){
             if(isDown) area->isPressed = true;
-            if(!isDown && area->isPressed) area->onClick(area->menu->game);
+            if(!isDown && area->isPressed && area->onClick) area->onClick(area->menu->game);
         }
     if(!isDown) area->isPressed = false;
 }

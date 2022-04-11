@@ -1,5 +1,6 @@
 #include "UI_mainMenu.h"
 #include "../Game/game.h"
+#include "UI_settingsMenu.h"
 #include <stdbool.h>
 
 static Game *THIS_GAME = NULL;
@@ -71,7 +72,7 @@ void switchToHomeMenu(void *self){
 }
 
 static UI_textureObject *menuBackground = NULL;
-char **(*LM_getTradById)(char *idToGet) = NULL;
+static char **(*LM_getTradById)(char *idToGet) = NULL;
 
 void rescaleBackground(){
     int w = 1920;
@@ -91,13 +92,17 @@ void onUpdate(){
     rescaleBackground();
 }
 
+void switchToSettings()
+{
+    UI_switchToSettings(THIS_GAME);
+}
+
 void UI_initMainMenu(void *GAME)
 {
     THIS_GAME = GAME;
     Game *game = GAME;
     game->menu = UI_initMenu(GAME);
     game->menu->updateScript = onUpdate;
-    game->menu->game = GAME;
     LM_getTradById = game->languageManager->getTradById;
 
     UI_anchor *A_NULL = UI_newAnchor(game->menu, A_RNULL, A_RNULL);
@@ -117,7 +122,7 @@ void UI_initMainMenu(void *GAME)
 
     //Main menu buttons
     playButton = UI_newButton(THIS_GAME->menu, LM_getTradById("menu_home_play"), UI_B_BIG, AH_PLAY, false, switchToPlayMenu, NULL, NULL, 2);
-    settingsButton = UI_newButton(THIS_GAME->menu, LM_getTradById("menu_home_settings"), UI_B_BIG, AH_SETTINGS, false, onClickPrintf, NULL, NULL, 2);
+    settingsButton = UI_newButton(THIS_GAME->menu, LM_getTradById("menu_home_settings"), UI_B_BIG, AH_SETTINGS, false, switchToSettings, NULL, NULL, 2);
     quitButton = UI_newButton(THIS_GAME->menu, LM_getTradById("menu_home_quit"), UI_B_BIG, AH_QUIT, false, onClickPrintf, NULL, NULL, 2);
     // aboutButton = UI_newButton(THIS_GAME->menu, LM_getTradById("menu_home_about"), UI_B_BIG, AH_ABOUT, false, onClickPrintf, NULL, NULL, 3);
 

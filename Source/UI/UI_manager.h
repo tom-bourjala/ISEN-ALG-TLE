@@ -4,3 +4,4 @@
 #include "UI_panel.h"
 
 UI_menu *UI_initMenu(void *game);
+void UI_refreshMenu(UI_menu *menu);
