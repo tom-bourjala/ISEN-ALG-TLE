@@ -40,8 +40,9 @@ void UI_updateSlider(void *self){
         else *slider->value = (game->mouseX-getX) / totalWidth;
     } else
         slider->textureGrabber = slider->textureGrabberIdle;
-    if((game->mouseX >= slider->anchorCL->getX(game) && game->mouseX <= slider->anchorCL->getX(game)+totalWidth) && (game->mouseY>=slider->anchorCL->getY(game)-(5*slider->sizeCoef) && game->mouseY<=slider->anchorCL->getY(game)+(5*slider->sizeCoef)))
-        game->currentCursor = game->cursorHand;
+    if(!slider->hidden)
+        if((game->mouseX >= slider->anchorCL->getX(game) && game->mouseX <= slider->anchorCL->getX(game)+totalWidth) && (game->mouseY>=slider->anchorCL->getY(game)-(5*slider->sizeCoef) && game->mouseY<=slider->anchorCL->getY(game)+(5*slider->sizeCoef)))
+            game->currentCursor = game->cursorHand;
 }
 
 void UI_renderSlider(void *self){
@@ -65,8 +66,7 @@ void UI_renderSlider(void *self){
 
 void UI_SliderHandleMouseEvent(UI_slider *slider, bool isPressed){
     Game *game = slider->menu->game;
-    if(isPressed)
-    {
+    if(isPressed && !slider->hidden){
         float totalWidth = (slider->width+1)*slider->unitWidth*slider->sizeCoef;
         if((game->mouseX >= slider->anchorCL->getX(game) && game->mouseX <= slider->anchorCL->getX(game)+totalWidth) && (game->mouseY>=slider->anchorCL->getY(game)-(5*slider->sizeCoef) && game->mouseY<=slider->anchorCL->getY(game)+(5*slider->sizeCoef)))
             slider->isPressed = true;
