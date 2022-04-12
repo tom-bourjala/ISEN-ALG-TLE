@@ -71,6 +71,10 @@ void switchToHomeMenu(void *self){
     hidePlayMenu();
 }
 
+void exitGame(void *self){
+    THIS_GAME->isRunning = false;
+}
+
 static UI_textureObject *menuBackground = NULL;
 static char **(*LM_getTradById)(char *idToGet) = NULL;
 
@@ -123,7 +127,7 @@ void UI_initMainMenu(void *GAME)
     //Main menu buttons
     playButton = UI_newButton(THIS_GAME->menu, LM_getTradById("menu_home_play"), UI_B_BIG, AH_PLAY, false, switchToPlayMenu, NULL, NULL, 2);
     settingsButton = UI_newButton(THIS_GAME->menu, LM_getTradById("menu_home_settings"), UI_B_BIG, AH_SETTINGS, false, switchToSettings, NULL, NULL, 2);
-    quitButton = UI_newButton(THIS_GAME->menu, LM_getTradById("menu_home_quit"), UI_B_BIG, AH_QUIT, false, onClickPrintf, NULL, NULL, 2);
+    quitButton = UI_newButton(THIS_GAME->menu, LM_getTradById("menu_home_quit"), UI_B_BIG, AH_QUIT, false, exitGame, NULL, NULL, 2);
     // aboutButton = UI_newButton(THIS_GAME->menu, LM_getTradById("menu_home_about"), UI_B_BIG, AH_ABOUT, false, onClickPrintf, NULL, NULL, 3);
 
     //Play menu buttons
