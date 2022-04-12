@@ -70,9 +70,10 @@ void UI_RenderTextureObject(void *self)
 {
     UI_textureObject *this = self;
     Game *game = this->menu->game;
-    if(!this->hidden)
+    if(!this->hidden){
         if(this->flip) SDL_RenderCopyEx(game->renderer, this->texture, NULL, &this->rect, 0, NULL, SDL_FLIP_HORIZONTAL);
         else SDL_RenderCopyEx(game->renderer,this->texture, NULL, &this->rect, 0, NULL, SDL_FLIP_NONE);
+    }
 }
 
 void UI_FreeTextureObject(void *self){
