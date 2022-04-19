@@ -9,12 +9,14 @@
 
 static SDL_Thread *thread = NULL;
 static float *progress = NULL;
-static float *text = NULL;
+static char *text = NULL;
+static bool isLoading = false;
 static Game *game = NULL;
 
 static int loadingThread(void *data){
-    while(game->isRunning){
+    while(isLoading){
         //render loading screen
+        printf("%s... : %0.2f\n", text, *progress);
     }
     return 0;
 }
@@ -30,5 +32,6 @@ void launchLoading(void *GAME, float *loadingProgress, char *loadingText){
 
 void endLoading(void *GAME){
     //free menu UI
-    SDL_KillThread(thread);
+    isLoading = false;
+    SDL_WaitThread(thread, NULL);
 }
