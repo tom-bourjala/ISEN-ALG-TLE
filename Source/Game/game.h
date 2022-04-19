@@ -1,3 +1,5 @@
+#pragma once
+
 #include <SDL2/SDL.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,9 +12,6 @@
 #include "../Maps/mapManager.h"
 #include "../List/SmartList.h"
 #include "../Language/lang.h"
-
-#ifndef GAME_H
-#define GAME_H
 
 typedef enum {DEBUG_NULL, DEBUG_HITBOX, DEBUG_PATH, DEBUG_EL} debug;
 typedef enum {GS_LoadingMainMenu, GS_MainMenu, GS_LoadingMap, GS_InGame} gameStatus;
@@ -38,6 +37,7 @@ typedef struct
     SDL_Cursor *currentCursor;
     SDL_Cursor *cursorArrow;
     SDL_Cursor *cursorHand;
+    void *selection;
     int mouseX;
     int mouseY;
     int winWidth;
@@ -58,5 +58,3 @@ struct GameObject{
     GameObjectType type;
     void *actor;
 };
-
-#endif

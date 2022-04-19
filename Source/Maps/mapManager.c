@@ -11,7 +11,7 @@
 #include <math.h>
 
 static mapManager *MAP_MANAGER = NULL;
-
+static float *loadingProgress = NULL;
 typedef enum{MAP_NAME, MAP_DESC, MAP_NONE} mapConfigFileParam;
 
 static mapConfigFileParam getMapConfigFileParamFromString(char *fileParamString){
@@ -106,6 +106,9 @@ static void loadMapMetadataFromFiles(map *map){
         }
     }
     fclose(map_file);
+
+    if(loadingProgress) *loadingProgress = 0.3;
+
     sprintf(path, "./assets/maps/%s.nodes", map->id);
     FILE *nodes_file = fopen(path,"rb");
     if(!nodes_file) printf("\033[1;31mFailed to open %s\033[0m\n", path);
@@ -121,6 +124,7 @@ static void loadMapMetadataFromFiles(map *map){
     float ratioY = (float)map->height/(float)sourceHeight;
     //saving binary format (0:)[x](1:)[y](2:)[type](3:)[nextX](4:)[nextY](5:)[altNextX](6:)[altNextY]
     int readValue[7];
+    if(loadingProgress) *loadingProgress = 0.4;
     while(fread(readValue, sizeof(int), 7, nodes_file) == 7){
         map_node *currentNode = NULL;
         nodeChildLinkToSolve *currentNext = NULL;
@@ -159,7 +163,10 @@ static void loadMapMetadataFromFiles(map *map){
         } else currentNode->nextAlt = NULL;
     }
     fclose(nodes_file);
+    if(loadingProgress) *loadingProgress = 0.5;
+
     //Resolving child links
+    float progressDelta = 0.4/childLinkToSolve->length;
     for(int index = 0; index < childLinkToSolve->length; index++){
         nodeChildLinkToSolve *nclts = getDataAtIndex(*childLinkToSolve, index);
         map_node *parent = nclts->parent;
@@ -167,12 +174,14 @@ static void loadMapMetadataFromFiles(map *map){
         if(nclts->isAltNext) parent->nextAlt = child;
         else parent->next = child;
         free(nclts);
+        if(loadingProgress) *loadingProgress += progressDelta;
     }
     freeList(childLinkToSolve);
 }
 
 
-void loadMapFromFiles(const char *id, const int width, const int height){
+void loadMapFromFiles(const char *id, const int width, const int height, float *progress){
+    loadingProgress = progress;
     if(MAP_MANAGER->currentMap) MAP_MANAGER->unloadMap();
     Game *game = MAP_MANAGER->parent;
     map *loadedMap = malloc(sizeof(map));
@@ -180,14 +189,19 @@ void loadMapFromFiles(const char *id, const int width, const int height){
     strcpy(loadedMap->id, id);
     char dataMapFileName[255];
     sprintf(dataMapFileName, "map_%s_datagrid.png", loadedMap->id);
+    if(loadingProgress) *loadingProgress = 0.1;
     loadedMap->dataGrid = getDataGridFromDataMap(dataMapFileName, width, height);
+    if(loadingProgress) *loadingProgress = 0.2;
     loadedMap->width = width;
     loadedMap->height = height;
     loadedMap->texName = malloc(sizeof(char) * (strlen(id)+10));
     sprintf(loadedMap->texName, "map_%s.png", loadedMap->id);
     loadedMap->texture = game->textureManager->getTexture(loadedMap->texName);
+    if(loadingProgress) *loadingProgress = 0.25;
     loadMapMetadataFromFiles(loadedMap);
     MAP_MANAGER->currentMap = loadedMap;
+    if(loadingProgress) *loadingProgress = 1.0;
+    loadingProgress = NULL;
 }
 
 void unloadCurrentMap(){

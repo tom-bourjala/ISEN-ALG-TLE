@@ -6,6 +6,7 @@
 #include <time.h>
 #include "game.h"
 #include "rendererAddons.h"
+#include "gameManager.h"
 #include "../Turrets/turrets.h"
 #include "../Robots/robots.h"
 
@@ -143,10 +144,9 @@ Game *initGame(const char* title, int width, int height, bool fullscreen){
     GAME->projectileManager = initProjectileManager();
     GAME->mapManager = initMapManager(GAME);
     GAME->languageManager = initLanguageManager();
-    UI_initMainMenu(GAME);
+    launchMainMenu(GAME);
     GAME->gameObjects = newList(COMPARE_PTR);
     GAME->key_debug = DEBUG_NULL;
-    GAME->status = GS_LoadingMainMenu;
     GAME->cursorHand = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND);
     GAME->cursorArrow = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
     GAME->currentCursor = GAME->cursorArrow;

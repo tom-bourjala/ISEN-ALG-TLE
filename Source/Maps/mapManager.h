@@ -1,3 +1,5 @@
+#pragma once
+
 #include "../List/SmartList.h"
 #include "./mapDataManagement.h"
 #include <SDL2/SDL.h>
@@ -5,9 +7,6 @@
 #include <stdlib.h>
 #include <stdlib.h>
 #include <stdbool.h>
-
-#ifndef MAPMANAGER_H
-#define MAPMANAGER_H
 
 typedef struct{
     char *id;
@@ -19,7 +18,7 @@ typedef struct{
 typedef struct
 {
     map *currentMap;
-    void (*loadMap)(const char *id, const int width, const int height);
+    void (*loadMap)(const char *id, const int width, const int height, float *progress);
     void (*unloadMap)(void);
     void (*render)(void);
     void (*updatePreviews)(void);
@@ -28,5 +27,3 @@ typedef struct
 } mapManager;
 
 mapManager *initMapManager(void *game);
-
-#endif

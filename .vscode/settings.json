@@ -12,6 +12,8 @@
         "texturemanager.h": "c",
         "mapdatamanagement.h": "c",
         "robots.h": "c",
-        "game.h": "c"
+        "game.h": "c",
+        "selection.h": "c",
+        "ui_mainmenu.h": "c"
     }
 }
