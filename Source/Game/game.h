@@ -37,6 +37,7 @@ typedef struct
     SDL_Cursor *currentCursor;
     SDL_Cursor *cursorArrow;
     SDL_Cursor *cursorHand;
+    void *selection;
     int mouseX;
     int mouseY;
     int winWidth;
