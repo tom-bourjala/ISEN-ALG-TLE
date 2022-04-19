@@ -24,7 +24,6 @@ static UI_text *st_text_resolution = NULL;
 static UI_text *st_text_fullscreen = NULL;
 static UI_button *st_button_fullscreen = NULL;
 static UI_slider *st_slider_resolution = NULL;
-static UI_button *st_text_resolution = NULL;
 
 //AUDIO PANEL
 static UI_panelButton *st_button_audio = NULL;
@@ -245,7 +244,6 @@ void UI_switchToSettings(void *GAME)
     st_arrow_left_lang = UI_newButton(st_panel->menu, NULL, UI_ARROW,st_title_line_anchor_col_right_row_3,true,NULL,fullscreen_on,fullscreen_off,1);
     st_arrow_right_lang = UI_newButton(st_panel->menu, NULL, UI_ARROW,st_title_line_anchor_col_right_row_3,true,NULL,fullscreen_on,fullscreen_off,1);
     UI_flipButton(st_arrow_left_lang); //<- (!)
-    st_text_resolution = UI_newButton(st_panel->menu,LM_getTradById("options_menu_video_800_600"),UI_B_DEFAULT, st_title_line_anchor_col_right_row_3, false,NULL,NULL,NULL,1);
 
     st_text_daltonism = UI_newText(st_panel->menu,LM_getTradById("options_menu_accessibility_daltonism"),st_title_line_anchor_col_left_row_3, UI_TA_LEFT, UI_TJ_CENTER,white, "./assets/fonts/RulerGold.ttf", 30);
     st_text_screen_shake = UI_newText(st_panel->menu,LM_getTradById("options_menu_accessibility_screen_shake"),st_title_line_anchor_col_left_row_4, UI_TA_LEFT, UI_TJ_CENTER,white, "./assets/fonts/RulerGold.ttf", 30);
