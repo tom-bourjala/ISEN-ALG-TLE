@@ -1,7 +1,7 @@
 #include "UI_mainMenu.h"
 #include "../Game/game.h"
 #include "UI_settingsMenu.h"
-#include <stdbool.h>
+#include "../Game/gameManager.h" 
 
 static Game *THIS_GAME = NULL;
 
@@ -101,6 +101,10 @@ void switchToSettings()
     UI_switchToSettings(THIS_GAME);
 }
 
+void GM_launchEndless(void *self){
+    launchEndlessMode(THIS_GAME);
+}
+
 void UI_initMainMenu(void *GAME)
 {
     THIS_GAME = GAME;
@@ -132,7 +136,7 @@ void UI_initMainMenu(void *GAME)
 
     //Play menu buttons
     campaignButton = UI_newButton(THIS_GAME->menu, LM_getTradById("menu_home_campagin"), UI_B_BIG, AP_CAMPAIGN, false, onClickPrintf, NULL, NULL, 2);
-    endlessButton = UI_newButton(THIS_GAME->menu, LM_getTradById("menu_home_endless"), UI_B_BIG, AP_ENDLESS, false, onClickPrintf, NULL, NULL, 2);
+    endlessButton = UI_newButton(THIS_GAME->menu, LM_getTradById("menu_home_endless"), UI_B_BIG, AP_ENDLESS, false, GM_launchEndless, NULL, NULL, 2);
     sandboxButton = UI_newButton(THIS_GAME->menu, LM_getTradById("menu_home_sandbox"), UI_B_BIG, AP_SANDBOX, false, onClickPrintf, NULL, NULL, 2);
     backButton = UI_newButton(THIS_GAME->menu, LM_getTradById("menu_back"), UI_B_BACK, AP_BACK, false, switchToHomeMenu, NULL, NULL, 1.5);
 
