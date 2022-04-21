@@ -43,19 +43,21 @@ static void coreRender(void *self){
     int coreWidth = coreTexWidth / coreFrames, coreHeight = coreTexHeight;
     int shieldWidth = shieldTexWidth / shieldFrames, shieldHeight = shieldTexHeight;
 
+    centerX -= coreWidth / 2;
+
     int coreCurrentFrame = coreFrames - (this->health / (this->maxHealth / coreFrames)) - 1;
     if(coreCurrentFrame < 0) coreCurrentFrame = 0;
     int shieldCurrentFrame = shieldFrames - (this->shield / (this->maxShield / shieldFrames)) - 1;
     if(shieldCurrentFrame < 0) shieldCurrentFrame = 0;
 
-    SLD_Rect rectCore = {centerX - coreWidth / 2, centerY - coreHeight / 2, coreWidth, coreHeight};
-    SLD_Rect rectShield = {centerX - shieldWidth / 2, centerY - shieldHeight / 2, shieldWidth, shieldHeight};
+    SDL_Rect rectCore = {centerX - coreWidth/2, centerY - coreHeight/2, coreWidth, coreHeight};
+    SDL_Rect rectShield = {centerX - shieldWidth, centerY - shieldHeight, shieldWidth * 2, shieldHeight * 2};
 
     SDL_Rect srcRectCore = {coreCurrentFrame * coreWidth, 0, coreWidth, coreHeight};
     SDL_Rect srcRectShield = {shieldCurrentFrame * shieldWidth, 0, shieldWidth, shieldHeight};
 
-    SDL_RenderCopy(GAME->renderer, this->coreTex, &srcRectCore, &rectCore);
-    SDL_RenderCopy(GAME->renderer, this->shieldTex, &srcRectShield, &rectShield);
+    SDL_RenderCopy(thisGameObject->game->renderer, this->coreTex, &srcRectCore, &rectCore);
+    if(this->shield) SDL_RenderCopy(thisGameObject->game->renderer, this->shieldTex, &srcRectShield, &rectShield);
 }
 
 static void coreDelete(void *self){
