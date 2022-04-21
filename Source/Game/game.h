@@ -47,7 +47,7 @@ typedef struct
 Game *initGame(const char* title, int width, int height, bool fullscreen);
 
 typedef struct GameObject GameObject;
-typedef enum {GOT_Turret, GOT_Robot, GOT_Projectile, GOT_Effect, GOT_DEBUG} GameObjectType;
+typedef enum {GOT_Turret, GOT_Robot, GOT_Projectile, GOT_Effect, GOT_Core, GOT_DEBUG} GameObjectType;
 
 struct GameObject{
     void (*update)(void *self);
