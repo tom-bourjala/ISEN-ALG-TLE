@@ -9,6 +9,7 @@
 #include "gameManager.h"
 #include "../Turrets/turrets.h"
 #include "../Robots/robots.h"
+#include "./camera.h"
 
 static Game *GAME = NULL;
 
@@ -136,11 +137,17 @@ Game *initGame(const char* title, int width, int height, bool fullscreen){
     }
     GAME->mouseX = 0;
     GAME->mouseY = 0;
+    GAME->winWidth = 0;
+    GAME->winHeight = 0;
     GAME->handleEvents = handleEvents;
     GAME->update = update;
     GAME->render = render;
     GAME->clean = clean;
     GAME->textureManager = initTexManager(GAME->renderer);
+    initCamera(GAME);
+    GAME->cameraX = 0;
+    GAME->cameraY = 0;
+    GAME->cameraScale = 1;
     GAME->animationManager = initAnimManager();
     GAME->projectileManager = initProjectileManager();
     GAME->mapManager = initMapManager(GAME);

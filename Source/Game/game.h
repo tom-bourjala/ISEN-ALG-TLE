@@ -42,6 +42,9 @@ typedef struct
     int mouseY;
     int winWidth;
     int winHeight;
+    int cameraX;
+    int cameraY;
+    float cameraScale;
 } Game;
 
 Game *initGame(const char* title, int width, int height, bool fullscreen);

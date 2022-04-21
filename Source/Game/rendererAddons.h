@@ -19,4 +19,8 @@ typedef struct{
 
 GameObject *newGameObject_Debug(Game *GAME, int xpos, int ypos, int TTL, debugObjectType type);
 
+void relativeRender(SDL_Texture *tex, int x, int y, int w, int h);
+void relativeRenderFrame(SDL_Texture *tex, int x, int y, int w, int h, int frame);
+void relativeRenderEx(SDL_Texture *tex, int x, int y, int w, int h, int frame, int angle, bool hFlip, bool vFlip);
+
 #endif

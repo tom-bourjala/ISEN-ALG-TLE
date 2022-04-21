@@ -7,6 +7,7 @@
 #include "robotAi.h"
 #include "../Game/game.h"
 #include "../Game/rendererAddons.h"
+#include "../Game/camera.h"
 
 
 typedef enum{ROB_NAME, ROB_TEX_REF, ROB_PROJECTILE_NAME, ROB_WIDTH, ROB_HEIGHT, ROB_SPEED, ROB_TEX_ANIM_FRAMES, ROB_LIFE, ROB_WEAPON_DELAY, ROB_WEAPON_RANGE, ROB_IS_FRIENDLY, ROB_NONE} robotConfigFileParam;
@@ -117,12 +118,12 @@ void robotRender(void *self){
     robot *this = thisGameObject->actor;
     SDL_Rect rect={this->x - (this->width/2), this->y - (this->height/2),this->width,this->height};
     SDL_Rect srcrect={this->walk.currentFrame*64,0,64,64};
-    SDL_RenderCopyEx(thisGameObject->game->renderer, this->walk.texture,&srcrect,&rect,-this->rotation*90/(M_PI/2) + 180,NULL,SDL_FLIP_NONE);
+    cameraRenderEx(this->walk.texture, rect, this->walk.currentFrame, -this->rotation*90/(M_PI/2) + 180, false, false);
     if(thisGameObject->game->key_debug != DEBUG_NULL)
     {
         SDL_Color rouge = {255,0,0,255};
         SDL_SetRenderDrawColor(thisGameObject->game->renderer,rouge.r,rouge.g,rouge.b,rouge.a);
-        DrawCircle(thisGameObject->game->renderer, this->x, this->y, this->radius);
+        DrawCircle(thisGameObject->game->renderer, this->x - thisGameObject->game->cameraX, this->y - thisGameObject->game->cameraY, this->radius);
     }
 }
 

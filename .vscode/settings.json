@@ -14,6 +14,7 @@
         "robots.h": "c",
         "game.h": "c",
         "selection.h": "c",
-        "ui_mainmenu.h": "c"
+        "ui_mainmenu.h": "c",
+        "camera.h": "c"
     }
 }

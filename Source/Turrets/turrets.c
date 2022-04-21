@@ -5,6 +5,7 @@
 #include "turrets.h"
 #include "turretAi.h"
 #include "../Game/game.h"
+#include "../Game/camera.h"
 #include "../Game/rendererAddons.h"
 
 typedef enum{TP_NAME, TP_TEX_REF, TP_WIDTH, TP_HEIGHT, TP_TEX_ANIM_FRAMES, TP_ROTATION_SPEED, TP_ROTATION_ACCELERATION, TP_WEAPON_DELAY, TP_WEAPON_RANGE, TP_NONE} turretConfigFileParam;
@@ -109,11 +110,11 @@ void turretRender(void *self){
     turret *this = thisGameObject->actor;
     SDL_Rect rect={this->x,this->y,this->width,this->height};
     
-    SDL_RenderCopyEx(thisGameObject->game->renderer, this->base.texture,NULL,&rect,0,NULL,SDL_FLIP_NONE);
-    SDL_RenderCopyEx(thisGameObject->game->renderer, this->support.texture,NULL,&rect,-this->rotation*90/(M_PI/2),NULL,SDL_FLIP_NONE);
+    cameraRender(this->base.texture, rect);
+    cameraRenderEx(this->support.texture, rect, 0, -this->rotation*90/(M_PI/2), false, false);
 
     SDL_Rect srcrect={this->canon.currentFrame*64,0,64,64};
-    SDL_RenderCopyEx(thisGameObject->game->renderer, this->canon.texture,&srcrect,&rect,-this->rotation*90/(M_PI/2),NULL,SDL_FLIP_NONE);
+    cameraRenderEx(this->canon.texture, rect, this->canon.currentFrame, -this->rotation*90/(M_PI/2), false, false);
 }
 
 void turretDelete(void *self){

@@ -6,12 +6,14 @@
 #include "core.h"
 #include "../Game/game.h"
 #include "../Game/rendererAddons.h"
+#include "../Game/camera.h"
 
 static void coreUpdate(void *self){
     GameObject *thisGameObject = self;
     core *this = thisGameObject->actor;
     if(this->health <= 0){
         //NOTIFY GAME OVER
+        this->radius = 0;
         return;
     }
     if(this->shield < this->maxShield){
@@ -42,6 +44,8 @@ static void coreRender(void *self){
 
     int coreWidth = coreTexWidth / coreFrames, coreHeight = coreTexHeight;
     int shieldWidth = shieldTexWidth / shieldFrames, shieldHeight = shieldTexHeight;
+    if(this->shield > 0) this->radius = shieldWidth;
+    else this->radius = coreWidth;
 
     centerX -= coreWidth / 2;
 
@@ -52,12 +56,9 @@ static void coreRender(void *self){
 
     SDL_Rect rectCore = {centerX - coreWidth/2, centerY - coreHeight/2, coreWidth, coreHeight};
     SDL_Rect rectShield = {centerX - shieldWidth, centerY - shieldHeight, shieldWidth * 2, shieldHeight * 2};
-
-    SDL_Rect srcRectCore = {coreCurrentFrame * coreWidth, 0, coreWidth, coreHeight};
-    SDL_Rect srcRectShield = {shieldCurrentFrame * shieldWidth, 0, shieldWidth, shieldHeight};
-
-    SDL_RenderCopy(thisGameObject->game->renderer, this->coreTex, &srcRectCore, &rectCore);
-    if(this->shield) SDL_RenderCopy(thisGameObject->game->renderer, this->shieldTex, &srcRectShield, &rectShield);
+    
+    cameraRenderFrame(this->coreTex, rectCore, coreCurrentFrame);
+    if(this->shield) cameraRenderFrame(this->shieldTex, rectShield, shieldCurrentFrame);
 }
 
 static void coreDelete(void *self){

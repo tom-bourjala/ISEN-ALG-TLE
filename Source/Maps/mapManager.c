@@ -3,6 +3,7 @@
 #include "../Game/textureManager.h"
 #include "../Game/rendererAddons.h"
 #include "../List/SmartList.h"
+#include "../Game/camera.h"
 #include <SDL2/SDL.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -220,13 +221,13 @@ void renderMap(){
     map *Map = MAP_MANAGER->currentMap;
     Game *game = MAP_MANAGER->parent;
     SDL_Rect rect={0,0,Map->width,Map->height};
-    SDL_RenderCopyEx(game->renderer, game->textureManager->getTexture(Map->texName),NULL,&rect,0,NULL,SDL_FLIP_NONE);
+    cameraRender(Map->texture, rect);
     if(game->key_debug == DEBUG_PATH){
         char debugTex[255];
         sprintf(debugTex, "map_%s_datagrid.png", Map->id);
         SDL_Texture *tex = game->textureManager->getTexture(debugTex);
         SDL_SetTextureAlphaMod(tex, 200);
-        SDL_RenderCopyEx(game->renderer, tex,NULL,&rect,0,NULL,SDL_FLIP_NONE);
+        cameraRender(tex, rect);
         SDL_SetTextureAlphaMod(tex, 255);
         SDL_SetRenderDrawColor(game->renderer, 0,0,255,255);
         // for(int x = 0; x<Map->dataGrid.w; x++) for(int y = 0; y<Map->dataGrid.h; y++)
@@ -240,14 +241,14 @@ void renderMap(){
                 if(seed == 3 || seed == 7) SDL_SetRenderDrawColor(game->renderer, 227,37,250,100);
                 int pathSeed = seed;
                 while(node->next){
-                    DrawCircle(game->renderer,node->x,node->y,5);
-                    DrawCircle(game->renderer,node->x,node->y,4);
-                    DrawCircle(game->renderer,node->x,node->y,3);
-                    DrawCircle(game->renderer,node->x,node->y,2);
-                    DrawCircle(game->renderer,node->x,node->y,1);
-                    SDL_RenderDrawLine(game->renderer, node->x, node->y, node->next->x, node->next->y);
+                    DrawCircle(game->renderer,node->x - game->cameraX,node->y - game->cameraY,5);
+                    DrawCircle(game->renderer,node->x - game->cameraX,node->y - game->cameraY,4);
+                    DrawCircle(game->renderer,node->x - game->cameraX,node->y - game->cameraY,3);
+                    DrawCircle(game->renderer,node->x - game->cameraX,node->y - game->cameraY,2);
+                    DrawCircle(game->renderer,node->x - game->cameraX,node->y - game->cameraY,1);
+                    SDL_RenderDrawLine(game->renderer, node->x - game->cameraX, node->y - game->cameraY, node->next->x - game->cameraX, node->next->y - game->cameraY);
                     if(node->nextAlt){
-                        SDL_RenderDrawLine(game->renderer, node->x, node->y, node->nextAlt->x, node->nextAlt->y);
+                        SDL_RenderDrawLine(game->renderer, node->x - game->cameraX, node->y - game->cameraY, node->nextAlt->x - game->cameraX, node->nextAlt->y - game->cameraY);
                         if(!(pathSeed%2)) node = node->next;
                         else node = node->nextAlt;
                         pathSeed/=2;

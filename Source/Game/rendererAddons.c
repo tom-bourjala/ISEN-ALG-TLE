@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include "rendererAddons.h"
 
-
 void DebugUpdate(void *self){
    GameObject *thisGameObject = self;
    debugObject *this = thisGameObject->actor;
@@ -17,7 +16,7 @@ void DebugRender(void *self) {
    debugObject *this = thisGameObject->actor;
    SDL_Color rouge = {255,0,0,255};
    SDL_SetRenderDrawColor(thisGameObject->game->renderer,rouge.r,rouge.g,rouge.b,rouge.a);
-   DrawCircle(thisGameObject->game->renderer,this->x,this->y,10);
+   DrawCircle(thisGameObject->game->renderer,this->x - thisGameObject->game->cameraX,thisGameObject->game->cameraY,10);
 }
 
 void DebugDelete(void *self){
