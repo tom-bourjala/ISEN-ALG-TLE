@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 typedef struct gameModeData
 {
@@ -13,7 +14,7 @@ typedef struct gameModeData
     bool isPaused;
 } gameModeData;
 
-
+void updateGameManager();
 void launchMainMenu(void *GAME);
 void launchEndlessMode(void *GAME);
 

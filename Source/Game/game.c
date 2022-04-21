@@ -59,6 +59,7 @@ void update(){
     GAME->projectileManager->applyHits();
     GAME->menu->update();
     SDL_SetCursor(GAME->currentCursor);
+    updateGameManager();
 }
 
 void renderGameObject(void *object){
