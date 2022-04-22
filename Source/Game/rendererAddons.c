@@ -47,6 +47,7 @@ GameObject *newGameObject_Debug(Game *GAME, int xpos, int ypos, int TTL, debugOb
    newGameObject->update = DebugUpdate;
    newGameObject->type = GOT_DEBUG;
    newGameObject->actor = newDebugObject;
+   appendInList(GAME->gameObjects, newGameObject);
    return newGameObject;
 }
 

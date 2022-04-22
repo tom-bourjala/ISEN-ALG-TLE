@@ -220,5 +220,6 @@ GameObject *newGameObject_Robot(Game *GAME, char *robotFileName, map_node *spawn
     gameObject->render = robotRender;
     gameObject->delete = robotDelete;
     gameObject->isAlive = robotIsAlive;
+    appendInList(GAME->gameObjects, gameObject);
     return gameObject;
 }

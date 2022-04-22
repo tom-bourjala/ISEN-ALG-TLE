@@ -45,7 +45,7 @@ void applyHit(void *self){
     robot *target = targetObject->actor;
     target->life -= this->damage;
     if(targetObject->game->key_debug == DEBUG_HITBOX)
-        appendInList(targetObject->game->gameObjects, newGameObject_Debug(targetObject->game, this->x, this->y, 600, DO_Hit));
+        newGameObject_Debug(targetObject->game, this->x, this->y, 600, DO_Hit);
     if(!targetObject->isAlive(targetObject)){
         targetObject->delete(targetObject);
     }

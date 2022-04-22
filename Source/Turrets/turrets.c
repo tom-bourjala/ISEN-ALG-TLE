@@ -145,5 +145,6 @@ GameObject *newGameObject_Turret(Game *GAME, char *turretFileName, int xpos, int
     gameObject->render = turretRender;
     gameObject->delete = turretDelete;
     gameObject->isAlive = turretIsAlive;
+    appendInList(GAME->gameObjects, gameObject);
     return gameObject;
 }
