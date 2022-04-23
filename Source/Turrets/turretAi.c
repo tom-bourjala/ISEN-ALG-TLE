@@ -64,7 +64,7 @@ void tryShoot(GameObject *turretObject){
     turret *this = turretObject->actor;
     if(!turretObject->game->animationManager->getAnim(this->canon.animationId)){
         turretObject->game->animationManager->addAnim(this->canon.animationId, &this->canon.currentFrame, this->canon.nOfFrames, 1);
-        turretObject->game->projectileManager->newProjectile(turretObject->game, "debug.projectile", this->x + (this->width/2), this->y + (this->height/2), this->rotation, turretObject);
+        turretObject->game->projectileManager->newProjectile(turretObject->game, this->projectileName, this->x + (this->width/2), this->y + (this->height/2), this->rotation, turretObject);
     }
 }
 

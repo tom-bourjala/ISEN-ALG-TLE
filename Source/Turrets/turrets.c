@@ -8,7 +8,7 @@
 #include "../Game/camera.h"
 #include "../Game/rendererAddons.h"
 
-typedef enum{TP_NAME, TP_TEX_REF, TP_WIDTH, TP_HEIGHT, TP_TEX_ANIM_FRAMES, TP_ROTATION_SPEED, TP_ROTATION_ACCELERATION, TP_WEAPON_DELAY, TP_WEAPON_RANGE, TP_NONE} turretConfigFileParam;
+typedef enum{TP_NAME, TP_TEX_REF, TP_WIDTH, TP_HEIGHT, TP_TEX_ANIM_FRAMES, TP_ROTATION_SPEED, TP_ROTATION_ACCELERATION, TP_WEAPON_DELAY, TP_WEAPON_RANGE, TP_WEAPON_PROJECTILE_NAME, TP_NONE} turretConfigFileParam;
 
 turretConfigFileParam getTurretConfigFileParamFromString(char *fileParamString){
     if(!strcmp("NAME", fileParamString)) return TP_NAME;
@@ -20,6 +20,7 @@ turretConfigFileParam getTurretConfigFileParamFromString(char *fileParamString){
     if(!strcmp("ROTATION_ACCELERATION", fileParamString)) return TP_ROTATION_ACCELERATION;
     if(!strcmp("DELAY", fileParamString)) return TP_WEAPON_DELAY;
     if(!strcmp("RANGE", fileParamString)) return TP_WEAPON_RANGE;
+    if(!strcmp("PROJECTILE", fileParamString)) return TP_WEAPON_PROJECTILE_NAME;
     return TP_NONE;
 }
 
@@ -68,6 +69,10 @@ turret *newTurret(Game GAME,char *turretFileName, int xpos, int ypos){
                 break;    
             case TP_WEAPON_RANGE:
                 createdTurret->range = atof(stat_value);
+                break;
+            case TP_WEAPON_PROJECTILE_NAME:
+                createdTurret->projectileName = malloc(sizeof(char)*(strlen(stat_value) + 15));
+                sprintf(createdTurret->projectileName, "%s.projectile", stat_value);
                 break;
             case TP_NONE :
                 break;
