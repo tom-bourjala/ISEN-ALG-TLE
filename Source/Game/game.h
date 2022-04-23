@@ -31,6 +31,7 @@ typedef struct
     langManager *languageManager;
     UI_menu *menu;
     list *gameObjects;
+    GameObject *core;
     bool isRunning;
     debug key_debug;
     gameStatus status;
