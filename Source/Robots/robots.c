@@ -25,6 +25,7 @@ robotConfigFileParam getRobotConfigFileParamFromString(char *fileParamString){
     if(!strcmp("PROJECTILE", fileParamString)) return ROB_PROJECTILE_NAME;
     if(!strcmp("LIFE", fileParamString)) return ROB_LIFE;
     if(!strcmp("SPEED", fileParamString)) return ROB_SPEED;
+
     return ROB_NONE;
 }
 
@@ -75,8 +76,8 @@ robot *newRobot(Game GAME, char *robotFileName, int x, int y, map_node *spawnNod
                 createdRobot->height = atoi(stat_value);
                 break;
             case ROB_PROJECTILE_NAME:
-                createdRobot->projectileName = malloc(sizeof(char)*(strlen(stat_value)+1));
-                strcpy(createdRobot->projectileName, stat_value);
+                createdRobot->projectileName = malloc(sizeof(char)*(strlen(stat_value)+15));
+                sprintf(createdRobot->projectileName, "%s.projectile", stat_value);
                 break;
             case ROB_SPEED:
                 createdRobot->maxSpeed = atof(stat_value);

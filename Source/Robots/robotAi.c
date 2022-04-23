@@ -4,6 +4,7 @@
 #include <math.h>
 #include <limits.h>
 #include "../Game/game.h"
+#include "../Core/core.h"
 #include "../Game/projectileManager.h"
 #include "../List/SmartList.h"
 #include "../Robots/robots.h"
@@ -143,6 +144,15 @@ vectAi getVectTargetNode(GameObject *robotObj){
     } else return getVectDirectNode(robotObj);
 }
 
+vectAi getVectFireRange(GameObject *robotObj){
+    robot *currentRobot = robotObj->actor;
+    GameObject *coreObj = robotObj->game->coreObj;
+    core *core = coreObj->actor;
+    int coreX = core->node->x, coreY = core->node->y;
+    float delta = distBetweenTwoPoints(coreX, coreY, currentRobot->x, currentRobot->y) - currentRobot->range - (core->radius/2);
+    vectAi result = vectRotToVectAi((vectRot){delta*0.05, atan2f(coreX - currentRobot->x, coreY - currentRobot->y)});
+    return result;
+}
 
 vectAi getVectBorderProximity(GameObject *robotObj){
     robot *currentRobot = robotObj->actor;
@@ -204,19 +214,27 @@ bool isRobotAfterTargetNode(robot robot){
 
 void updateRobotPathAi(GameObject *robotObj){
     robot *robot = robotObj->actor;
-    if(robot->targetNode->next && robot->x > 0 && robot->y > 0 && robot->y < robotObj->game->mapManager->currentMap->height){
-        vectAi allyProximity = getVectAllyProximity(robotObj);
-        vectAi borderProximity = getVectBorderProximity(robotObj);
+    vectAi newSpeedVect = {0,0}; 
+    GameObject *coreObj = robotObj->game->coreObj;
+    core *core = coreObj->actor;
+    int coreX = core->node->x, coreY = core->node->y;
+    float coreDistance = distBetweenTwoPoints(coreX, coreY, robot->x, robot->y);
+    printf("coreDistance: %f\n", coreDistance);
+    printf("coreX: %d, coreY: %d\n", coreX, coreY);
+    printf("robot range: %d\n", robot->range);
+    vectAi allyProximity = getVectAllyProximity(robotObj);
+    vectAi borderProximity = getVectBorderProximity(robotObj);
+    if(coreDistance < robot->range*2){
+        vectAi vectFireRange = getVectFireRange(robotObj);
+        newSpeedVect.vx = allyProximity.vx + borderProximity.vx + vectFireRange.vx + robot->speedx;
+        newSpeedVect.vy = allyProximity.vy + borderProximity.vy + vectFireRange.vy + robot->speedy;
+        newSpeedVect.vx /= 4;
+        newSpeedVect.vy /= 4;
+    }else if(robot->targetNode->next){
         vectAi swarmProximity = getVectSwarmProximity(robotObj);
         vectAi targetNode = getVectTargetNode(robotObj);
-        vectAi newSpeedVect;
         newSpeedVect.vx = allyProximity.vx + borderProximity.vx + swarmProximity.vx + targetNode.vx;
         newSpeedVect.vy = allyProximity.vy + borderProximity.vy + swarmProximity.vy + targetNode.vy;
-        vectAi A = (vectAi){-5,5};
-        vectAi B = vectRotToVectAi(vectAiToVectRot(A));
-        newSpeedVect = crunchVectAi(newSpeedVect, robot->maxSpeed);
-        robot->speedx = newSpeedVect.vx;
-        robot->speedy = newSpeedVect.vy;
         if(isRobotAfterTargetNode(*robot)){
             robot->lastNode = robot->targetNode;
             if(robot->targetNode->nextAlt){
@@ -226,4 +244,7 @@ void updateRobotPathAi(GameObject *robotObj){
             }else robot->targetNode = robot->targetNode->next;
         }
     }
+    newSpeedVect = crunchVectAi(newSpeedVect, robot->maxSpeed);
+    robot->speedy = newSpeedVect.vy;
+    robot->speedx = newSpeedVect.vx;
 }

@@ -7,6 +7,7 @@
 #include "../UI/UI_mainMenu.h"
 #include "../UI/UI_hud.h"
 #include "../Core/core.h"
+#include "../Robots/robots.h"
 
 static Game *GAME = NULL;
  
@@ -31,10 +32,16 @@ void launchEndlessMode(void *game){
     endLoading(GAME);
     UI_initHud(GAME);
     GAME->cameraScale = 0.7f;
+    map_node *startNode = GAME->mapManager->currentMap->starts->first->data;
+    newGameObject_Robot(GAME, "debug.robot", startNode, 0);
+    newGameObject_Robot(GAME, "debug.robot", startNode, 0);
+    newGameObject_Robot(GAME, "debug.robot", startNode, 0);
+    newGameObject_Robot(GAME, "debug.robot", startNode, 0);
+    newGameObject_Robot(GAME, "debug.robot", startNode, 0);
+    newGameObject_Robot(GAME, "debug.robot", startNode, 0);
+    newGameObject_Robot(GAME, "debug.robot", startNode, 0);
 }
 
 void updateGameManager(){
-    if(Core){
-        hitCore(Core, 1);
-    }
+    
 }
