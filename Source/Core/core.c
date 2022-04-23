@@ -96,7 +96,7 @@ GameObject *newGameObject_Core(Game *GAME, map_node *spawnNode, int maxHealth, i
     gameObject->delete = coreDelete;
     gameObject->isAlive = coreIsAlive;
     appendInList(GAME->gameObjects, gameObject);
-    GAME->core = gameObject;
+    GAME->coreObj = gameObject;
     return gameObject;
 }
 

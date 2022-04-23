@@ -16,6 +16,9 @@
 typedef enum {DEBUG_NULL, DEBUG_HITBOX, DEBUG_PATH, DEBUG_EL} debug;
 typedef enum {GS_LoadingMainMenu, GS_MainMenu, GS_LoadingMap, GS_InGame} gameStatus;
 
+typedef struct GameObject GameObject;
+typedef enum {GOT_Turret, GOT_Robot, GOT_Projectile, GOT_Effect, GOT_Core, GOT_DEBUG} GameObjectType;
+
 typedef struct
 {
     void (*handleEvents)(void);
@@ -31,7 +34,7 @@ typedef struct
     langManager *languageManager;
     UI_menu *menu;
     list *gameObjects;
-    GameObject *core;
+    GameObject *coreObj;
     bool isRunning;
     debug key_debug;
     gameStatus status;
@@ -50,8 +53,6 @@ typedef struct
 
 Game *initGame(const char* title, int width, int height, bool fullscreen);
 
-typedef struct GameObject GameObject;
-typedef enum {GOT_Turret, GOT_Robot, GOT_Projectile, GOT_Effect, GOT_Core, GOT_DEBUG} GameObjectType;
 
 struct GameObject{
     void (*update)(void *self);
