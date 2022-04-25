@@ -20,10 +20,15 @@ static void coreUpdate(void *self){
         this->rechargeDelayCounter--;
         if(this->rechargeDelayCounter <= 0){
             this->rechargeDelayCounter = 0;
-            this->shield += this->rechargeRate;
-            if(this->shield >= this->maxShield){
-                this->shield = this->maxShield;
-                this->rechargeDelayCounter = this->rechargeDelay;
+            static float rechargeAmount = 0;
+            rechargeAmount += this->rechargeRate;
+            if(rechargeAmount >= 1){
+                this->shield += rechargeAmount;
+                rechargeAmount = 0;
+                if(this->shield >= this->maxShield){
+                    this->shield = this->maxShield;
+                    this->rechargeDelayCounter = this->rechargeDelay;
+                }
             }
         }
     }
@@ -74,7 +79,7 @@ static bool coreIsAlive(void *self){
     return this->health > 0;
 }
 
-GameObject *newGameObject_Core(Game *GAME, map_node *spawnNode, int maxHealth, int maxShield, int rechargeDelay, int rechargeRate){
+GameObject *newGameObject_Core(Game *GAME, map_node *spawnNode, int maxHealth, int maxShield, int rechargeDelay, float rechargeRate){
     core *this = malloc(sizeof(core));
     this->coreTex = GAME->textureManager->getTexture("core.png");
     this->shieldTex = GAME->textureManager->getTexture("shield.png");
@@ -102,6 +107,10 @@ GameObject *newGameObject_Core(Game *GAME, map_node *spawnNode, int maxHealth, i
 
 void hitCore(GameObject *target, int damage){
     core *this = target->actor;
+    //printf "hit regiter" in red
+    printf("\033[0;31m");
+    printf("hit core :%d\n", damage);
+    printf("\033[0m");
     if(this->shield > 0){
         this->shield -= damage;
         if(this->shield < 0){
@@ -110,6 +119,5 @@ void hitCore(GameObject *target, int damage){
     }else{
         this->health -= damage;
     }
-    this->shield -= damage;
     this->rechargeDelayCounter = this->rechargeDelay;
 }

@@ -13,10 +13,10 @@ typedef struct{
     int maxShield;
     int rechargeDelay;
     int rechargeDelayCounter;
-    int rechargeRate;
+    float rechargeRate;
     int radius;
     map_node *node;
 } core;
 
-GameObject *newGameObject_Core(Game *GAME, map_node *spawnNode, int maxHealth, int maxShield, int rechargeDelay, int rechargeRate);
+GameObject *newGameObject_Core(Game *GAME, map_node *spawnNode, int maxHealth, int maxShield, int rechargeDelay, float rechargeRate);
 void hitCore(GameObject *target, int damage);
