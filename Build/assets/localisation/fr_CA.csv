@@ -34,3 +34,6 @@ options_menu_accessibility_daltonism_deuteranopia;DEUTERANOPIE
 options_menu_accessibility_daltonism_tritanopia;TRITANOPIE
 options_menu_accessibility_daltonism_protanopia;PROTANOPIE
 options_menu_accessibility_daltonism_none;AUCUN
+hud_next_wave;NEXT
+hud_wave_info;VAGUE 1
+
