@@ -42,3 +42,21 @@ void cameraRenderEx(SDL_Texture *tex, SDL_Rect dest, int frame, float angle, boo
     }
     SDL_RenderCopyEx(GAME->renderer, tex, &src, &dest, angle, NULL, flip);
 }
+
+void cameraRenderExUnsquared(SDL_Texture *tex, SDL_Rect dest, int frame, int nOfFrames, float angle, bool hFlip, bool vFlip){
+    int frameWidth, frameHeight;
+    SDL_QueryTexture(tex, NULL, NULL, &frameWidth, &frameHeight);
+    frameWidth /= nOfFrames;
+    updateRectDest(&dest);
+    SDL_Rect src = {frame * frameWidth, 0, frameWidth, frameHeight};
+    SDL_RendererFlip flip = SDL_FLIP_NONE;
+    if(hFlip) flip = SDL_FLIP_HORIZONTAL;
+    if(vFlip){
+        if(hFlip) flip =  SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL;
+        else flip = SDL_FLIP_VERTICAL;
+    }
+    SDL_RenderCopyEx(GAME->renderer, tex, &src, &dest, angle, NULL, flip);
+    //SDL print red rect
+    SDL_SetRenderDrawColor(GAME->renderer, 255, 0, 0, 255);
+    SDL_RenderDrawRect(GAME->renderer, &dest);
+}
