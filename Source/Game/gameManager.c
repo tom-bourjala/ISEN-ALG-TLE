@@ -8,6 +8,7 @@
 #include "../UI/UI_hud.h"
 #include "../Core/core.h"
 #include "../Robots/robots.h"
+#include "../List/smartList.h"
 
 static Game *GAME = NULL;
  
@@ -28,20 +29,17 @@ void launchEndlessMode(void *game){
     float progress = 0.0f;
     launchLoading(GAME, &progress, "Loading Endless Mode");
     GAME->mapManager->loadMap("debug", 1920, 1080, &progress);
-    Core = newGameObject_Core(GAME, GAME->mapManager->currentMap->end, 100, 100, 10, 5);
+    Core = newGameObject_Core(GAME, GAME->mapManager->currentMap->end, 100, 100, 500, 0.5);
     endLoading(GAME);
     UI_initHud(GAME);
     GAME->cameraScale = 0.7f;
     map_node *startNode = GAME->mapManager->currentMap->starts->first->data;
     newGameObject_Robot(GAME, "debug.robot", startNode, 0);
-    newGameObject_Robot(GAME, "debug.robot", startNode, 0);
-    newGameObject_Robot(GAME, "debug.robot", startNode, 0);
-    newGameObject_Robot(GAME, "debug.robot", startNode, 0);
-    newGameObject_Robot(GAME, "debug.robot", startNode, 0);
-    newGameObject_Robot(GAME, "debug.robot", startNode, 0);
-    newGameObject_Robot(GAME, "debug.robot", startNode, 0);
+    forEach(GAME->languageManager->availableLangIds, printLang);
 }
 
 void updateGameManager(){
-    
+    if(Core){
+        core *coreActor = Core->actor;
+    }
 }
