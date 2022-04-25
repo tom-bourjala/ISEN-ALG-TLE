@@ -8,6 +8,8 @@ typedef struct {
     char **(*getTradById)(char *idToGet);
     void (*loadLang)(char *langId);
     void (*clear)(void);
+    char *currentLangId;
+    list *availableLangIds;
 } langManager;
 
 typedef struct {

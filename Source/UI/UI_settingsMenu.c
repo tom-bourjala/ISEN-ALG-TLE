@@ -116,9 +116,6 @@ int x_arrow_left_daltonism(void *none){return col_right_x(NULL);}
 int x_arrow_right_daltonism(void *none){return col_right_x(NULL) + 250;}
 
 //LANG
-char *st_accessibility_lang_choice[3];
-char *st_lang_id[3];
-static int int_accessibility_lang_choice = 0;
 static UI_text *st_text_lang_choice = NULL;
 
 // RESOLUTION
@@ -246,24 +243,22 @@ void fullscreen_off(void *self)
 
 void changeLangLeft(void *self)
 {
-    UI_button *button = self;
-    int_accessibility_lang_choice -= 1;
-    if(int_accessibility_lang_choice==-1)
-        int_accessibility_lang_choice = 2;
-    st_text_lang_choice->text = LM_getTradById(st_accessibility_lang_choice[int_accessibility_lang_choice]);
-    Game *game = THIS_GAME;
-    game->languageManager->loadLang(st_lang_id[int_accessibility_lang_choice]);
+    int currentLangIndex = searchIndexInList(*THIS_GAME->languageManager->availableLangIds, THIS_GAME->languageManager->currentLangId);
+    currentLangIndex++;
+    if(currentLangIndex >= THIS_GAME->languageManager->availableLangIds->length)
+        currentLangIndex = 0;
+    char *langToLoad = getDataAtIndex(*THIS_GAME->languageManager->availableLangIds, currentLangIndex);
+    THIS_GAME->languageManager->loadLang(langToLoad);
 }
 
 void changeLangRight(void *self)
 {
-    UI_button *button = self;
-    int_accessibility_lang_choice += 1;
-    if(int_accessibility_lang_choice==3)
-        int_accessibility_lang_choice = 0;
-    st_text_lang_choice->text = LM_getTradById(st_accessibility_lang_choice[int_accessibility_lang_choice]);
-    Game *game = THIS_GAME;
-    game->languageManager->loadLang(st_lang_id[int_accessibility_lang_choice]);
+    int currentLangIndex = searchIndexInList(*THIS_GAME->languageManager->availableLangIds, THIS_GAME->languageManager->currentLangId);
+    currentLangIndex--;
+    if(currentLangIndex < 0)
+        currentLangIndex = THIS_GAME->languageManager->availableLangIds->length - 1;
+    char *langToLoad = getDataAtIndex(*THIS_GAME->languageManager->availableLangIds, currentLangIndex);
+    THIS_GAME->languageManager->loadLang(langToLoad);
 }
 
 void changeResolutionRight(void *self)
@@ -452,19 +447,9 @@ void UI_switchToSettings(void *GAME)
     UI_flipButton(st_arrow_left_carousel); //<- (!)
     st_panel_carousel_anchor = UI_newAnchor(game->menu, x_panel_carousel, y_panel_carousel);
     st_panel_carousel_lang = UI_newPanel(game->menu, 210, 40, st_panel_carousel_anchor, 2, UI_PT_B);
-    for(int i=0;i<3;i++)
-    {
-        st_accessibility_lang_choice[i] = malloc(sizeof(char)*255);
-        st_lang_id[i] = malloc(sizeof(char)*255);
-    }
-    strcpy(st_accessibility_lang_choice[0],"options_menu_accessibility_lang_english");
-    strcpy(st_accessibility_lang_choice[1],"options_menu_accessibility_lang_french");
-    strcpy(st_accessibility_lang_choice[2],"options_menu_accessibility_lang_canadian");
-    strcpy(st_lang_id[0],"en_US");
-    strcpy(st_lang_id[1],"fr_FR");
-    strcpy(st_lang_id[2],"fr_CA");
+
     UI_anchor *st_accessibility_lang_anchor = UI_newAnchor(game->menu,x_panel_carousel_text,y_panel_carousel_text);
-    st_text_lang_choice = UI_newText(game->menu,LM_getTradById("options_menu_accessibility_lang_english"),st_accessibility_lang_anchor,UI_TA_CENTER, UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf",30);
+    st_text_lang_choice = UI_newText(game->menu,LM_getTradById("lang_name"),st_accessibility_lang_anchor,UI_TA_CENTER, UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf",30);
     
     st_panel_carousel_anchor_daltonism = UI_newAnchor(game->menu,x_panel_carousel_daltonism,y_panel_carousel_daltonism);
     st_panel_carousel_daltonism = UI_newPanel(game->menu, 210, 40, st_panel_carousel_anchor_daltonism, 2, UI_PT_B);
