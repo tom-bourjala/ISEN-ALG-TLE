@@ -1,3 +1,4 @@
+lang_name;ENGLISH
 menu_home_play;PLAY
 menu_home_settings;SETTINGS
 menu_home_quit;QUIT
@@ -27,9 +28,6 @@ options_menu_accessibility_screen_shake;SCREEN SHAKE
 options_menu_accessibility_inverse_x;INVERSE X AXIS
 options_menu_accessibility_inverse_y;INVERSE Y AXIS
 options_menu_accessibility_text_size;TEXT SIZE
-options_menu_accessibility_lang_french;FRANCAIS
-options_menu_accessibility_lang_english;ENGLISH
-options_menu_accessibility_lang_canadian;CANADIEN
 options_menu_accessibility_daltonism_deuteranopia;DEUTERANOPIA
 options_menu_accessibility_daltonism_tritanopia;TRITANOPIA
 options_menu_accessibility_daltonism_protanopia;PROTANOPIA

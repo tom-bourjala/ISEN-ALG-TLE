@@ -1,3 +1,4 @@
+lang_name;QUEBECOIS
 main_menu_play;S'AMUSER
 main_menu_settings;PARAMETRES
 main_menu_quit;PARTIR
@@ -27,9 +28,6 @@ options_menu_accessibility_screen_shake;TREMBLEMENTS
 options_menu_accessibility_inverse_x;INVERSER L'AXE X
 options_menu_accessibility_inverse_y;INVERSER L'AXE Y
 options_menu_accessibility_text_size;TAILLE DU TEXTE
-options_menu_accessibility_lang_french;FRANCAIS
-options_menu_accessibility_lang_english;ENGLISH
-options_menu_accessibility_lang_canadian;CANADIEN
 options_menu_accessibility_daltonism_deuteranopia;DEUTERANOPIE
 options_menu_accessibility_daltonism_tritanopia;TRITANOPIE
 options_menu_accessibility_daltonism_protanopia;PROTANOPIE
