@@ -6,6 +6,7 @@
 #include <math.h>
 #include "../Robots/robots.h"
 #include "../Turrets/turrets.h"
+#include "../Core/core.h"
 #include "camera.h"
 #include "projectileManager.h"
 #include "game.h"
@@ -42,11 +43,19 @@ void newHit(int damage, float x, float y, weaponType type, void *parent, void *t
 void applyHit(void *self){
     hit *this = self;
     GameObject *targetObject = this->target;
-    robot *target = targetObject->actor;
-    target->life -= this->damage;
+    switch (targetObject->type) {
+        case GOT_Robot:
+            ((robot*)targetObject->actor)->life -= this->damage;
+            break;
+        case GOT_Core:
+            hitCore(targetObject, this->damage);
+            break;
+        default:
+            break;
+    }
     if(targetObject->game->key_debug == DEBUG_HITBOX)
         newGameObject_Debug(targetObject->game, this->x, this->y, 600, DO_Hit);
-    if(!targetObject->isAlive(targetObject)){
+    if(!targetObject->isAlive(targetObject) && targetObject->type != GOT_Core){
         targetObject->delete(targetObject);
     }
     this->delete(this);
@@ -142,7 +151,19 @@ void projectileUpdate(void *self){
     list *GameObjects = parent->game->gameObjects;
     for(int index = 0; index < GameObjects->length; index++){
         GameObject *target = getDataAtIndex(*GameObjects, index);
-        if(target->type == GOT_Robot && target->isAlive(target)){
+        if(parent->type == GOT_Robot){
+            if(target->type == GOT_Core){
+                core *core = target->actor;
+                int coreX = core->node->x;
+                int coreY = core->node->y;
+                float distance = sqrt(pow(coreX-endPosX,2)+pow(coreY-endPosY,2));
+                if(distance < core->radius){
+                    newHit(this->damage, endPosX, endPosY, this->type, this->parent, target);
+                    this->delete(this);
+                    return;
+                }
+            }
+        } else if(target->type == GOT_Robot && target->isAlive(target)){
             robot *actor = target->actor;
             float targetX = actor->x + actor->width/2;
             float targetY = actor->y + actor->height/2;
@@ -174,7 +195,8 @@ void projectileRender(void *self){
     projectile *this = self;
     GameObject *parent = this->parent;
     SDL_Rect rect={ROUND(this->x)+(this->projectileRenderer.width/2),ROUND(this->y),this->projectileRenderer.width, this->projectileRenderer.height};
-    cameraRenderEx(this->projectileRenderer.texture, rect, this->projectileRenderer.currentFrame, -this->rotation*90/(M_PI/2) + 180, false, false);
+    //NEEED TO FIX THIS
+    cameraRenderExUnsquared(this->projectileRenderer.texture, rect, this->projectileRenderer.currentFrame, this->projectileRenderer.nOfFrames, -this->rotation*90/(M_PI/2) + 180, false, false);
 }
 
 void projectileDelete(void *self){
