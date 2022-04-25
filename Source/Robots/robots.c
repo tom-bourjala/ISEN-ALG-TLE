@@ -99,6 +99,7 @@ robot *newRobot(Game GAME, char *robotFileName, int x, int y, map_node *spawnNod
     createdRobot->speedy = 0.0;
     createdRobot->rotation = 0.0;
     createdRobot->rotationCache = 0.0;
+    createdRobot->delayCounter = createdRobot->delay;
     createdRobot->radius = (createdRobot->width + createdRobot->height)/8;
     return createdRobot;
 }
@@ -112,6 +113,7 @@ void robotUpdate(void *self){
     this->rotationCache = this->rotation;
     this->rotation = (atan2f(this->targetNode->x - this->lastNode->x, this->targetNode->y - this->lastNode->y)*0.4) + (this->rotationCache*0.6);
     this->walk.currentFrame = (this->walk.currentFrame + 1) % this->walk.nOfFrames;
+    updateShotBehavior(thisGameObject);
 }
 
 void robotRender(void *self){

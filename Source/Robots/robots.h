@@ -31,6 +31,7 @@ typedef struct{
     int shield;
     int maxShield;
     int delay;
+    int delayCounter;
     int range;
     int radius;
     bool isFriendly;

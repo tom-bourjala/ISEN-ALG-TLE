@@ -219,9 +219,6 @@ void updateRobotPathAi(GameObject *robotObj){
     core *core = coreObj->actor;
     int coreX = core->node->x, coreY = core->node->y;
     float coreDistance = distBetweenTwoPoints(coreX, coreY, robot->x, robot->y);
-    printf("coreDistance: %f\n", coreDistance);
-    printf("coreX: %d, coreY: %d\n", coreX, coreY);
-    printf("robot range: %d\n", robot->range);
     vectAi allyProximity = getVectAllyProximity(robotObj);
     vectAi borderProximity = getVectBorderProximity(robotObj);
     if(coreDistance < robot->range*2){
@@ -247,4 +244,19 @@ void updateRobotPathAi(GameObject *robotObj){
     newSpeedVect = crunchVectAi(newSpeedVect, robot->maxSpeed);
     robot->speedy = newSpeedVect.vy;
     robot->speedx = newSpeedVect.vx;
+}
+
+void updateShotBehavior(GameObject *robotObj){
+    robot *robot = robotObj->actor;
+    core *core = robotObj->game->coreObj->actor;
+    int coreDistance = distBetweenTwoPoints(core->node->x, core->node->y, robot->x, robot->y);
+    if(coreDistance < robot->range*1.5){
+        if(robot->delayCounter > 0){
+            robot->delayCounter--;
+        }else{
+            robot->delayCounter = robot->delay;
+            float rotation = modulo2Pi(atan2f(core->node->x - robot->x, core->node->y - robot->y) + M_PI);
+            robotObj->game->projectileManager->newProjectile(robotObj->game, robot->projectileName, robot->x, robot->y, rotation, robotObj);
+        }
+    }
 }
