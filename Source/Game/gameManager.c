@@ -8,7 +8,7 @@
 #include "../UI/UI_hud.h"
 #include "../Core/core.h"
 #include "../Robots/robots.h"
-#include "../List/smartList.h"
+#include "../List/SmartList.h"
 
 static Game *GAME = NULL;
  
