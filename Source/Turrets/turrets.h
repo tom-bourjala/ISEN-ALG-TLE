@@ -21,7 +21,7 @@ typedef struct{
 } turret_canon;
 
 typedef struct{
-    char* name;
+    char** name;
     int id;
     char* texref;
     float rotation;
@@ -39,4 +39,16 @@ typedef struct{
     turret_canon canon;
 } turret;
 
+typedef struct{
+    int x;
+    int y;
+    int width;
+    int height;
+    SDL_Texture *thumbnail;
+    SDL_Texture *allowed;
+    SDL_Texture *forbidden;
+    char **name;
+} turretSelection;
+
 GameObject *newGameObject_Turret(Game *GAME, char *turretFileName, int xpos, int ypos);
+list *generateTurretsSelection(Game *GAME);
