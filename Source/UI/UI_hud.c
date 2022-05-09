@@ -3,6 +3,8 @@
 #include "UI_settingsMenu.h"
 #include <stdbool.h>
 #include "../Core/core.h"
+#include "../Turrets/turrets.h"
+
 
 static Game *THIS_GAME = NULL;
 
@@ -73,6 +75,9 @@ int HUD_turret_text_2_y(void *none){return HUD_panel_y(NULL)+0.2*THIS_GAME->winH
 int HUD_turret_text_3_x(void *none){return HUD_panel_x(NULL)+0.34375*THIS_GAME->winWidth;}
 int HUD_turret_text_3_y(void *none){return HUD_panel_y(NULL)+0.2*THIS_GAME->winHeight;}
 
+list *HUD_turret_list = NULL;
+
+
 /* HUD right part */
 int HUD_right_part_panel_x(void *none){return THIS_GAME->winWidth-0.39375*THIS_GAME->winWidth;}
 int HUD_right_part_panel_y(void *none){return HUD_panel_y(NULL)+0.025*THIS_GAME->winHeight;}
@@ -87,6 +92,19 @@ int HUD_right_part_text_2_y(void *none){return HUD_right_part_img_y(NULL)+0.0625
 int HUD_right_part_text_3_x(void *none){return HUD_right_part_img_x(NULL)+0.095*THIS_GAME->winWidth;}
 int HUD_right_part_text_3_y(void *none){return HUD_right_part_img_y(NULL)+0.1*THIS_GAME->winHeight;}
 
+typedef struct{
+    turretSelection *turret;
+    int x;
+    int y;
+    int width;
+    int height;
+    UI_actionArea *actionArea;
+    UI_textureObject *texObj;
+    UI_text *text;
+    UI_panel *panel;
+} turretSelector;
+
+list *turretSelectors = NULL;
 
 void changeSpeed_1(void *none)
 {
@@ -104,6 +122,11 @@ void changeSpeed_3(void *none)
 }
 
 void nextWave(void *none)
+{
+
+}
+
+void eventTurretSelector(void *none)
 {
 
 }
@@ -211,28 +234,47 @@ void UI_initHud(void *GAME)
 
     /* Turret Selection*/
     UI_anchor *A_PANEL_TURRET_HUD_1 = UI_newAnchor(game->menu, HUD_turret_panel_1_x, HUD_turret_panel_1_y);
-    UI_panel *HUD_turret_panel_1 = UI_newPanel(game->menu,0.125*THIS_GAME->winHeight,0.125*THIS_GAME->winHeight, A_PANEL_TURRET_HUD_1, 2, UI_PT_A);
     UI_anchor *A_PANEL_TURRET_HUD_2 = UI_newAnchor(game->menu, HUD_turret_panel_2_x, HUD_turret_panel_2_y);
-    UI_panel *HUD_turret_panel_2 = UI_newPanel(game->menu,0.125*THIS_GAME->winHeight,0.125*THIS_GAME->winHeight, A_PANEL_TURRET_HUD_2, 2, UI_PT_A);
     UI_anchor *A_PANEL_TURRET_HUD_3 = UI_newAnchor(game->menu, HUD_turret_panel_3_x, HUD_turret_panel_3_y);
+    UI_panel *HUD_turret_panel_1 = UI_newPanel(game->menu,0.125*THIS_GAME->winHeight,0.125*THIS_GAME->winHeight, A_PANEL_TURRET_HUD_1, 2, UI_PT_A);
+    UI_panel *HUD_turret_panel_2 = UI_newPanel(game->menu,0.125*THIS_GAME->winHeight,0.125*THIS_GAME->winHeight, A_PANEL_TURRET_HUD_2, 2, UI_PT_A);
     UI_panel *HUD_turret_panel_3 = UI_newPanel(game->menu,0.125*THIS_GAME->winHeight,0.125*THIS_GAME->winHeight, A_PANEL_TURRET_HUD_3, 2, UI_PT_A);
 
     UI_anchor *A_TEXT_TURRET_HUD_1 = UI_newAnchor(game->menu, HUD_turret_text_1_x, HUD_turret_text_1_y);
-    char **text_turret_1 = malloc(sizeof(char*));
-    *text_turret_1 = malloc(sizeof(char)*255);
-    strcpy(*text_turret_1,"Turret 1");
-    UI_text *HUD_text_turret_1 = UI_newText(game->menu,text_turret_1,A_TEXT_TURRET_HUD_1, UI_TA_CENTER, UI_TJ_CENTER,(SDL_Color){255,255,255,255}, "./assets/fonts/RulerGold.ttf", 20);
     UI_anchor *A_TEXT_TURRET_HUD_2 = UI_newAnchor(game->menu, HUD_turret_text_2_x, HUD_turret_text_2_y);
-    char **text_turret_2 = malloc(sizeof(char*));
-    *text_turret_2 = malloc(sizeof(char)*255);
-    strcpy(*text_turret_2,"Turret 2");
-    UI_text *HUD_text_turret_2 = UI_newText(game->menu,text_turret_2,A_TEXT_TURRET_HUD_2, UI_TA_CENTER, UI_TJ_CENTER,(SDL_Color){255,255,255,255}, "./assets/fonts/RulerGold.ttf", 20);
     UI_anchor *A_TEXT_TURRET_HUD_3 = UI_newAnchor(game->menu, HUD_turret_text_3_x, HUD_turret_text_3_y);
-    char **text_turret_3 = malloc(sizeof(char*));
-    *text_turret_3 = malloc(sizeof(char)*255);
-    strcpy(*text_turret_3,"Turret 3");
-    UI_text *HUD_text_turret_3 = UI_newText(game->menu,text_turret_3,A_TEXT_TURRET_HUD_3, UI_TA_CENTER, UI_TJ_CENTER,(SDL_Color){255,255,255,255}, "./assets/fonts/RulerGold.ttf", 20);
-    
+
+    HUD_turret_list = generateTurretsSelection(game);
+    turretSelectors = newList(COMPARE_PTR);
+    for(int i = 0; i < 3; i++){
+        turretSelection *tmp = getDataAtIndex(*HUD_turret_list, i);
+        if(!tmp) break;
+        UI_anchor *A_text_tmp;
+        UI_anchor *A_panel_tmp;
+        turretSelector *tmp_selector = malloc(sizeof(turretSelector));
+        switch(i){
+            case 0:
+                A_text_tmp = A_TEXT_TURRET_HUD_1;
+                A_panel_tmp = A_PANEL_TURRET_HUD_1;
+                break;
+            case 1:
+                A_text_tmp = A_TEXT_TURRET_HUD_2;
+                A_panel_tmp = A_PANEL_TURRET_HUD_2;
+                break;
+            case 2:
+                A_text_tmp = A_TEXT_TURRET_HUD_3;
+                A_panel_tmp = A_PANEL_TURRET_HUD_3;
+                break;
+        }
+        int width = 0.125*THIS_GAME->winHeight;
+        int height = 0.125*THIS_GAME->winHeight;
+        tmp_selector->text = UI_newText(game->menu,tmp->name,A_text_tmp, UI_TA_CENTER, UI_TJ_CENTER,(SDL_Color){255,255,255,255}, "./assets/fonts/RulerGold.ttf", 20);
+        tmp_selector->panel = UI_newPanel(game->menu,width,height, A_panel_tmp, 2, UI_PT_A);
+        tmp_selector->actionArea = UI_newActionArea(game->menu, (SDL_Rect) {0,0, width, height}, A_panel_tmp, eventTurretSelector);
+        tmp_selector->turret = tmp;
+        appendInList(turretSelectors, tmp_selector);
+    }
+
     /* HUD right part */
     UI_anchor *A_PANEL_RIGHT_PART_HUD = UI_newAnchor(game->menu, HUD_right_part_panel_x, HUD_right_part_panel_y);
     UI_panel *HUD_right_part_panel = UI_newPanel(game->menu,0.378125*THIS_GAME->winWidth,0.2*THIS_GAME->winHeight, A_PANEL_RIGHT_PART_HUD, 2, UI_PT_A);
