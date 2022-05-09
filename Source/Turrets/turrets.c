@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <dirent.h>
 #include "turrets.h"
 #include "turretAi.h"
 #include "../Game/game.h"
@@ -42,8 +43,7 @@ turret *newTurret(Game GAME,char *turretFileName, int xpos, int ypos){
         sscanf(line_cache,"%[^ ] = %[^\n]", stat_name, stat_value);
         switch(getTurretConfigFileParamFromString(stat_name)){
             case TP_NAME:
-                createdTurret->name = malloc(sizeof(char)*(strlen(stat_value) + 1));
-                strcpy(createdTurret->name, stat_value);
+                createdTurret->name = GAME.languageManager->getTradById(stat_value);
                 break;
             case TP_TEX_REF:
                 createdTurret->texref = malloc(sizeof(char)*(strlen(stat_value) + 1));
@@ -152,4 +152,75 @@ GameObject *newGameObject_Turret(Game *GAME, char *turretFileName, int xpos, int
     gameObject->isAlive = turretIsAlive;
     appendInList(GAME->gameObjects, gameObject);
     return gameObject;
+}
+
+list *getTurretsDisplay(Game *GAME){
+    list *turrets = newList(COMPARE_PTR);
+    DIR *dir = opendir("./assets/turrets");
+    struct dirent *ent;
+    while ((ent = readdir(dir)) != NULL) {
+        if(strstr(ent->d_name, ".turret") != NULL){
+            turret *turret = newTurret(*GAME, ent->d_name, 0, 0);
+            DisplayObject *displayObject = malloc(sizeof(DisplayObject));
+            displayObject->id = malloc(sizeof(char)*(strlen(ent->d_name) + 1));
+            strcpy(displayObject->id, ent->d_name);
+            displayObject->name = turret->name;
+            displayObject->texBottomLayer = turret->base.texture;
+            displayObject->objBottomLayer = NULL;
+            displayObject->frameBottomDiv = 1;
+
+            displayObject->texMiddleLayer = turret->canon.texture;
+            displayObject->objMiddleLayer = NULL;
+            displayObject->frameMiddleDiv = 1/turret->canon.nOfFrames;
+
+            displayObject->texTopLayer = NULL;
+            displayObject->objTopLayer = NULL;
+            displayObject->frameTopDiv = 1;
+            appendInList(turrets, displayObject);
+            free(turret);
+        }
+    }
+    //Close directory
+    closedir(dir);
+    return turrets;
+}
+
+turretSelection *newTurretSelection(Game *GAME, char *turretFileName){
+    turretSelection *createdTurretSelection = malloc(sizeof(turretSelection));
+    createdTurretSelection->x = 0;
+    createdTurretSelection->y = 0;
+    createdTurretSelection->width = 0;
+    createdTurretSelection->height = 0;
+    turret *srcturret = newTurret(*GAME, turretFileName, 0, 0);
+    createdTurretSelection->name = srcturret->name;
+    createdTurretSelection->thumbnail = SDL_CreateTexture(GAME->renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, srcturret->width, srcturret->height);
+    SDL_SetRenderTarget(GAME->renderer, createdTurretSelection->thumbnail);
+    if(srcturret->base.texture) SDL_RenderCopy(GAME->renderer, srcturret->base.texture, NULL, NULL);
+    if(srcturret->support.texture) SDL_RenderCopy(GAME->renderer, srcturret->support.texture, NULL, NULL);
+    if(srcturret->canon.texture) SDL_RenderCopy(GAME->renderer, srcturret->canon.texture, NULL, NULL);
+    createdTurretSelection->allowed = SDL_CreateTexture(GAME->renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, srcturret->width, srcturret->height);
+    SDL_SetRenderTarget(GAME->renderer, createdTurretSelection->allowed);
+    SDL_RenderCopy(GAME->renderer, createdTurretSelection->thumbnail, NULL, NULL);
+    SDL_SetTextureColorMod(createdTurretSelection->allowed, 0, 0, 255);
+    createdTurretSelection->forbidden = SDL_CreateTexture(GAME->renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, srcturret->width, srcturret->height);
+    SDL_SetRenderTarget(GAME->renderer, createdTurretSelection->forbidden);
+    SDL_RenderCopy(GAME->renderer, createdTurretSelection->thumbnail, NULL, NULL);
+    SDL_SetTextureColorMod(createdTurretSelection->forbidden, 255, 0, 0);
+    SDL_SetRenderTarget(GAME->renderer, NULL);
+    free(srcturret);
+    return createdTurretSelection;
+}
+
+list *generateTurretsSelection(Game *GAME){
+    list *turrets = newList(COMPARE_PTR);
+    DIR *dir = opendir("./assets/turrets");
+    struct dirent *ent;
+    while ((ent = readdir(dir)) != NULL) {
+        if(strstr(ent->d_name, ".turret") != NULL){
+            turret *turret = newTurretSelection(GAME, ent->d_name);
+            appendInList(turrets, turret);
+        }
+    }
+    closedir(dir);
+    return turrets;
 }
