@@ -1,10 +1,10 @@
 #include "UI_mainMenu.h"
 #include "../Game/game.h"
+#include "../Game/selection.h"
 #include "UI_settingsMenu.h"
 #include <stdbool.h>
 #include "../Core/core.h"
 #include "../Turrets/turrets.h"
-
 
 static Game *THIS_GAME = NULL;
 
@@ -126,9 +126,36 @@ void nextWave(void *none)
 
 }
 
-void eventTurretSelector(void *none)
+void eventTurretSelector(void *triggeredActionArea)
 {
-
+    turretSelector *selected = NULL;
+    void getSelectedTurret(void *self){
+        turretSelector *this = self;
+        if(this->actionArea == triggeredActionArea){
+            selected = this;
+        }
+        printf("%p : %p\n", this->actionArea, triggeredActionArea);
+    }
+    forEach(turretSelectors, getSelectedTurret);
+    if(selected){
+        if(THIS_GAME->selection){
+            Selection *currentSelection = THIS_GAME->selection;
+            if(currentSelection->type == SELECT_TURRET){
+                turretSelection *currentTurret = currentSelection->selected.turretSelection; 
+                if(currentTurret == selected->turret){
+                    free(currentSelection);
+                    THIS_GAME->selection = NULL;
+                    return;
+                }
+            }
+            free(currentSelection);
+            THIS_GAME->selection = NULL;
+        }
+        Selection *selection = malloc(sizeof(Selection));
+        selection->type = SELECT_TURRET;
+        selection->selected.turretSelection = selected->turret;
+        THIS_GAME->selection = selection;
+    }
 }
 
 static void onUpdate(){
@@ -271,6 +298,7 @@ void UI_initHud(void *GAME)
         tmp_selector->text = UI_newText(game->menu,tmp->name,A_text_tmp, UI_TA_CENTER, UI_TJ_CENTER,(SDL_Color){255,255,255,255}, "./assets/fonts/RulerGold.ttf", 20);
         tmp_selector->panel = UI_newPanel(game->menu,width,height, A_panel_tmp, 2, UI_PT_A);
         tmp_selector->actionArea = UI_newActionArea(game->menu, (SDL_Rect) {0,0, width, height}, A_panel_tmp, eventTurretSelector);
+        tmp_selector->texObj = UI_newStaticTextureObjectStatic(game->menu, (SDL_Rect) {0,0, width, height}, A_panel_tmp, tmp->thumbnail);
         tmp_selector->turret = tmp;
         appendInList(turretSelectors, tmp_selector);
     }

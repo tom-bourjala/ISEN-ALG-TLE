@@ -1,3 +1,4 @@
+#pragma once
 #include <stdio.h>
 #include <stdlib.h>
 #include "../Game/game.h"
@@ -40,6 +41,7 @@ typedef struct{
 } turret;
 
 typedef struct{
+    char *turretId;
     int x;
     int y;
     int width;

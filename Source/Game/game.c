@@ -7,7 +7,9 @@
 #include "game.h"
 #include "rendererAddons.h"
 #include "gameManager.h"
+#include "selection.h"
 #include "../Turrets/turrets.h"
+#include "../Turrets/turretUsher.h"
 #include "../Robots/robots.h"
 #include "./camera.h"
 
@@ -19,6 +21,7 @@ void handleEvents(){
     SDL_GetWindowSize(GAME->window, &GAME->winWidth, &GAME->winHeight);
     while(SDL_PollEvent(&event))
     {
+        if(GAME->selection) handleInputTurretSelection(GAME, &event);
         switch (event.type)
         {
             case SDL_MOUSEBUTTONDOWN:
@@ -81,8 +84,8 @@ void render(){
     GAME->projectileManager->renderProjectiles();
 
     //Render UI
+    if(GAME->selection) renderTurretSelection(GAME);
     if(GAME->menu) GAME->menu->render();
-
     SDL_RenderPresent(GAME->renderer);
 }
 
@@ -126,7 +129,10 @@ Game *initGame(const char* title, int width, int height, bool fullscreen){
         if(GAME->window) printf("Window Created...\n");
         else printf("\033[1;31mFailed to create window : %s\033[0m\n", SDL_GetError());
         GAME->renderer = SDL_CreateRenderer(GAME->window, -1, 0);
-        if(GAME->renderer) printf("Renderer Created...\n");
+        if(GAME->renderer){
+            printf("Renderer Created...\n");
+            SDL_SetRenderDrawBlendMode(GAME->renderer, SDL_BLENDMODE_BLEND);
+        }
         else printf("\033[1;31mFailed to create renderer : %s\033[0m\n", SDL_GetError());
         GAME->isRunning = true;
         if(!IMG_Init(IMG_INIT_PNG)) printf("\033[1;31mIMG INIT: %s\033[0m\n", IMG_GetError());

@@ -158,25 +158,62 @@ turretSelection *newTurretSelection(Game *GAME, char *turretFileName){
     turretSelection *createdTurretSelection = malloc(sizeof(turretSelection));
     createdTurretSelection->x = 0;
     createdTurretSelection->y = 0;
-    createdTurretSelection->width = 0;
-    createdTurretSelection->height = 0;
+    createdTurretSelection->turretId = malloc(sizeof(char)*strlen(turretFileName)+1);
+    strcpy(createdTurretSelection->turretId, turretFileName);
     turret *srcturret = newTurret(*GAME, turretFileName, 0, 0);
+    createdTurretSelection->width = srcturret->width;
+    createdTurretSelection->height = srcturret->height;
     createdTurretSelection->name = srcturret->name;
-    createdTurretSelection->thumbnail = SDL_CreateTexture(GAME->renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, srcturret->width, srcturret->height);
+    SDL_PixelFormatEnum format = SDL_PIXELFORMAT_RGBA8888;
+    // SDL_QueryTexture(srcturret->base.texture, &format, NULL, NULL, NULL);
+
+    createdTurretSelection->thumbnail = SDL_CreateTexture(GAME->renderer, format, SDL_TEXTUREACCESS_TARGET, srcturret->width, srcturret->height);
     SDL_SetRenderTarget(GAME->renderer, createdTurretSelection->thumbnail);
     if(srcturret->base.texture) SDL_RenderCopy(GAME->renderer, srcturret->base.texture, NULL, NULL);
     if(srcturret->support.texture) SDL_RenderCopy(GAME->renderer, srcturret->support.texture, NULL, NULL);
     if(srcturret->canon.texture) SDL_RenderCopy(GAME->renderer, srcturret->canon.texture, NULL, NULL);
-    createdTurretSelection->allowed = SDL_CreateTexture(GAME->renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, srcturret->width, srcturret->height);
+
+    createdTurretSelection->allowed = SDL_CreateTexture(GAME->renderer, format, SDL_TEXTUREACCESS_TARGET, srcturret->width, srcturret->height);
+    SDL_SetTextureBlendMode(createdTurretSelection->allowed, SDL_BLENDMODE_BLEND);
     SDL_SetRenderTarget(GAME->renderer, createdTurretSelection->allowed);
-    SDL_RenderCopy(GAME->renderer, createdTurretSelection->thumbnail, NULL, NULL);
+    if(srcturret->base.texture){
+        SDL_SetTextureAlphaMod(srcturret->base.texture, 128);
+        SDL_RenderCopy(GAME->renderer, srcturret->base.texture, NULL, NULL);
+        SDL_SetTextureAlphaMod(srcturret->base.texture, 255);
+    }
+    if(srcturret->support.texture){
+        SDL_SetTextureAlphaMod(srcturret->support.texture, 128);
+        SDL_RenderCopy(GAME->renderer, srcturret->support.texture, NULL, NULL);
+        SDL_SetTextureAlphaMod(srcturret->support.texture, 255);
+    }
+    if(srcturret->canon.texture){
+        SDL_SetTextureAlphaMod(srcturret->canon.texture, 128);
+        SDL_RenderCopy(GAME->renderer, srcturret->canon.texture, NULL, NULL);
+        SDL_SetTextureAlphaMod(srcturret->canon.texture, 255);
+    }
     SDL_SetTextureColorMod(createdTurretSelection->allowed, 0, 0, 255);
-    createdTurretSelection->forbidden = SDL_CreateTexture(GAME->renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, srcturret->width, srcturret->height);
+    createdTurretSelection->forbidden = SDL_CreateTexture(GAME->renderer, format, SDL_TEXTUREACCESS_TARGET, srcturret->width, srcturret->height);
+    SDL_SetTextureBlendMode(createdTurretSelection->forbidden, SDL_BLENDMODE_BLEND);
     SDL_SetRenderTarget(GAME->renderer, createdTurretSelection->forbidden);
-    SDL_RenderCopy(GAME->renderer, createdTurretSelection->thumbnail, NULL, NULL);
+    if(srcturret->base.texture){
+        SDL_SetTextureAlphaMod(srcturret->base.texture, 150);
+        SDL_RenderCopy(GAME->renderer, srcturret->base.texture, NULL, NULL);
+        SDL_SetTextureAlphaMod(srcturret->base.texture, 255);
+    }
+    if(srcturret->support.texture){
+        SDL_SetTextureAlphaMod(srcturret->support.texture, 128);
+        SDL_RenderCopy(GAME->renderer, srcturret->support.texture, NULL, NULL);
+        SDL_SetTextureAlphaMod(srcturret->support.texture, 255);
+    }
+    if(srcturret->canon.texture){
+        SDL_SetTextureAlphaMod(srcturret->canon.texture, 200);
+        SDL_RenderCopy(GAME->renderer, srcturret->canon.texture, NULL, NULL);
+        SDL_SetTextureAlphaMod(srcturret->canon.texture, 255);
+    }    
     SDL_SetTextureColorMod(createdTurretSelection->forbidden, 255, 0, 0);
     SDL_SetRenderTarget(GAME->renderer, NULL);
     free(srcturret);
+
     return createdTurretSelection;
 }
 
@@ -186,7 +223,7 @@ list *generateTurretsSelection(Game *GAME){
     struct dirent *ent;
     while ((ent = readdir(dir)) != NULL) {
         if(strstr(ent->d_name, ".turret") != NULL){
-            turret *turret = newTurretSelection(GAME, ent->d_name);
+            turretSelection *turret = newTurretSelection(GAME, ent->d_name);
             appendInList(turrets, turret);
         }
     }
