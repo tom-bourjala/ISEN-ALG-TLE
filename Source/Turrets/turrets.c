@@ -154,37 +154,6 @@ GameObject *newGameObject_Turret(Game *GAME, char *turretFileName, int xpos, int
     return gameObject;
 }
 
-list *getTurretsDisplay(Game *GAME){
-    list *turrets = newList(COMPARE_PTR);
-    DIR *dir = opendir("./assets/turrets");
-    struct dirent *ent;
-    while ((ent = readdir(dir)) != NULL) {
-        if(strstr(ent->d_name, ".turret") != NULL){
-            turret *turret = newTurret(*GAME, ent->d_name, 0, 0);
-            DisplayObject *displayObject = malloc(sizeof(DisplayObject));
-            displayObject->id = malloc(sizeof(char)*(strlen(ent->d_name) + 1));
-            strcpy(displayObject->id, ent->d_name);
-            displayObject->name = turret->name;
-            displayObject->texBottomLayer = turret->base.texture;
-            displayObject->objBottomLayer = NULL;
-            displayObject->frameBottomDiv = 1;
-
-            displayObject->texMiddleLayer = turret->canon.texture;
-            displayObject->objMiddleLayer = NULL;
-            displayObject->frameMiddleDiv = 1/turret->canon.nOfFrames;
-
-            displayObject->texTopLayer = NULL;
-            displayObject->objTopLayer = NULL;
-            displayObject->frameTopDiv = 1;
-            appendInList(turrets, displayObject);
-            free(turret);
-        }
-    }
-    //Close directory
-    closedir(dir);
-    return turrets;
-}
-
 turretSelection *newTurretSelection(Game *GAME, char *turretFileName){
     turretSelection *createdTurretSelection = malloc(sizeof(turretSelection));
     createdTurretSelection->x = 0;
