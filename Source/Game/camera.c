@@ -7,7 +7,7 @@ void initCamera(Game *game)
     GAME = game;
 }
 
-static void updateRectDest(SDL_Rect *dest){
+void projectRectToCamera(SDL_Rect *dest){
     dest->x -= GAME->cameraX;
     dest->y -= GAME->cameraY;
     dest->x *= GAME->cameraScale;
@@ -16,15 +16,24 @@ static void updateRectDest(SDL_Rect *dest){
     dest->h *= GAME->cameraScale;
 }
 
+void projectRectToCamera_inv(SDL_Rect *dest){
+    dest->x /= GAME->cameraScale;
+    dest->y /= GAME->cameraScale;
+    dest->x += GAME->cameraX;
+    dest->y += GAME->cameraY;
+    dest->w /= GAME->cameraScale;
+    dest->h /= GAME->cameraScale;
+}
+
 void cameraRender(SDL_Texture *tex, SDL_Rect dest){
-    updateRectDest(&dest);
+    projectRectToCamera(&dest);
     SDL_RenderCopy(GAME->renderer, tex, NULL, &dest);
 }
 
 void cameraRenderFrame(SDL_Texture *tex, SDL_Rect dest, int frame){
     int frameWidth, frameHeight;
     SDL_QueryTexture(tex, NULL, NULL, &frameWidth, &frameHeight);
-    updateRectDest(&dest);
+    projectRectToCamera(&dest);
     SDL_Rect src = {frame * frameHeight, 0, frameHeight, frameHeight};
     SDL_RenderCopy(GAME->renderer, tex, &src, &dest);
 }
@@ -32,7 +41,7 @@ void cameraRenderFrame(SDL_Texture *tex, SDL_Rect dest, int frame){
 void cameraRenderEx(SDL_Texture *tex, SDL_Rect dest, int frame, float angle, bool hFlip, bool vFlip){
     int frameWidth, frameHeight;
     SDL_QueryTexture(tex, NULL, NULL, &frameWidth, &frameHeight);
-    updateRectDest(&dest);
+    projectRectToCamera(&dest);
     SDL_Rect src = {frame * frameHeight, 0, frameHeight, frameHeight};
     SDL_RendererFlip flip = SDL_FLIP_NONE;
     if(hFlip) flip = SDL_FLIP_HORIZONTAL;
@@ -47,7 +56,7 @@ void cameraRenderExUnsquared(SDL_Texture *tex, SDL_Rect dest, int frame, int nOf
     int frameWidth, frameHeight;
     SDL_QueryTexture(tex, NULL, NULL, &frameWidth, &frameHeight);
     frameWidth /= nOfFrames;
-    updateRectDest(&dest);
+    projectRectToCamera(&dest);
     SDL_Rect src = {frame * frameWidth, 0, frameWidth, frameHeight};
     SDL_RendererFlip flip = SDL_FLIP_NONE;
     if(hFlip) flip = SDL_FLIP_HORIZONTAL;

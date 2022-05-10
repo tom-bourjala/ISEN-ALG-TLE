@@ -10,3 +10,6 @@ void cameraRender(SDL_Texture *tex, SDL_Rect dest);
 void cameraRenderFrame(SDL_Texture *tex, SDL_Rect dest, int frame);
 void cameraRenderEx(SDL_Texture *tex, SDL_Rect dest, int frame, float angle, bool hFlip, bool vFlip);
 void cameraRenderExUnsquared(SDL_Texture *tex, SDL_Rect dest, int frame, int nOfFrames, float angle, bool hFlip, bool vFlip);
+
+void projectRectToCamera(SDL_Rect *dest);
+void projectRectToCamera_inv(SDL_Rect *dest);
