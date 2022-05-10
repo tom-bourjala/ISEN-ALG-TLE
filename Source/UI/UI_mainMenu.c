@@ -76,6 +76,7 @@ void exitGame(void *self){
 }
 
 static UI_textureObject *menuBackground = NULL;
+static UI_textureObject *menuLogo = NULL;
 static char **(*LM_getTradById)(char *idToGet) = NULL;
 
 void rescaleBackground(){
@@ -126,6 +127,7 @@ void UI_initMainMenu(void *GAME)
     UI_anchor *AP_BACK = UI_newAnchor(game->menu, DIAG_X, gety_bottomOfRow);
 
     menuBackground = UI_newStaticTextureObject(game->menu, (SDL_Rect) {0,0,1920,1080}, A_NULL, "menu_background.png");
+    menuLogo = UI_newStaticTextureObject(game->menu, (SDL_Rect) {400,400,400,200}, A_NULL, "TLELogo.png");
     // menuBackground->hidden = true;
 
     //Main menu buttons
