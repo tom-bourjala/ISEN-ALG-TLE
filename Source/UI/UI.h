@@ -1,14 +1,13 @@
+#pragma once
 #include "UI_struct.h"
 #include <stdbool.h>
-
-#ifndef UI_H
-#define UI_H
 
 UI_anchor *UI_newAnchor(UI_menu *parent, int (*getx)(void *entry), int (*gety)(void *entry));
 void UI_FreeAnchor(void *self);
 
 UI_textureObject *UI_newAnimatedTextureObject(UI_menu *parent, SDL_Rect rect, UI_anchor *anchor, char *textureName, int nOfFrames);
 UI_textureObject *UI_newStaticTextureObject(UI_menu *parent, SDL_Rect rect, UI_anchor *anchor, char *textureName);
+UI_textureObject *UI_newStaticTextureObjectStatic(UI_menu *parent, SDL_Rect rect, UI_anchor *anchor, SDL_Texture *texture);
 void UI_UpdateTextureObject(void *self);
 void UI_RenderTextureObject(void *self);
 void UI_FreeTextureObject(void *self);
@@ -23,5 +22,3 @@ UI_actionArea *UI_newActionArea(UI_menu *parent, SDL_Rect rect, UI_anchor *ancho
 void UI_UpdateActionArea(void *self);
 void UI_actionAreaHandleMouseEvent(UI_actionArea *area, bool isDown);
 void UI_FreeActionArea(void *self);
-
-#endif
