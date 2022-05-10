@@ -17,7 +17,7 @@ void UI_FreeAnchor(void *self){
     free(this);
 }
 
-UI_textureObject *UI_newStaticTextureObject(UI_menu *parent, SDL_Rect rect, UI_anchor *anchor, char *textureName)
+UI_textureObject *UI_newStaticTextureObjectStatic(UI_menu *parent, SDL_Rect rect, UI_anchor *anchor, SDL_Texture *texture)
 {
     Game *game = parent->game;
     UI_textureObject *static_texture_object = malloc(sizeof(UI_textureObject));
@@ -26,13 +26,19 @@ UI_textureObject *UI_newStaticTextureObject(UI_menu *parent, SDL_Rect rect, UI_a
     static_texture_object->rect.y = anchor->getY(parent->game);
     static_texture_object->anchor = anchor;
     static_texture_object->menu = parent;
-    static_texture_object->texture = game->textureManager->getTexture(textureName);
+    static_texture_object->texture = texture;
     static_texture_object->hidden = false;
     static_texture_object->flip = false;
     static_texture_object->nOfFrames = 1;
     static_texture_object->currentFrame = 0;
     appendInList(parent->textureObjects, static_texture_object); 
     return static_texture_object;
+}
+
+UI_textureObject *UI_newStaticTextureObject(UI_menu *parent, SDL_Rect rect, UI_anchor *anchor, char *textureName)
+{
+    Game *game = parent->game;
+    return UI_newStaticTextureObjectStatic(parent, rect, anchor, game->textureManager->getTexture(textureName));
 }
 
 UI_textureObject *UI_newAnimatedTextureObject(UI_menu *parent,SDL_Rect rect, UI_anchor *anchor, char *textureName, int nOfFrames)
@@ -177,7 +183,7 @@ void UI_actionAreaHandleMouseEvent(UI_actionArea *area, bool isDown){
     if(!area->disabled)
         if((x>=area->rect.x && x<=area->rect.x+area->rect.w) && (y>=area->rect.y && y<=area->rect.y+area->rect.h)){
             if(isDown) area->isPressed = true;
-            if(!isDown && area->isPressed && area->onClick) area->onClick(area->menu->game);
+            if(!isDown && area->isPressed && area->onClick) area->onClick(area);
         }
     if(!isDown) area->isPressed = false;
 }
