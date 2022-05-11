@@ -162,6 +162,7 @@ turretSelection *newTurretSelection(Game *GAME, char *turretFileName){
     turret *srcturret = newTurret(*GAME, turretFileName, 0, 0);
     createdTurretSelection->width = srcturret->width;
     createdTurretSelection->height = srcturret->height;
+    createdTurretSelection->radius = srcturret->range;
     createdTurretSelection->name = srcturret->name;
     SDL_PixelFormatEnum format = SDL_PIXELFORMAT_RGBA8888;
     // SDL_QueryTexture(srcturret->base.texture, &format, NULL, NULL, NULL);
