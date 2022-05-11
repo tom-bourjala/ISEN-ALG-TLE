@@ -125,7 +125,6 @@ void turretRender(void *self){
 void turretDelete(void *self){
     GameObject *thisGameObject = self;
     turret *this = thisGameObject->actor;
-    free(this->name);
     free(this->texref);  
     free(this->base.textureName); 
     free(this->support.textureName);
