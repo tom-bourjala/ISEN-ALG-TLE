@@ -7,6 +7,7 @@
 #define RENDERADDONS_H
 
 void DrawCircle(SDL_Renderer * renderer, int32_t centreX, int32_t centreY, int32_t radius);
+void DrawLine(SDL_Renderer * renderer, int32_t x1, int32_t y1, int32_t x2, int32_t y2);
 
 typedef enum {DO_Hit} debugObjectType;
 
