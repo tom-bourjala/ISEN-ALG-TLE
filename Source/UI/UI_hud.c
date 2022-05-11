@@ -134,7 +134,6 @@ void eventTurretSelector(void *triggeredActionArea)
         if(this->actionArea == triggeredActionArea){
             selected = this;
         }
-        printf("%p : %p\n", this->actionArea, triggeredActionArea);
     }
     forEach(turretSelectors, getSelectedTurret);
     if(selected){
