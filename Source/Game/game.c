@@ -29,6 +29,12 @@ void handleEvents(){
                 if(event.button.button == SDL_BUTTON_LEFT)
                     GAME->menu->handleEvent(event.button.type == SDL_MOUSEBUTTONDOWN);
                 break;
+            case SDL_MOUSEWHEEL:
+                if(event.wheel.y > 0)
+                    cameraZoomAt(0.1, GAME->mouseX, GAME->mouseY);
+                else if(event.wheel.y < 0)
+                    cameraZoomAt(-0.1, GAME->mouseX, GAME->mouseY);
+                break;
             case SDL_QUIT:
                 GAME->isRunning = false;
                 break;
@@ -151,10 +157,6 @@ Game *initGame(const char* title, int width, int height, bool fullscreen){
     GAME->render = render;
     GAME->clean = clean;
     GAME->textureManager = initTexManager(GAME->renderer);
-    initCamera(GAME);
-    GAME->cameraX = 0;
-    GAME->cameraY = 0;
-    GAME->cameraScale = 1;
     GAME->animationManager = initAnimManager();
     GAME->projectileManager = initProjectileManager();
     GAME->mapManager = initMapManager(GAME);
@@ -167,5 +169,6 @@ Game *initGame(const char* title, int width, int height, bool fullscreen){
     GAME->currentCursor = GAME->cursorArrow;
     GAME->winWidth = width;
     GAME->winWidth = height;
+    initCamera(GAME);
     return GAME;
 }
