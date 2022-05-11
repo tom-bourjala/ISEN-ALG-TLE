@@ -145,6 +145,7 @@ Game *initGame(const char* title, int width, int height, bool fullscreen){
     GAME->mouseY = 0;
     GAME->winWidth = 0;
     GAME->winHeight = 0;
+    GAME->selection = NULL;
     GAME->handleEvents = handleEvents;
     GAME->update = update;
     GAME->render = render;
