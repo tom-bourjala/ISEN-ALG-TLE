@@ -49,6 +49,7 @@ UI_button *UI_newButton(UI_menu *menu, char **text, UI_buttonType type, UI_ancho
     Game *game = menu->game;
     newButton->hidden = false;
     newButton->menu = menu;
+    newButton->textureObjectIcon = NULL;
     char strKey[100];
     getButtonStrKey(type, strKey);
     char idleStr[255], hoverStr[255], enabledStr[255], disabledStr[255];
@@ -85,6 +86,51 @@ UI_button *UI_newButton(UI_menu *menu, char **text, UI_buttonType type, UI_ancho
     return newButton;
 }
 
+UI_button *UI_newButtonIcon(UI_menu *menu, UI_buttonType type, UI_anchor *anchor, bool isSticky, void (*onClick)(void *button), void (*onSetOn)(void *button), void (*onSetOff)(void *button), float sizeFactor,char *icon){
+    UI_button *newButton = malloc(sizeof(UI_button));
+    SDL_Color white = {255,255,255,255};
+    newButton->text = NULL;
+    Game *game = menu->game;
+    newButton->hidden = false;
+    newButton->menu = menu;
+    char strKey[100];
+    getButtonStrKey(type, strKey);
+    char idleStr[255], hoverStr[255], enabledStr[255], disabledStr[255];
+    if(type == UI_CHECK_SMALL || type == UI_CHECK_ROUND || type == UI_CHECK_SQUARE){
+        sprintf(idleStr,"UI_%s_off.png", strKey);
+        sprintf(enabledStr,"UI_%s_on.png", strKey);
+        newButton->textureHover = NULL;
+        newButton->textureDisabled = NULL;
+    }else{
+        sprintf(hoverStr,"UI_%s_hover.png", strKey);
+        sprintf(idleStr,"UI_%s_idle.png", strKey);
+        sprintf(enabledStr,"UI_%s_enabled.png", strKey);
+        sprintf(disabledStr,"UI_%s_disabled.png", strKey);
+        newButton->textureHover = game->textureManager->getTexture(hoverStr);
+        newButton->textureDisabled = game->textureManager->getTexture(disabledStr);
+    }
+    newButton->textureIdle = game->textureManager->getTexture(idleStr);
+    newButton->texturePress = game->textureManager->getTexture(enabledStr); 
+    newButton->textureObject = UI_newStaticTextureObject(menu, (SDL_Rect) {0,0,0,0}, anchor, idleStr);
+    newButton->hoverTextureObject = newButton->textureHover ? UI_newStaticTextureObject(menu, (SDL_Rect) {0,0,0,0}, anchor, hoverStr) : NULL;
+    newButton->actionArea = UI_newActionArea(menu, (SDL_Rect) {0,0,0,0}, anchor, onClick);
+    newButton->actionArea->disabled = true;
+    newButton->isPressed = false;
+    newButton->isDisabled = false;
+    newButton->isSticky = isSticky;
+    newButton->anchor = anchor;
+    newButton->type = type;
+    newButton->onSetOn = onSetOn;
+    newButton->onSetOff = onSetOff;
+    newButton->sizeFactor = sizeFactor;
+    if(icon!=NULL){newButton->textureObjectIcon = UI_newStaticTextureObject(menu,(SDL_Rect){0,0,0,0},anchor,icon);}
+    else{newButton->textureObjectIcon=NULL;}
+    UI_updateButton(newButton);
+    appendInList(menu->buttons, newButton);
+    
+    return newButton;
+}
+
 void UI_flipButton(UI_button *button){
     if(button->hoverTextureObject) button->hoverTextureObject->flip = !button->hoverTextureObject->flip;
     if(button->textureObject) button->textureObject->flip = !button->textureObject->flip;
@@ -105,6 +151,15 @@ void UI_updateButton(void *self){
         SDL_QueryTexture(this->hoverTextureObject->texture, NULL, NULL, &texWidth, &texHeight);
         rect = (SDL_Rect) {this->anchor->getX(game) - ((texWidth*this->sizeFactor)/2), this->anchor->getY(game) - ((texHeight*this->sizeFactor)/2), texWidth*this->sizeFactor, texHeight*this->sizeFactor};
         this->hoverTextureObject->rect = rect;
+    }
+
+    if(this->textureObjectIcon != NULL){
+        SDL_QueryTexture(this->textureIdle, NULL, NULL, &texWidth, &texHeight);
+        int icon_width,icon_height;
+        SDL_QueryTexture(this->textureObjectIcon->texture, NULL, NULL, &icon_width, &icon_height);
+        if(texWidth>=texHeight){rect = (SDL_Rect) {this->anchor->getX(game) - ((icon_width*this->sizeFactor)/2) - 0.025*texWidth*this->sizeFactor, this->anchor->getY(game) - ((texHeight*this->sizeFactor)/2) + 0.3*(texHeight*this->sizeFactor)/2, texHeight*this->sizeFactor*0.6, texHeight*this->sizeFactor*0.6};}
+        else{rect = (SDL_Rect) {this->anchor->getX(game) - ((icon_width*this->sizeFactor)/2) - 0.025*texWidth*this->sizeFactor, this->anchor->getY(game) - ((texHeight*this->sizeFactor)/2) + 0.3*(texHeight*this->sizeFactor)/2, texWidth*this->sizeFactor*0.6, texWidth*this->sizeFactor*0.6};}
+        this->textureObjectIcon->rect = rect;
     }
 
     if(!this->hidden){
