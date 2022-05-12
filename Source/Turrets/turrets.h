@@ -46,6 +46,7 @@ typedef struct{
     int y;
     int width;
     int height;
+    int radius;
     SDL_Texture *thumbnail;
     SDL_Texture *allowed;
     SDL_Texture *forbidden;

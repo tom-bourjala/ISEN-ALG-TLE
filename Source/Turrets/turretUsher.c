@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include "turrets.h"
 #include "../Game/selection.h"
+#include "../Game/rendererAddons.h"
 
 static bool isPlacementValid(Game *game, SDL_Rect *dest){
     bool valid = true;
@@ -50,9 +51,18 @@ void renderTurretSelection(Game *game){
     turretSelection *turret = selection->selected.turretSelection;
     if(!turret) return;
     SDL_Rect dest = getTurretPlacement(game, turret);
-    printf("%d, %d, %d, %d\n", dest.x, dest.y, dest.w, dest.h);
     if(!isPlacementValid(game, &dest)) cameraRender(turret->forbidden, dest);
-    else cameraRender(turret->allowed, dest);
+    else{
+        cameraRender(turret->allowed, dest);
+        SDL_SetRenderDrawColor(game->renderer, 255, 255, 255, 100);
+        DrawCircle(game->renderer, dest.x+(dest.w/2), dest.y+(dest.h/2), turret->radius);
+        SDL_SetRenderDrawColor(game->renderer, 43, 250, 250, 200);
+        DrawCircle(game->renderer, dest.x+(dest.w/2), dest.y+(dest.h/2), turret->radius-1);
+        DrawCircle(game->renderer, dest.x+(dest.w/2), dest.y+(dest.h/2), turret->radius-2);
+        DrawCircle(game->renderer, dest.x+(dest.w/2), dest.y+(dest.h/2), turret->radius-3);
+        SDL_SetRenderDrawColor(game->renderer, 255, 255, 255, 100);
+        DrawCircle(game->renderer, dest.x+(dest.w/2), dest.y+(dest.h/2), turret->radius-4);
+    }
 }
 
 void handleInputTurretSelection(Game *game, SDL_Event *event){
@@ -65,12 +75,10 @@ void handleInputTurretSelection(Game *game, SDL_Event *event){
             if(event->button.button == SDL_BUTTON_LEFT){
                 if(game->mouseY < game->winHeight - 200){
                     SDL_Rect dest = getTurretPlacement(game, turret);
-                    printf("aknowledged placement: %d, %d, %d, %d\n", dest.x, dest.y, dest.w, dest.h);
                     if(isPlacementValid(game, &dest)){
                         newGameObject_Turret(game, turret->turretId, dest.x, dest.y);
                         free(selection);
                         game->selection = NULL;
-                        printf("placed turret\n");
                     }
                 }
             }else{

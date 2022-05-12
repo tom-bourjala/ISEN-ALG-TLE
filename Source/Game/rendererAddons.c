@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "rendererAddons.h"
+#include "camera.h"
 
 void DebugUpdate(void *self){
    GameObject *thisGameObject = self;
@@ -53,9 +54,12 @@ GameObject *newGameObject_Debug(Game *GAME, int xpos, int ypos, int TTL, debugOb
 
 void DrawCircle(SDL_Renderer * renderer, int32_t centreX, int32_t centreY, int32_t radius)
 {
-   const int32_t diameter = (radius * 2);
 
-   int32_t x = (radius - 1);
+   SDL_Rect dest = {centreX, centreY, radius*2, radius*2};
+   projectRectToCamera(&dest);
+   const int32_t diameter = dest.w;
+
+   int32_t x = ((dest.w/2) - 1);
    int32_t y = 0;
    int32_t tx = 1;
    int32_t ty = 1;
@@ -64,14 +68,14 @@ void DrawCircle(SDL_Renderer * renderer, int32_t centreX, int32_t centreY, int32
    while (x >= y)
    {
       //  Each of the following renders an octant of the circle
-      SDL_RenderDrawPoint(renderer, centreX + x, centreY - y);
-      SDL_RenderDrawPoint(renderer, centreX + x, centreY + y);
-      SDL_RenderDrawPoint(renderer, centreX - x, centreY - y);
-      SDL_RenderDrawPoint(renderer, centreX - x, centreY + y);
-      SDL_RenderDrawPoint(renderer, centreX + y, centreY - x);
-      SDL_RenderDrawPoint(renderer, centreX + y, centreY + x);
-      SDL_RenderDrawPoint(renderer, centreX - y, centreY - x);
-      SDL_RenderDrawPoint(renderer, centreX - y, centreY + x);
+      SDL_RenderDrawPoint(renderer, dest.x + x, dest.y - y);
+      SDL_RenderDrawPoint(renderer, dest.x + x, dest.y + y);
+      SDL_RenderDrawPoint(renderer, dest.x - x, dest.y - y);
+      SDL_RenderDrawPoint(renderer, dest.x - x, dest.y + y);
+      SDL_RenderDrawPoint(renderer, dest.x + y, dest.y - x);
+      SDL_RenderDrawPoint(renderer, dest.x + y, dest.y + x);
+      SDL_RenderDrawPoint(renderer, dest.x - y, dest.y - x);
+      SDL_RenderDrawPoint(renderer, dest.x - y, dest.y + x);
 
       if (error <= 0)
       {
@@ -87,4 +91,13 @@ void DrawCircle(SDL_Renderer * renderer, int32_t centreX, int32_t centreY, int32
          error += (tx - diameter);
       }
    }
+}
+
+void DrawLine(SDL_Renderer * renderer, int32_t x1, int32_t y1, int32_t x2, int32_t y2)
+{
+   SDL_Rect start = {x1, y1, 0, 0};
+   SDL_Rect end = {x2, y2, 0, 0};
+   projectRectToCamera(&start);
+   projectRectToCamera(&end);
+   SDL_RenderDrawLine(renderer, start.x, start.y, end.x, end.y);
 }

@@ -13,3 +13,8 @@ void cameraRenderExUnsquared(SDL_Texture *tex, SDL_Rect dest, int frame, int nOf
 
 void projectRectToCamera(SDL_Rect *dest);
 void projectRectToCamera_inv(SDL_Rect *dest);
+
+void cameraCheckSize();
+void cameraZoom(float zoom);
+void cameraMove(int x, int y);
+void cameraZoomAt(float zoom, int x, int y);

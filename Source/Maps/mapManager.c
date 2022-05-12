@@ -246,9 +246,9 @@ void renderMap(){
                     DrawCircle(game->renderer,node->x - game->cameraX,node->y - game->cameraY,3);
                     DrawCircle(game->renderer,node->x - game->cameraX,node->y - game->cameraY,2);
                     DrawCircle(game->renderer,node->x - game->cameraX,node->y - game->cameraY,1);
-                    SDL_RenderDrawLine(game->renderer, node->x - game->cameraX, node->y - game->cameraY, node->next->x - game->cameraX, node->next->y - game->cameraY);
+                    DrawLine(game->renderer, node->x - game->cameraX, node->y - game->cameraY, node->next->x - game->cameraX, node->next->y - game->cameraY);
                     if(node->nextAlt){
-                        SDL_RenderDrawLine(game->renderer, node->x - game->cameraX, node->y - game->cameraY, node->nextAlt->x - game->cameraX, node->nextAlt->y - game->cameraY);
+                        DrawLine(game->renderer, node->x - game->cameraX, node->y - game->cameraY, node->nextAlt->x - game->cameraX, node->nextAlt->y - game->cameraY);
                         if(!(pathSeed%2)) node = node->next;
                         else node = node->nextAlt;
                         pathSeed/=2;
