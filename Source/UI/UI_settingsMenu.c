@@ -49,6 +49,18 @@ static UI_slider *st_slider_dialogues = NULL;
 //KEYS MAP PANEL
 static UI_panelButton *st_button_commands = NULL;
 static UI_text *st_text_commands_title = NULL;
+static UI_text *st_text_command_up = NULL;
+static UI_text *st_text_command_down = NULL;
+static UI_text *st_text_command_right = NULL;
+static UI_text *st_text_command_left = NULL;
+static UI_text *st_text_command_zoom_in = NULL;
+static UI_text *st_text_command_zoom_out = NULL;
+static UI_text *st_text_command_turret_1 = NULL;
+static UI_text *st_text_command_turret_2 = NULL;
+static UI_text *st_text_command_turret_3 = NULL;
+static UI_text *st_text_command_pause = NULL;
+static UI_text *st_text_command_sell = NULL;
+static UI_text *st_text_command_upgrade = NULL;
 
 //ACCESSIBILITY PANEL
 static UI_panelButton *st_button_accessibility = NULL;
@@ -80,40 +92,57 @@ static char **(*LM_getTradById)(char *string) = NULL;
 int getPannelMiddle_x(void *none){return THIS_GAME->winWidth/2;}
 int getPannelMiddle_y(void *none){return THIS_GAME->winHeight/2;}
 
-int back_button_anchor_x(void *non){return getPannelMiddle_x(NULL)+455;}
-int back_button_anchor_y(void *non){return getPannelMiddle_y(NULL)+350;}
+int back_button_anchor_x(void *non){return getPannelMiddle_x(NULL)+0.23698*THIS_GAME->winWidth;}
+int back_button_anchor_y(void *non){return getPannelMiddle_y(NULL)+0.32407*THIS_GAME->winHeight-30;}
 
 int col_left_x(void *none){return st_panel->width/4+getLT_x(NULL);}
 int col_right_x(void *none){return 2*st_panel->width/3+getLT_x(NULL);}
+int col_left_x_command_button(void *none){return col_left_x(NULL)-80;}
+int col_right_x_command_button(void *none){return col_right_x(NULL)-80;}
 
-int x_arrow_left(void *none){return col_right_x(NULL);}
-int x_arrow_right(void *none){return col_right_x(NULL) + 250;}
+int x_arrow_left(void *none){return col_right_x(NULL)-50;}
+int x_arrow_right(void *none){return col_right_x(NULL) + 0.130208*THIS_GAME->winWidth + 50;}
 
-int st_title_x(void *none){return getLT_x(NULL)+50;}
-int st_title_y(void *none){return getLT_y(NULL)+50;}
+int st_title_x(void *none){return getLT_x(NULL)+0.0260417*THIS_GAME->winWidth;}
+int st_title_y(void *none){return getLT_y(NULL)+0.046296*THIS_GAME->winHeight;}
 
-int st_text_row_1(void *none){return getPannelMiddle_y(NULL)-200;}
-int st_text_row_2(void *none){return getPannelMiddle_y(NULL)-140;}
-int st_text_row_3(void *none){return getPannelMiddle_y(NULL)-80;}
-int st_text_row_4(void *none){return getPannelMiddle_y(NULL)-20;}
-int st_text_row_5(void *none){return getPannelMiddle_y(NULL)+40;}
-int st_text_row_6(void *none){return getPannelMiddle_y(NULL)+100;}
-int st_text_row_7(void *none){return getPannelMiddle_y(NULL)+160;}
+int st_text_row_1(void *none){return getPannelMiddle_y(NULL)-0.185185*THIS_GAME->winHeight;}
+int st_text_row_2(void *none){return getPannelMiddle_y(NULL)-0.12963*THIS_GAME->winHeight;}
+int st_text_row_3(void *none){return getPannelMiddle_y(NULL)-0.074074*THIS_GAME->winHeight;}
+int st_text_row_4(void *none){return getPannelMiddle_y(NULL)-0.018519*THIS_GAME->winHeight;}
+int st_text_row_5(void *none){return getPannelMiddle_y(NULL)+0.037037*THIS_GAME->winHeight;}
+int st_text_row_6(void *none){return getPannelMiddle_y(NULL)+0.092593*THIS_GAME->winHeight;}
+int st_text_row_7(void *none){return getPannelMiddle_y(NULL)+0.148148*THIS_GAME->winHeight;}
+int st_text_row_1_button(void *none){return getPannelMiddle_y(NULL)-0.185185*THIS_GAME->winHeight-5;}
+int st_text_row_2_button(void *none){return getPannelMiddle_y(NULL)-0.12963*THIS_GAME->winHeight-5;}
+int st_text_row_3_button(void *none){return getPannelMiddle_y(NULL)-0.074074*THIS_GAME->winHeight-5;}
+int st_text_row_4_button(void *none){return getPannelMiddle_y(NULL)-0.018519*THIS_GAME->winHeight-5;}
+int st_text_row_5_button(void *none){return getPannelMiddle_y(NULL)+0.037037*THIS_GAME->winHeight-5;}
+int st_text_row_6_button(void *none){return getPannelMiddle_y(NULL)+0.092593*THIS_GAME->winHeight-5;}
+int st_text_row_7_button(void *none){return getPannelMiddle_y(NULL)+0.148148*THIS_GAME->winHeight-5;}
 
-int x_panel_carousel(void *none){return col_right_x(NULL) + 20;}
-int y_panel_carousel(void *none){return st_text_row_2(NULL) - 20;}
+int x_panel_carousel(void *none){return col_right_x(NULL) + 0.0104166*THIS_GAME->winWidth;}
+int y_panel_carousel(void *none){return st_text_row_2(NULL) - 0.0205185*THIS_GAME->winHeight;}
 UI_anchor *st_panel_carousel_anchor = NULL;
 UI_panel *st_panel_carousel_lang = NULL;
 
-int x_panel_carousel_text(void *none){return col_right_x(NULL) + 125;}
-int y_panel_carousel_text(void *none){return st_text_row_2(NULL) + 5;}
+int x_panel_carousel_text(void *none){return col_right_x(NULL) + 0.0651042*THIS_GAME->winWidth;}
+int y_panel_carousel_text(void *none){return st_text_row_2(NULL) + 0.00463*THIS_GAME->winHeight;}
 
-int x_panel_carousel_text_daltonism(void *none){return col_right_x(NULL) + 125;}
-int y_panel_carousel_text_daltonism(void *none){return st_text_row_2(NULL) + 65;}
-int x_panel_carousel_daltonism(void *none){return col_right_x(NULL) + 20;}
-int y_panel_carousel_daltonism(void *none){return st_text_row_2(NULL) + 40;}
+int x_panel_carousel_text_daltonism(void *none){return col_right_x(NULL) + 0.0651042*THIS_GAME->winWidth;}
+int y_panel_carousel_text_daltonism(void *none){return st_text_row_2(NULL) + 0.060185*THIS_GAME->winHeight;}
+int x_panel_carousel_daltonism(void *none){return col_right_x(NULL) + 0.0104166*THIS_GAME->winWidth;}
+int y_panel_carousel_daltonism(void *none){return st_text_row_2(NULL) + 0.037037*THIS_GAME->winHeight;}
 int x_arrow_left_daltonism(void *none){return col_right_x(NULL);}
-int x_arrow_right_daltonism(void *none){return col_right_x(NULL) + 250;}
+int x_arrow_right_daltonism(void *none){return col_right_x(NULL) + 0.130208*THIS_GAME->winWidth;}
+
+/*
+int x_col_1_left_commands(void *none){return getLT_x(NULL)*2;}
+int x_col_1_right_commands(void *none){return getLT_x(NULL)*2+100;}
+int y_col_1_left_commands(void *none){return getLT_y(NULL)*2;}
+int y_col_1_right_commands(void *none){return getLT_y(NULL)*2+100;}
+*/
+
 
 //LANG
 static UI_text *st_text_lang_choice = NULL;
@@ -121,8 +150,8 @@ static UI_text *st_text_lang_choice = NULL;
 // RESOLUTION
 UI_anchor *st_panel_carousel_anchor_resolution = NULL;
 UI_panel *st_panel_carousel_resolution = NULL;
-char *st_display_resolution_choice[4];
-static int int_st_display_resolution_choice = 1;
+char *st_display_resolution_choice[5];
+static int int_st_display_resolution_choice = 3;
 static UI_text *st_text_display_resolution = NULL;
 UI_anchor *st_text_display_resolution_anchor = NULL;
 
@@ -166,6 +195,18 @@ void changeAudioHiddenState(bool hidden){
 
 void changeCommandsHiddenState(bool hidden){
     st_text_commands_title->hidden = hidden;
+    st_text_command_up->hidden = hidden;
+    st_text_command_down->hidden = hidden;
+    st_text_command_right->hidden = hidden;
+    st_text_command_left->hidden = hidden;
+    st_text_command_zoom_in->hidden = hidden;
+    st_text_command_zoom_out->hidden = hidden;
+    st_text_command_turret_1->hidden = hidden;
+    st_text_command_turret_2->hidden = hidden;
+    st_text_command_turret_3->hidden = hidden;
+    st_text_command_pause->hidden = hidden;
+    st_text_command_sell->hidden = hidden;
+    st_text_command_upgrade->hidden = hidden;
 }
 
 void changeAccessibilityHiddenState(bool hidden){
@@ -175,7 +216,6 @@ void changeAccessibilityHiddenState(bool hidden){
     st_text_screen_shake->hidden = hidden;
     st_text_inverse_x_axis->hidden = hidden;
     st_text_inverse_y_axis->hidden = hidden;
-    st_text_text_size->hidden = hidden;
     st_arrow_left_carousel->hidden = hidden;
     st_arrow_right_carousel->hidden = hidden;
     st_panel_carousel_lang->hidden = hidden;
@@ -265,25 +305,28 @@ void changeResolutionRight(void *self)
 {
     UI_button *button = self;
     int_st_display_resolution_choice += 1;
-    if(int_st_display_resolution_choice==4)
+    if(int_st_display_resolution_choice==5)
         int_st_display_resolution_choice = 0;
-    st_text_display_resolution->text = LM_getTradById(st_display_resolution_choice[int_st_display_resolution_choice]);
     Game *game = THIS_GAME;
     switch(int_st_display_resolution_choice)
     {
         case 0:
-            SDL_SetWindowSize(game->window,800,600);
+            SDL_SetWindowSize(game->window,1280,720);
             break;
         case 1:
-            SDL_SetWindowSize(game->window,1200,800);
+            SDL_SetWindowSize(game->window,1366,768);
             break;
         case 2:
-            SDL_SetWindowSize(game->window,1600,1000);
+            SDL_SetWindowSize(game->window,1536,864);
             break;
         case 3:
             SDL_SetWindowSize(game->window,1920,1080);
             break;
-    }   
+        case 4:
+            SDL_SetWindowSize(game->window,2560,1440);
+            break;
+    }
+    st_text_display_resolution->text = LM_getTradById(st_display_resolution_choice[int_st_display_resolution_choice]);
 }
 
 void changeResolutionLeft(void *self)
@@ -291,24 +334,27 @@ void changeResolutionLeft(void *self)
     UI_button *button = self;
     int_st_display_resolution_choice -= 1;
     if(int_st_display_resolution_choice==-1)
-        int_st_display_resolution_choice = 3;
-    st_text_display_resolution->text = LM_getTradById(st_display_resolution_choice[int_st_display_resolution_choice]);
+        int_st_display_resolution_choice = 4;
     Game *game = THIS_GAME;
     switch(int_st_display_resolution_choice)
     {
         case 0:
-            SDL_SetWindowSize(game->window,800,600);
+            SDL_SetWindowSize(game->window,1280,720);
             break;
         case 1:
-            SDL_SetWindowSize(game->window,1200,800);
+            SDL_SetWindowSize(game->window,1366,768);
             break;
         case 2:
-            SDL_SetWindowSize(game->window,1600,1000);
+            SDL_SetWindowSize(game->window,1536,864);
             break;
         case 3:
             SDL_SetWindowSize(game->window,1920,1080);
             break;
+        case 4:
+            SDL_SetWindowSize(game->window,2560,1440);
+            break;
     }
+    st_text_display_resolution->text = LM_getTradById(st_display_resolution_choice[int_st_display_resolution_choice]);
 }
 
 void changeDaltonismLeft(void *self)
@@ -403,26 +449,59 @@ void UI_switchToSettings(void *GAME)
     UI_anchor *st_title_line_anchor_col_right_row_5 = UI_newAnchor(game->menu, col_right_x, st_text_row_5);
     UI_anchor *st_title_line_anchor_col_right_row_6 = UI_newAnchor(game->menu, col_right_x, st_text_row_6);
     UI_anchor *st_title_line_anchor_col_right_row_7 = UI_newAnchor(game->menu, col_right_x, st_text_row_7);
-    
+    UI_anchor *st_title_command_anchor_col_left_row_1 = UI_newAnchor(game->menu, col_left_x_command_button, st_text_row_1_button);
+    UI_anchor *st_title_command_anchor_col_left_row_2 = UI_newAnchor(game->menu, col_left_x_command_button, st_text_row_2_button);
+    UI_anchor *st_title_command_anchor_col_left_row_3 = UI_newAnchor(game->menu, col_left_x_command_button, st_text_row_3_button);
+    UI_anchor *st_title_command_anchor_col_left_row_4 = UI_newAnchor(game->menu, col_left_x_command_button, st_text_row_4_button);
+    UI_anchor *st_title_command_anchor_col_left_row_5 = UI_newAnchor(game->menu, col_left_x_command_button, st_text_row_5_button);
+    UI_anchor *st_title_command_anchor_col_left_row_6 = UI_newAnchor(game->menu, col_left_x_command_button, st_text_row_6_button);
+    UI_anchor *st_title_command_anchor_col_left_row_7 = UI_newAnchor(game->menu, col_left_x_command_button, st_text_row_7_button);
+    UI_anchor *st_title_command_anchor_col_right_row_1 = UI_newAnchor(game->menu, col_right_x_command_button, st_text_row_1_button);
+    UI_anchor *st_title_command_anchor_col_right_row_2 = UI_newAnchor(game->menu, col_right_x_command_button, st_text_row_2_button);
+    UI_anchor *st_title_command_anchor_col_right_row_3 = UI_newAnchor(game->menu, col_right_x_command_button, st_text_row_3_button);
+    UI_anchor *st_title_command_anchor_col_right_row_4 = UI_newAnchor(game->menu, col_right_x_command_button, st_text_row_4_button);
+    UI_anchor *st_title_command_anchor_col_right_row_5 = UI_newAnchor(game->menu, col_right_x_command_button, st_text_row_5_button);
+    UI_anchor *st_title_command_anchor_col_right_row_6 = UI_newAnchor(game->menu, col_right_x_command_button, st_text_row_6_button);
+    UI_anchor *st_title_command_anchor_col_right_row_7 = UI_newAnchor(game->menu, col_right_x_command_button, st_text_row_7_button);
+
     st_text_resolution = UI_newText(st_panel->menu,LM_getTradById("options_menu_video_resolution"),st_title_line_anchor_col_left_row_2, UI_TA_LEFT, UI_TJ_CENTER,white, "./assets/fonts/RulerGold.ttf", 30);
     st_panel_carousel_anchor_resolution = UI_newAnchor(game->menu, x_panel_carousel, y_panel_carousel);
-    st_panel_carousel_resolution = UI_newPanel(game->menu, 210, 40, st_panel_carousel_anchor_resolution, 2, UI_PT_B);
-    for(int i=0;i<4;i++)
+    st_panel_carousel_resolution = UI_newPanel(game->menu,210, 40, st_panel_carousel_anchor_resolution, 2, UI_PT_B);
+
+    for(int i=0;i<5;i++)
     {
         st_display_resolution_choice[i] = malloc(sizeof(char)*255);
     }
 
-    strcpy(st_display_resolution_choice[0],"options_menu_video_800_600");
-    strcpy(st_display_resolution_choice[1],"options_menu_video_1200_800");
-    strcpy(st_display_resolution_choice[2],"options_menu_video_1600_1000");
+    strcpy(st_display_resolution_choice[4],"options_menu_video_2560_1440");
     strcpy(st_display_resolution_choice[3],"options_menu_video_1920_1080");
+    strcpy(st_display_resolution_choice[2],"options_menu_video_1536_864");
+    strcpy(st_display_resolution_choice[1],"options_menu_video_1366_768");
+    strcpy(st_display_resolution_choice[0],"options_menu_video_1280_720");
 
     st_text_display_resolution_anchor = UI_newAnchor(game->menu,x_panel_carousel_text,y_panel_carousel_text);
-    st_text_display_resolution = UI_newText(game->menu,LM_getTradById("options_menu_video_1200_800"),st_text_display_resolution_anchor,UI_TA_CENTER, UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf",30);
+    switch(game->winWidth)
+    {
+        case 2560:
+            st_text_display_resolution = UI_newText(game->menu,LM_getTradById("options_menu_video_2560_1440"),st_text_display_resolution_anchor,UI_TA_CENTER, UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf",30);
+            break;
+        case 1536:
+            st_text_display_resolution = UI_newText(game->menu,LM_getTradById("options_menu_video_1536_864"),st_text_display_resolution_anchor,UI_TA_CENTER, UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf",30);
+            break;
+        case 1366:
+            st_text_display_resolution = UI_newText(game->menu,LM_getTradById("options_menu_video_1366_768"),st_text_display_resolution_anchor,UI_TA_CENTER, UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf",30);
+            break;
+        case 1280:
+            st_text_display_resolution = UI_newText(game->menu,LM_getTradById("options_menu_video_1280_720"),st_text_display_resolution_anchor,UI_TA_CENTER, UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf",30);
+            break;
+        default:
+            st_text_display_resolution = UI_newText(game->menu,LM_getTradById("options_menu_video_1920_1080"),st_text_display_resolution_anchor,UI_TA_CENTER, UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf",30);
+            break;
+    }
     UI_anchor *st_arrow_left_carousel_resolution_anchor = UI_newAnchor(game->menu, x_arrow_left, st_text_row_2);
     UI_anchor *st_arrow_right_carousel_resolution_anchor = UI_newAnchor(game->menu, x_arrow_right, st_text_row_2);
-    st_arrow_left_carousel_resolution = UI_newButton(st_panel->menu, NULL, UI_ARROW,st_arrow_right_carousel_resolution_anchor,false,changeResolutionLeft,NULL,NULL,1);;
-    st_arrow_right_carousel_resolution = UI_newButton(st_panel->menu, NULL, UI_ARROW,st_arrow_left_carousel_resolution_anchor,false,changeResolutionRight,NULL,NULL,1);;
+    st_arrow_left_carousel_resolution = UI_newButton(st_panel->menu, NULL, UI_ARROW,st_arrow_right_carousel_resolution_anchor,false,changeResolutionRight,NULL,NULL,1);
+    st_arrow_right_carousel_resolution = UI_newButton(st_panel->menu, NULL, UI_ARROW,st_arrow_left_carousel_resolution_anchor,false,changeResolutionLeft,NULL,NULL,1);
     UI_flipButton(st_arrow_left_carousel_resolution);
 
     st_text_fullscreen = UI_newText(st_panel->menu,LM_getTradById("options_menu_video_fullscreen"),st_title_line_anchor_col_left_row_3, UI_TA_LEFT, UI_TJ_CENTER,white, "./assets/fonts/RulerGold.ttf", 30);
@@ -479,6 +558,31 @@ void UI_switchToSettings(void *GAME)
     st_text_inverse_y_axis = UI_newText(st_panel->menu,LM_getTradById("options_menu_accessibility_inverse_y"),st_title_line_anchor_col_left_row_6, UI_TA_LEFT, UI_TJ_CENTER,white, "./assets/fonts/RulerGold.ttf", 30);
     st_button_accessibility_invert_y_axis = UI_newButton(st_panel->menu, NULL, UI_CHECK_DEFAULT,st_title_line_anchor_col_right_row_6,true,NULL,invertYAxisOn,invertYAxisOff,1);;
     
-    st_text_text_size = UI_newText(st_panel->menu,LM_getTradById("options_menu_accessibility_text_size"),st_title_line_anchor_col_left_row_7, UI_TA_LEFT, UI_TJ_CENTER,white, "./assets/fonts/RulerGold.ttf", 30);
+    st_text_command_up = UI_newText(st_panel->menu,LM_getTradById("options_menu_keybinds_up"),st_title_line_anchor_col_left_row_1,UI_TA_LEFT,UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf", 30);
+    st_text_command_down = UI_newText(st_panel->menu,LM_getTradById("options_menu_keybinds_down"),st_title_line_anchor_col_left_row_2,UI_TA_LEFT,UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf", 30);
+    st_text_command_right = UI_newText(st_panel->menu,LM_getTradById("options_menu_keybinds_right"),st_title_line_anchor_col_right_row_1,UI_TA_LEFT,UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf", 30);
+    st_text_command_left = UI_newText(st_panel->menu,LM_getTradById("options_menu_keybinds_left"),st_title_line_anchor_col_right_row_2,UI_TA_LEFT,UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf", 30);
+    st_text_command_zoom_in = UI_newText(st_panel->menu,LM_getTradById("options_menu_keybinds_zoom_in"),st_title_line_anchor_col_left_row_3,UI_TA_LEFT,UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf", 30);
+    st_text_command_zoom_out = UI_newText(st_panel->menu,LM_getTradById("options_menu_keybinds_zoom_out"),st_title_line_anchor_col_right_row_3,UI_TA_LEFT,UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf", 30);
+    st_text_command_turret_1 = UI_newText(st_panel->menu,LM_getTradById("options_menu_keybinds_turret_1"),st_title_line_anchor_col_left_row_4,UI_TA_LEFT,UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf", 30);
+    st_text_command_turret_2 = UI_newText(st_panel->menu,LM_getTradById("options_menu_keybinds_turret_2"),st_title_line_anchor_col_left_row_5,UI_TA_LEFT,UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf", 30);
+    st_text_command_turret_3 = UI_newText(st_panel->menu,LM_getTradById("options_menu_keybinds_turret_3"),st_title_line_anchor_col_left_row_6,UI_TA_LEFT,UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf", 30);
+    st_text_command_pause = UI_newText(st_panel->menu,LM_getTradById("options_menu_keybinds_pause"),st_title_line_anchor_col_right_row_4,UI_TA_LEFT,UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf", 30);
+    st_text_command_sell = UI_newText(st_panel->menu,LM_getTradById("options_menu_keybinds_sell"),st_title_line_anchor_col_right_row_5,UI_TA_LEFT,UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf", 30);
+    st_text_command_upgrade = UI_newText(st_panel->menu,LM_getTradById("options_menu_keybinds_upgrade"),st_title_line_anchor_col_right_row_6,UI_TA_LEFT,UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf", 30);
+    
+    UI_button *button_right_arrow = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_right_row_1,true,NULL,screenShakeOn,screenShakeOff,1.5,"UI_icon_key_move_right.png");
+    UI_button *button_left_arrow = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_right_row_2,true,NULL,screenShakeOn,screenShakeOff,1.5,"UI_icon_key_move_left.png");
+    UI_button *button_zoom_out = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_right_row_3,true,NULL,screenShakeOn,screenShakeOff,1.5,"UI_icon_minus.png");
+    UI_button *button_zoom_in = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_left_row_3,true,NULL,screenShakeOn,screenShakeOff,1.5,"UI_icon_more.png");
+    UI_button *button_pause = UI_newButton(st_panel->menu,LM_getTradById("options_menu_keybinds_upgrade"),UI_B_DEFAULT,st_title_command_anchor_col_right_row_4,true,NULL,screenShakeOn,screenShakeOff,1.5);
+    UI_button *button_sell = UI_newButton(st_panel->menu,LM_getTradById("options_menu_keybinds_upgrade"),UI_B_DEFAULT,st_title_command_anchor_col_right_row_5,true,NULL,screenShakeOn,screenShakeOff,1.5);
+    UI_button *button_upgrade = UI_newButton(st_panel->menu,LM_getTradById("options_menu_keybinds_upgrade"),UI_B_DEFAULT,st_title_command_anchor_col_right_row_6,true,NULL,screenShakeOn,screenShakeOff,1.5);
+    UI_button *button_turret1 = UI_newButton(st_panel->menu,LM_getTradById("options_menu_keybinds_upgrade"),UI_B_DEFAULT,st_title_command_anchor_col_left_row_4,true,NULL,screenShakeOn,screenShakeOff,1.5);
+    UI_button *button_turret2 = UI_newButton(st_panel->menu,LM_getTradById("options_menu_keybinds_upgrade"),UI_B_DEFAULT,st_title_command_anchor_col_left_row_5,true,NULL,screenShakeOn,screenShakeOff,1.5);
+    UI_button *button_turret3 = UI_newButton(st_panel->menu,LM_getTradById("options_menu_keybinds_upgrade"),UI_B_DEFAULT,st_title_command_anchor_col_left_row_6,true,NULL,screenShakeOn,screenShakeOff,1.5);
+    UI_button *button_up_arrow = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_left_row_1,true,NULL,screenShakeOn,screenShakeOff,1.5,"UI_icon_key_move_up.png");
+    UI_button *button_down_arrow = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_left_row_2,true,NULL,screenShakeOn,screenShakeOff,1.5,"UI_icon_key_move_down.png");
+
     onUpdateSettings();    
 }
