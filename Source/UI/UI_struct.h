@@ -79,6 +79,7 @@ typedef struct
     UI_text *text;
     UI_textureObject *textureObject;
     UI_textureObject *hoverTextureObject;
+    UI_textureObject *textureObjectIcon;
     UI_actionArea *actionArea;
     SDL_Texture *textureIdle;
     SDL_Texture *textureHover;
