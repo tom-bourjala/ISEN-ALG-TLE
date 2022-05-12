@@ -14,7 +14,7 @@ Game *game = NULL;
 int main(int argc, const char * argv[]) {
     int FPS = 60;
     int frameDelta = 1000 / FPS;
-    game = initGame("The Last Engineer", 1600, 800, false);
+    game = initGame("The Last Engineer", 1920, 1080, false);
     // game->mapManager->loadMap("debug", 1900, 1000);
     
     // list *starts = game->mapManager->currentMap->starts;
