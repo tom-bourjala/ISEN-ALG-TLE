@@ -13,10 +13,11 @@ play_menu_campaign;CAMPAGNE
 play_menu_endless;LIBRE
 play_menu_sandbox;BAC À SABLE
 play_menu_back;RETOUR
-options_menu_video_800_600;800 x 600
-options_menu_video_1200_800;1200 x 800
-options_menu_video_1600_1000;1600 x 1000
+options_menu_video_2560_1440;2560 x 1440
 options_menu_video_1920_1080;1920 x 1080
+options_menu_video_1536_864;1536 x 864
+options_menu_video_1366_768;1366 x 768
+options_menu_video_1280_720;1280 x 720
 options_menu_video_resolution;RESOLUTION
 options_menu_video_fullscreen;PLEIN ECRAN
 options_menu_sound_master;GENERAL
@@ -33,6 +34,18 @@ options_menu_accessibility_daltonism_deuteranopia;DEUTERANOPIE
 options_menu_accessibility_daltonism_tritanopia;TRITANOPIE
 options_menu_accessibility_daltonism_protanopia;PROTANOPIE
 options_menu_accessibility_daltonism_none;AUCUN
+options_menu_keybinds_up;HAUT
+options_menu_keybinds_down;BAS
+options_menu_keybinds_right;DROITE
+options_menu_keybinds_left;LEFT
+options_menu_keybinds_zoom_in;ZOOMMER
+options_menu_keybinds_zoom_out;DEZOOMER
+options_menu_keybinds_turret_1;TOURELLE 1
+options_menu_keybinds_turret_2;TOURELLE 2
+options_menu_keybinds_turret_3;TOURELLE 3
+options_menu_keybinds_pause;PAUSE
+options_menu_keybinds_sell;VENDRE
+options_menu_keybinds_upgrade;AMELIORER
 hud_next_wave;PROCHAINE VAGUE
 hud_wave_info;VAGUE 1
 
