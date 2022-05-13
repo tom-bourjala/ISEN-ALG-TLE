@@ -25,9 +25,18 @@ void handleEvents(){
         switch (event.type)
         {
             case SDL_MOUSEBUTTONDOWN:
+                if(event.button.button == SDL_BUTTON_LEFT){
+                    GAME->mouseLeftDown = true;
+                    GAME->menu->handleEvent(true);
+                    if(GAME->mouseY < GAME->winHeight - 200) cameraStartDrag();
+                }
+                break;
             case SDL_MOUSEBUTTONUP:
-                if(event.button.button == SDL_BUTTON_LEFT)
-                    GAME->menu->handleEvent(event.button.type == SDL_MOUSEBUTTONDOWN);
+                if(event.button.button == SDL_BUTTON_LEFT){
+                    GAME->mouseLeftDown = false;
+                    GAME->menu->handleEvent(false);
+                    if(GAME->cameraDragging) cameraEndDrag();
+                }
                 break;
             case SDL_MOUSEWHEEL:
                 if(event.wheel.y > 0)
@@ -70,6 +79,7 @@ void update(){
     GAME->menu->update();
     SDL_SetCursor(GAME->currentCursor);
     updateGameManager();
+    if(GAME->mouseLeftDown) cameraDrag();
 }
 
 void renderGameObject(void *object){
@@ -82,8 +92,6 @@ void render(){
 
     //Render MAP
     if(GAME->mapManager->currentMap) GAME->mapManager->render();
-
-    //Render EFFECTS
 
     //Render OBJECTS
     forEach(GAME->gameObjects, renderGameObject);
@@ -149,6 +157,7 @@ Game *initGame(const char* title, int width, int height, bool fullscreen){
     }
     GAME->mouseX = 0;
     GAME->mouseY = 0;
+    GAME->mouseLeftDown = false;
     GAME->winWidth = 0;
     GAME->winHeight = 0;
     GAME->selection = NULL;

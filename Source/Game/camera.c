@@ -1,6 +1,11 @@
 #include "camera.h"
 
 static float maxZoom = 5.0f;
+static int dragX = 0;
+static int dragY = 0;
+static int dragX_start = 0;
+static int dragY_start = 0;
+static int dragThreshold = 0;   
 
 static Game *GAME = NULL;
 
@@ -10,7 +15,8 @@ void initCamera(Game *game)
     GAME->cameraX = 0;
     GAME->cameraY = 0;
     GAME->cameraScale = 1;
-    cameraCheckSize();
+    GAME->cameraDragging = false;
+    cameraZoom(0.1);
 }
 
 void projectRectToCamera(SDL_Rect *dest){
@@ -82,14 +88,15 @@ void cameraCheckSize(){
     if(GAME->mapManager->currentMap){
         int mapWidth = GAME->mapManager->currentMap->width;
         int mapHeight = GAME->mapManager->currentMap->height;
+        printf("mapWidth: %d, mapHeight: %d\n", mapWidth, mapHeight);
         SDL_Rect camera = {0, 0, mapWidth, mapHeight};
         projectRectToCamera(&camera);
         if(camera.w < GAME->winWidth || camera.h < GAME->winHeight)
             cameraZoom(0.1f);
-        if(camera.w - camera.x < GAME->winWidth)
-            cameraMove(0, 5);
-        if(camera.h - camera.y < GAME->winHeight)
-            cameraMove(5, 0);
+        if(camera.w + camera.x < GAME->winWidth)
+            cameraMove(-5, 0);
+        if(camera.h + camera.y < GAME->winHeight - 200)
+            cameraMove(0, -5);
     }
 }
 
@@ -114,4 +121,26 @@ void cameraZoomAt(float zoom, int x, int y){
     GAME->cameraX = absX - (x/GAME->cameraScale);
     GAME->cameraY = absY - (y/GAME->cameraScale);
     cameraCheckSize();
+}
+
+void cameraStartDrag(){
+    int x = GAME->mouseX, y = GAME->mouseY;
+    dragX = x;
+    dragY = y;
+    dragX_start = x;
+    dragY_start = y;
+}
+
+void cameraDrag(){
+    int x = GAME->mouseX, y = GAME->mouseY;
+    if(abs(x - dragX) > dragThreshold || abs(y - dragY) > dragThreshold){
+        GAME->cameraDragging = true;
+        cameraMove(x - dragX, y - dragY);
+        dragX = x;
+        dragY = y;
+    }
+}
+
+void cameraEndDrag(){
+    GAME->cameraDragging = false;
 }
