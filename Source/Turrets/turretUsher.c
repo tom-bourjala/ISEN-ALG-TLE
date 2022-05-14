@@ -72,13 +72,15 @@ void handleInputTurretSelection(Game *game, SDL_Event *event){
     switch (event->type)
     {
         case SDL_MOUSEBUTTONUP:
-            if(event->button.button == SDL_BUTTON_LEFT && !game->cameraDragging){
-                if(game->mouseY < game->winHeight - 200){
-                    SDL_Rect dest = getTurretPlacement(game, turret);
-                    if(isPlacementValid(game, &dest)){
-                        newGameObject_Turret(game, turret->turretId, dest.x, dest.y);
-                        free(selection);
-                        game->selection = NULL;
+            if(event->button.button == SDL_BUTTON_LEFT){
+                if(!game->cameraDragging){
+                    if(game->mouseY < game->winHeight - 200){
+                        SDL_Rect dest = getTurretPlacement(game, turret);
+                        if(isPlacementValid(game, &dest)){
+                            newGameObject_Turret(game, turret->turretId, dest.x, dest.y);
+                            free(selection);
+                            game->selection = NULL;
+                        }
                     }
                 }
             }else{

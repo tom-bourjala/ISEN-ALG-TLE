@@ -133,9 +133,11 @@ void cameraStartDrag(){
 
 void cameraDrag(){
     int x = GAME->mouseX, y = GAME->mouseY;
-    if(abs(x - dragX) > dragThreshold || abs(y - dragY) > dragThreshold){
+    if(abs(x - dragX) + abs(y - dragY) > dragThreshold || GAME->cameraDragging){
         GAME->cameraDragging = true;
-        cameraMove(x - dragX, y - dragY);
+        int deltaX = (dragX - x) / GAME->cameraScale;
+        int deltaY = (dragY - y) / GAME->cameraScale;
+        cameraMove(deltaX, deltaY);
         dragX = x;
         dragY = y;
     }
