@@ -88,7 +88,6 @@ void cameraCheckSize(){
     if(GAME->mapManager->currentMap){
         int mapWidth = GAME->mapManager->currentMap->width;
         int mapHeight = GAME->mapManager->currentMap->height;
-        printf("mapWidth: %d, mapHeight: %d\n", mapWidth, mapHeight);
         SDL_Rect camera = {0, 0, mapWidth, mapHeight};
         projectRectToCamera(&camera);
         if(camera.w < GAME->winWidth || camera.h < GAME->winHeight)
