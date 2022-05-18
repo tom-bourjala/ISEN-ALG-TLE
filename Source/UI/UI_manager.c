@@ -1,4 +1,5 @@
 #include "UI_manager.h"
+#include "UI_newProgressBar.h"
 #include "../Game/game.h"
 #include <stdbool.h>
 
@@ -23,6 +24,8 @@ void UI_MenuUpdate(){
     forEach(MENU->panels, UI_updatePanel);
     //Update Panel Buttons
     forEach(MENU->panelButtons, UI_updateButtonPanel);
+    //Update Progress Bars
+    forEach(MENU->progressBars, UI_updateProgressBars);
 }
 
 void UI_MenuClear(){
@@ -48,6 +51,9 @@ void UI_MenuClear(){
         //Free Sliders
         forEach(MENU->sliders, UI_FreeSlider);
         freeList(MENU->sliders);
+        //Free ProgressBars
+        forEach(MENU->progressBars, UI_FreeProgressBars);
+        freeList(MENU->progressBars);
         //Free Panel Buttons
         forEach(MENU->panelButtons, UI_FreeButtonPanel);
         freeList(MENU->panelButtons);
@@ -84,6 +90,7 @@ void UI_MenuRender(){
     forEach(MENU->textureObjects, UI_RenderTextureObject);
     forEach(MENU->texts, UI_RenderText);
     forEach(MENU->sliders, UI_renderSlider);
+    forEach(MENU->progressBars, UI_renderProgressBars);
 }
 
 UI_menu *UI_initMenu(void *game){
@@ -103,6 +110,7 @@ UI_menu *UI_initMenu(void *game){
     newMenu->anchors = newList(COMPARE_PTR);
     newMenu->panels = newList(COMPARE_PTR);
     newMenu->panelButtons = newList(COMPARE_PTR);
+    newMenu->progressBars = newList(COMPARE_PTR);
     MENU = newMenu;
     return newMenu;
 }

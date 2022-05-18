@@ -16,6 +16,7 @@ typedef struct
     list *anchors;
     list *panels;
     list *panelButtons;
+    list *progressBars;
     void *game;
     void (*update)();
     void (*updateScript)();

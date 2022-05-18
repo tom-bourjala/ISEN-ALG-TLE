@@ -5,8 +5,13 @@
 #include <stdbool.h>
 #include "../Core/core.h"
 #include "../Turrets/turrets.h"
+#include "UI_newProgressBar.h"
 
 static Game *THIS_GAME = NULL;
+static float *core_health_percentage = NULL;
+static float *core_shield_percentage = NULL;
+static float health = 0;
+static float shield = 0;
 
 static char **(*LM_getTradById)(char *idToGet) = NULL;
 
@@ -161,30 +166,6 @@ static void onUpdate(){
 
 }
 
-void displayShieldBar()
-{
-    UI_panel *panel = UI_newPanel(THIS_GAME->menu,0.01875*THIS_GAME->winWidth,THIS_GAME->winHeight*0.2, A_HUD_SHIELD_BAR, 2, UI_PT_A);
-    core *ThisCore = THIS_GAME->coreObj->actor;
-    ThisCore->maxShield = 100;
-    ThisCore->shield = 75;
-    float percentage = (float)(ThisCore->health/ThisCore->maxHealth);
-    UI_panel *shield = UI_newPanel(THIS_GAME->menu,0.01875*THIS_GAME->winWidth,THIS_GAME->winHeight*0.2, A_HUD_SHIELD_BAR, 2, UI_PT_A);
-    shield->isActive = true;
-
-}
-
-void displayHealthBar()
-{
-    UI_panel *panel = UI_newPanel(THIS_GAME->menu,0.01875*THIS_GAME->winWidth,THIS_GAME->winHeight*0.2, A_HUD_HEALTH_BAR, 2, UI_PT_A);
-    core *ThisCore = THIS_GAME->coreObj->actor;
-    ThisCore->maxShield = 100;
-    ThisCore->shield = 75;
-    float percentage = (float)(ThisCore->health/ThisCore->maxHealth);
-    
-    UI_panel *health = UI_newPanel(THIS_GAME->menu,0.01875*THIS_GAME->winWidth, 0.2*THIS_GAME->winHeight, A_HUD_HEALTH_BAR, 2, UI_PT_A);
-    health->isActive = true;
-}
-
 void UI_initHud(void *GAME)
 {
     THIS_GAME = GAME;
@@ -225,8 +206,9 @@ void UI_initHud(void *GAME)
     /* Health and Shield bar */
     A_HUD_SHIELD_BAR = UI_newAnchor(game->menu, HUD_shield_bar_x, HUD_shield_bar_y);
     A_HUD_HEALTH_BAR = UI_newAnchor(game->menu, HUD_health_bar_x, HUD_health_bar_y);
-    displayHealthBar();
-    displayShieldBar();
+    core *ThisCore = game->coreObj->actor;
+    UI_progressBar *progressBar_health =  UI_newProgressBar(THIS_GAME,0.01875*THIS_GAME->winWidth, 0.2*THIS_GAME->winHeight,NULL, NULL,A_HUD_HEALTH_BAR,2,1,&ThisCore->health,&ThisCore->maxHealth);
+    UI_progressBar *progressBar_shield =  UI_newProgressBar(THIS_GAME,0.01875*THIS_GAME->winWidth, 0.2*THIS_GAME->winHeight,NULL, NULL,A_HUD_SHIELD_BAR,2,1,&ThisCore->shield,&ThisCore->maxShield);
 
     /* Golds */
     UI_anchor *A_PANEL_GOLDS_HUD = UI_newAnchor(game->menu, HUD_golds_panel_x, HUD_golds_panel_y);
