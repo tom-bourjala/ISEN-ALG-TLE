@@ -2,50 +2,54 @@
 #include "../Game/game.h"
 #include <stdbool.h>
 
-void getButtonStrKey(UI_buttonType type, char *str){
+void getButtonStrKey(UI_buttonType type, char *str)
+{
     switch (type)
     {
-        case UI_ARROW:
-            strcpy(str, "arrow");
-            break;
-        case UI_B_BIG:
-            strcpy(str, "button_big");
-            break;
-        case UI_B_BACK:
-            strcpy(str, "button_back");
-            break;
-        case UI_B_DIAG:
-            strcpy(str, "button_diag");
-            break;
-        case UI_B_LONG:
-            strcpy(str, "button_long");
-            break;
-        case UI_B_MAIN:
-            strcpy(str, "button_main");
-            break;
-        case UI_CHECK_DEFAULT:
-            strcpy(str, "check");
-            break;
-        case UI_CHECK_ROUND:
-            strcpy(str, "check_round");
-            break;
-        case UI_CHECK_SQUARE:
-            strcpy(str, "check_square");
-            break;
-        case UI_CHECK_SMALL:
-            strcpy(str, "check_small");
-            break;
-        default:
-            strcpy(str, "button");
-            break;
+    case UI_ARROW:
+        strcpy(str, "arrow");
+        break;
+    case UI_B_BIG:
+        strcpy(str, "button_big");
+        break;
+    case UI_B_BACK:
+        strcpy(str, "button_back");
+        break;
+    case UI_B_DIAG:
+        strcpy(str, "button_diag");
+        break;
+    case UI_B_LONG:
+        strcpy(str, "button_long");
+        break;
+    case UI_B_MAIN:
+        strcpy(str, "button_main");
+        break;
+    case UI_CHECK_DEFAULT:
+        strcpy(str, "check");
+        break;
+    case UI_CHECK_ROUND:
+        strcpy(str, "check_round");
+        break;
+    case UI_CHECK_SQUARE:
+        strcpy(str, "check_square");
+        break;
+    case UI_CHECK_SMALL:
+        strcpy(str, "check_small");
+        break;
+    default:
+        strcpy(str, "button");
+        break;
     }
 }
 
-UI_button *UI_newButton(UI_menu *menu, char **text, UI_buttonType type, UI_anchor *anchor, bool isSticky, void (*onClick)(void *button), void (*onSetOn)(void *button), void (*onSetOff)(void *button), float sizeFactor){
+UI_button *UI_newButton(UI_menu *menu, char **text, UI_buttonType type, UI_anchor *anchor, bool isSticky, void (*onClick)(void *button), void (*onSetOn)(void *button), void (*onSetOff)(void *button), float sizeFactor)
+{
     UI_button *newButton = malloc(sizeof(UI_button));
-    SDL_Color white = {255,255,255,255};
-    if(text) newButton->text = UI_newText(menu, text, anchor, UI_TA_CENTER, UI_TJ_CENTER, white, "./assets/fonts/ImprovGOLD.ttf", 50);
-    else newButton->text = NULL;
+    SDL_Color white = {255, 255, 255, 255};
+    if (text)
+        newButton->text = UI_newText(menu, text, anchor, UI_TA_CENTER, UI_TJ_CENTER, white, "./assets/fonts/ImprovGOLD.ttf", 50);
+    else
+        newButton->text = NULL;
     Game *game = menu->game;
     newButton->hidden = false;
     newButton->menu = menu;
@@ -53,24 +57,27 @@ UI_button *UI_newButton(UI_menu *menu, char **text, UI_buttonType type, UI_ancho
     char strKey[100];
     getButtonStrKey(type, strKey);
     char idleStr[255], hoverStr[255], enabledStr[255], disabledStr[255];
-    if(type == UI_CHECK_SMALL || type == UI_CHECK_ROUND || type == UI_CHECK_SQUARE){
-        sprintf(idleStr,"UI_%s_off.png", strKey);
-        sprintf(enabledStr,"UI_%s_on.png", strKey);
+    if (type == UI_CHECK_SMALL || type == UI_CHECK_ROUND || type == UI_CHECK_SQUARE)
+    {
+        sprintf(idleStr, "UI_%s_off.png", strKey);
+        sprintf(enabledStr, "UI_%s_on.png", strKey);
         newButton->textureHover = NULL;
         newButton->textureDisabled = NULL;
-    }else{
-        sprintf(hoverStr,"UI_%s_hover.png", strKey);
-        sprintf(idleStr,"UI_%s_idle.png", strKey);
-        sprintf(enabledStr,"UI_%s_enabled.png", strKey);
-        sprintf(disabledStr,"UI_%s_disabled.png", strKey);
+    }
+    else
+    {
+        sprintf(hoverStr, "UI_%s_hover.png", strKey);
+        sprintf(idleStr, "UI_%s_idle.png", strKey);
+        sprintf(enabledStr, "UI_%s_enabled.png", strKey);
+        sprintf(disabledStr, "UI_%s_disabled.png", strKey);
         newButton->textureHover = game->textureManager->getTexture(hoverStr);
         newButton->textureDisabled = game->textureManager->getTexture(disabledStr);
     }
     newButton->textureIdle = game->textureManager->getTexture(idleStr);
-    newButton->texturePress = game->textureManager->getTexture(enabledStr); 
-    newButton->textureObject = UI_newStaticTextureObject(menu, (SDL_Rect) {0,0,0,0}, anchor, idleStr);
-    newButton->hoverTextureObject = newButton->textureHover ? UI_newStaticTextureObject(menu, (SDL_Rect) {0,0,0,0}, anchor, hoverStr) : NULL;
-    newButton->actionArea = UI_newActionArea(menu, (SDL_Rect) {0,0,0,0}, anchor, onClick);
+    newButton->texturePress = game->textureManager->getTexture(enabledStr);
+    newButton->textureObject = UI_newStaticTextureObject(menu, (SDL_Rect){0, 0, 0, 0}, anchor, idleStr);
+    newButton->hoverTextureObject = newButton->textureHover ? UI_newStaticTextureObject(menu, (SDL_Rect){0, 0, 0, 0}, anchor, hoverStr) : NULL;
+    newButton->actionArea = UI_newActionArea(menu, (SDL_Rect){0, 0, 0, 0}, anchor, onClick);
     newButton->actionArea->disabled = true;
     newButton->isPressed = false;
     newButton->isDisabled = false;
@@ -82,13 +89,14 @@ UI_button *UI_newButton(UI_menu *menu, char **text, UI_buttonType type, UI_ancho
     newButton->sizeFactor = sizeFactor;
     UI_updateButton(newButton);
     appendInList(menu->buttons, newButton);
-    
+
     return newButton;
 }
 
-UI_button *UI_newButtonIcon(UI_menu *menu, UI_buttonType type, UI_anchor *anchor, bool isSticky, void (*onClick)(void *button), void (*onSetOn)(void *button), void (*onSetOff)(void *button), float sizeFactor,char *icon){
+UI_button *UI_newButtonIcon(UI_menu *menu, UI_buttonType type, UI_anchor *anchor, bool isSticky, void (*onClick)(void *button), void (*onSetOn)(void *button), void (*onSetOff)(void *button), float sizeFactor, char *icon)
+{
     UI_button *newButton = malloc(sizeof(UI_button));
-    SDL_Color white = {255,255,255,255};
+    SDL_Color white = {255, 255, 255, 255};
     newButton->text = NULL;
     Game *game = menu->game;
     newButton->hidden = false;
@@ -96,24 +104,27 @@ UI_button *UI_newButtonIcon(UI_menu *menu, UI_buttonType type, UI_anchor *anchor
     char strKey[100];
     getButtonStrKey(type, strKey);
     char idleStr[255], hoverStr[255], enabledStr[255], disabledStr[255];
-    if(type == UI_CHECK_SMALL || type == UI_CHECK_ROUND || type == UI_CHECK_SQUARE){
-        sprintf(idleStr,"UI_%s_off.png", strKey);
-        sprintf(enabledStr,"UI_%s_on.png", strKey);
+    if (type == UI_CHECK_SMALL || type == UI_CHECK_ROUND || type == UI_CHECK_SQUARE)
+    {
+        sprintf(idleStr, "UI_%s_off.png", strKey);
+        sprintf(enabledStr, "UI_%s_on.png", strKey);
         newButton->textureHover = NULL;
         newButton->textureDisabled = NULL;
-    }else{
-        sprintf(hoverStr,"UI_%s_hover.png", strKey);
-        sprintf(idleStr,"UI_%s_idle.png", strKey);
-        sprintf(enabledStr,"UI_%s_enabled.png", strKey);
-        sprintf(disabledStr,"UI_%s_disabled.png", strKey);
+    }
+    else
+    {
+        sprintf(hoverStr, "UI_%s_hover.png", strKey);
+        sprintf(idleStr, "UI_%s_idle.png", strKey);
+        sprintf(enabledStr, "UI_%s_enabled.png", strKey);
+        sprintf(disabledStr, "UI_%s_disabled.png", strKey);
         newButton->textureHover = game->textureManager->getTexture(hoverStr);
         newButton->textureDisabled = game->textureManager->getTexture(disabledStr);
     }
     newButton->textureIdle = game->textureManager->getTexture(idleStr);
-    newButton->texturePress = game->textureManager->getTexture(enabledStr); 
-    newButton->textureObject = UI_newStaticTextureObject(menu, (SDL_Rect) {0,0,0,0}, anchor, idleStr);
-    newButton->hoverTextureObject = newButton->textureHover ? UI_newStaticTextureObject(menu, (SDL_Rect) {0,0,0,0}, anchor, hoverStr) : NULL;
-    newButton->actionArea = UI_newActionArea(menu, (SDL_Rect) {0,0,0,0}, anchor, onClick);
+    newButton->texturePress = game->textureManager->getTexture(enabledStr);
+    newButton->textureObject = UI_newStaticTextureObject(menu, (SDL_Rect){0, 0, 0, 0}, anchor, idleStr);
+    newButton->hoverTextureObject = newButton->textureHover ? UI_newStaticTextureObject(menu, (SDL_Rect){0, 0, 0, 0}, anchor, hoverStr) : NULL;
+    newButton->actionArea = UI_newActionArea(menu, (SDL_Rect){0, 0, 0, 0}, anchor, onClick);
     newButton->actionArea->disabled = true;
     newButton->isPressed = false;
     newButton->isDisabled = false;
@@ -123,91 +134,143 @@ UI_button *UI_newButtonIcon(UI_menu *menu, UI_buttonType type, UI_anchor *anchor
     newButton->onSetOn = onSetOn;
     newButton->onSetOff = onSetOff;
     newButton->sizeFactor = sizeFactor;
-    if(icon!=NULL){newButton->textureObjectIcon = UI_newStaticTextureObject(menu,(SDL_Rect){0,0,0,0},anchor,icon);}
-    else{newButton->textureObjectIcon=NULL;}
+    if (icon != NULL)
+    {
+        newButton->textureObjectIcon = UI_newStaticTextureObject(menu, (SDL_Rect){0, 0, 0, 0}, anchor, icon);
+    }
+    else
+    {
+        newButton->textureObjectIcon = NULL;
+    }
     UI_updateButton(newButton);
     appendInList(menu->buttons, newButton);
-    
+
     return newButton;
 }
 
-void UI_flipButton(UI_button *button){
-    if(button->hoverTextureObject) button->hoverTextureObject->flip = !button->hoverTextureObject->flip;
-    if(button->textureObject) button->textureObject->flip = !button->textureObject->flip;
+void UI_flipButton(UI_button *button,SDL_RendererFlip flip)
+{
+    if (button->hoverTextureObject)
+        button->hoverTextureObject->flip = flip;
+    if (button->textureObject)
+        button->textureObject->flip = flip;
 }
 
-void UI_updateButton(void *self){
+void UI_updateButton(void *self)
+{
     UI_button *this = self;
     Game *game = this->menu->game;
-    
+
     int texHeight, texWidth;
 
     SDL_QueryTexture(this->textureObject->texture, NULL, NULL, &texWidth, &texHeight);
-    SDL_Rect rect = (SDL_Rect) {this->anchor->getX(game) - ((texWidth*this->sizeFactor)/2), this->anchor->getY(game) - ((texHeight*this->sizeFactor)/2), texWidth*this->sizeFactor, texHeight*this->sizeFactor};
+    SDL_Rect rect = (SDL_Rect){this->anchor->getX(game) - ((texWidth * this->sizeFactor) / 2), this->anchor->getY(game) - ((texHeight * this->sizeFactor) / 2), texWidth * this->sizeFactor, texHeight * this->sizeFactor};
     this->textureObject->rect = rect;
     this->actionArea->rect = rect;
 
-    if(this->hoverTextureObject){
+    if (this->hoverTextureObject)
+    {
         SDL_QueryTexture(this->hoverTextureObject->texture, NULL, NULL, &texWidth, &texHeight);
-        rect = (SDL_Rect) {this->anchor->getX(game) - ((texWidth*this->sizeFactor)/2), this->anchor->getY(game) - ((texHeight*this->sizeFactor)/2), texWidth*this->sizeFactor, texHeight*this->sizeFactor};
+        rect = (SDL_Rect){this->anchor->getX(game) - ((texWidth * this->sizeFactor) / 2), this->anchor->getY(game) - ((texHeight * this->sizeFactor) / 2), texWidth * this->sizeFactor, texHeight * this->sizeFactor};
         this->hoverTextureObject->rect = rect;
     }
 
-    if(this->textureObjectIcon != NULL){
+    if (this->textureObjectIcon != NULL)
+    {
         SDL_QueryTexture(this->textureIdle, NULL, NULL, &texWidth, &texHeight);
-        int icon_width,icon_height;
+        int icon_width, icon_height;
         SDL_QueryTexture(this->textureObjectIcon->texture, NULL, NULL, &icon_width, &icon_height);
-        if(texWidth>=texHeight){rect = (SDL_Rect) {this->anchor->getX(game) - ((icon_width*this->sizeFactor)/2) - 0.025*texWidth*this->sizeFactor, this->anchor->getY(game) - ((texHeight*this->sizeFactor)/2) + 0.3*(texHeight*this->sizeFactor)/2, texHeight*this->sizeFactor*0.6, texHeight*this->sizeFactor*0.6};}
-        else{rect = (SDL_Rect) {this->anchor->getX(game) - ((icon_width*this->sizeFactor)/2) - 0.025*texWidth*this->sizeFactor, this->anchor->getY(game) - ((texHeight*this->sizeFactor)/2) + 0.3*(texHeight*this->sizeFactor)/2, texWidth*this->sizeFactor*0.6, texWidth*this->sizeFactor*0.6};}
+        if (texWidth >= texHeight)
+        {
+            rect = (SDL_Rect){this->anchor->getX(game) - ((icon_width * this->sizeFactor) / 2) - 0.025 * texWidth * this->sizeFactor, this->anchor->getY(game) - ((texHeight * this->sizeFactor) / 2) + 0.3 * (texHeight * this->sizeFactor) / 2, texHeight * this->sizeFactor * 0.6, texHeight * this->sizeFactor * 0.6};
+        }
+        else
+        {
+            rect = (SDL_Rect){this->anchor->getX(game) - ((icon_width * this->sizeFactor) / 2) - 0.025 * texWidth * this->sizeFactor, this->anchor->getY(game) - ((texHeight * this->sizeFactor) / 2) + 0.3 * (texHeight * this->sizeFactor) / 2, texWidth * this->sizeFactor * 0.6, texWidth * this->sizeFactor * 0.6};
+        }
         this->textureObjectIcon->rect = rect;
     }
 
-    if(!this->hidden){
+    if (!this->hidden)
+    {
         this->textureObject->hidden = false;
-        if(this->text) this->text->hidden = false;
-        if(this->hoverTextureObject) this->hoverTextureObject->hidden = true;
-        if(!this->isDisabled){
-            bool isHover = (game->mouseX >= this->actionArea->rect.x && game->mouseX <= this->actionArea->rect.x+this->actionArea->rect.w) && (game->mouseY >= this->actionArea->rect.y && game->mouseY <= this->actionArea->rect.y+this->actionArea->rect.h);
-            if(isHover){
+        if (this->text)
+            this->text->hidden = false;
+        if (this->hoverTextureObject)
+            this->hoverTextureObject->hidden = true;
+        if (!this->isDisabled)
+        {
+            bool isHover = (game->mouseX >= this->actionArea->rect.x && game->mouseX <= this->actionArea->rect.x + this->actionArea->rect.w) && (game->mouseY >= this->actionArea->rect.y && game->mouseY <= this->actionArea->rect.y + this->actionArea->rect.h);
+            if (isHover)
+            {
                 game->currentCursor = game->cursorHand;
-                if(this->hoverTextureObject) this->hoverTextureObject->hidden = false;
+                if (this->hoverTextureObject)
+                    this->hoverTextureObject->hidden = false;
             }
         }
-        if(this->isPressed) this->textureObject->texture = this->texturePress;
-        else if(this->isDisabled && this->textureDisabled) this->textureObject->texture = this->textureDisabled;
-        else this->textureObject->texture = this->textureIdle;
-    }else{
+        if (this->isPressed)
+            this->textureObject->texture = this->texturePress;
+        else if (this->isDisabled && this->textureDisabled)
+            this->textureObject->texture = this->textureDisabled;
+        else
+            this->textureObject->texture = this->textureIdle;
+    }
+    else
+    {
         this->textureObject->hidden = true;
-        if(this->text) this->text->hidden = true;
-        if(this->hoverTextureObject) this->hoverTextureObject->hidden = true;
+        if (this->text)
+            this->text->hidden = true;
+        if (this->hoverTextureObject)
+            this->hoverTextureObject->hidden = true;
     }
 }
 
-void UI_ButtonHandleMouseEvent(UI_button *button, bool isDown){
+void UI_ButtonHandleMouseEvent(UI_button *button, bool isDown)
+{
     Game *game = button->menu->game;
     int x = game->mouseX;
     int y = game->mouseY;
-    bool isHover = (x>=button->actionArea->rect.x && x<=button->actionArea->rect.x+button->actionArea->rect.w) && (y>=button->actionArea->rect.y && y<=button->actionArea->rect.y+button->actionArea->rect.h);
-     
-    if(!button->hidden && !button->isDisabled){
-        if(button->isSticky){
-            if(!isDown && isHover){
+    bool isHover = (x >= button->actionArea->rect.x && x <= button->actionArea->rect.x + button->actionArea->rect.w) && (y >= button->actionArea->rect.y && y <= button->actionArea->rect.y + button->actionArea->rect.h);
+
+    if (!button->hidden && !button->isDisabled)
+    {
+        if (button->isSticky)
+        {
+            if (!isDown && isHover)
+            {
                 button->isPressed = !button->isPressed;
-                if(button->onSetOn && button->isPressed) button->onSetOn(button); 
-                if(button->onSetOff && !button->isPressed) button->onSetOff(button);
-                if(button->actionArea->onClick) button->actionArea->onClick(button);
+                if (button->onSetOn && button->isPressed)
+                    button->onSetOn(button);
+                if (button->onSetOff && !button->isPressed)
+                    button->onSetOff(button);
+                if (button->actionArea->onClick)
+                    button->actionArea->onClick(button);
             }
-        }else{
-            if(isHover){
-                if(isDown) button->isPressed = true;
-                if(!isDown && button->isPressed) button->actionArea->onClick(button);
+        }
+        else
+        {
+            if (isHover)
+            {
+                if (isDown)
+                    button->isPressed = true;
+                if (!isDown && button->isPressed)
+                    button->actionArea->onClick(button);
             }
-            if(!isDown) button->isPressed = false;
+            if (!isDown)
+                button->isPressed = false;
         }
     }
 }
 
-void UI_FreeButton(void *self){
+void UI_FreeButton(void *self)
+{
     UI_button *this = self;
     free(this);
+}
+
+void UI_setButtonIcon(UI_button *button, char *icon, SDL_RendererFlip flip)
+{
+    Game *game = button->menu->game;
+    button->textureObjectIcon = UI_newStaticTextureObject(game->menu, (SDL_Rect){0, 0, 0, 0}, button->anchor, icon);
+    button->textureObjectIcon->flip = flip;
 }
