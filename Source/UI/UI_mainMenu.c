@@ -1,6 +1,8 @@
 #include "UI_mainMenu.h"
-#include "../Game/game.h"
 #include "UI_settingsMenu.h"
+
+#include "../Game/game.h"
+#include "../Game/selection.h"
 #include "../Game/gameManager.h" 
 
 static Game *THIS_GAME = NULL;
@@ -103,6 +105,14 @@ void switchToSettings()
 }
 
 void GM_launchEndless(void *self){
+    if(THIS_GAME->selection){
+        Selection *toFree = THIS_GAME->selection;
+        free(toFree);
+    }
+    Selection *selection = malloc(sizeof(Selection));
+    selection->type = SELECT_MAP;
+    selection->selected.mapId = 0;
+    THIS_GAME->selection = selection;
     launchEndlessMode(THIS_GAME);
 }
 
