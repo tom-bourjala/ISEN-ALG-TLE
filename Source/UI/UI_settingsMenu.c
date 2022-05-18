@@ -502,7 +502,7 @@ void UI_switchToSettings(void *GAME)
     UI_anchor *st_arrow_right_carousel_resolution_anchor = UI_newAnchor(game->menu, x_arrow_right, st_text_row_2);
     st_arrow_left_carousel_resolution = UI_newButton(st_panel->menu, NULL, UI_ARROW,st_arrow_right_carousel_resolution_anchor,false,changeResolutionRight,NULL,NULL,1);
     st_arrow_right_carousel_resolution = UI_newButton(st_panel->menu, NULL, UI_ARROW,st_arrow_left_carousel_resolution_anchor,false,changeResolutionLeft,NULL,NULL,1);
-    UI_flipButton(st_arrow_left_carousel_resolution);
+    UI_flipButton(st_arrow_left_carousel_resolution,SDL_FLIP_HORIZONTAL);
 
     st_text_fullscreen = UI_newText(st_panel->menu,LM_getTradById("options_menu_video_fullscreen"),st_title_line_anchor_col_left_row_3, UI_TA_LEFT, UI_TJ_CENTER,white, "./assets/fonts/RulerGold.ttf", 30);
     st_button_fullscreen = UI_newButton(st_panel->menu, NULL, UI_CHECK_DEFAULT,st_title_line_anchor_col_right_row_3,true,NULL,fullscreen_on,fullscreen_off,1);
@@ -523,7 +523,7 @@ void UI_switchToSettings(void *GAME)
     UI_anchor *st_arrow_right_anchor = UI_newAnchor(game->menu, x_arrow_right, st_text_row_2);
     st_arrow_left_carousel = UI_newButton(st_panel->menu, NULL, UI_ARROW,st_arrow_right_anchor,false,changeLangLeft,NULL,NULL,1);
     st_arrow_right_carousel = UI_newButton(st_panel->menu, NULL, UI_ARROW,st_arrow_left_anchor,false,changeLangRight,NULL,NULL,1);
-    UI_flipButton(st_arrow_left_carousel); //<- (!)
+    UI_flipButton(st_arrow_left_carousel,SDL_FLIP_HORIZONTAL); //<- (!)
     st_panel_carousel_anchor = UI_newAnchor(game->menu, x_panel_carousel, y_panel_carousel);
     st_panel_carousel_lang = UI_newPanel(game->menu, 210, 40, st_panel_carousel_anchor, 2, UI_PT_B);
 
@@ -536,7 +536,7 @@ void UI_switchToSettings(void *GAME)
     st_arrow_right_accessibility_daltonism_anchor = UI_newAnchor(game->menu,x_arrow_right,st_text_row_3);
     st_arrow_left_carousel_daltonism = UI_newButton(st_panel->menu, NULL, UI_ARROW,st_arrow_right_accessibility_daltonism_anchor,false,changeDaltonismLeft,NULL,NULL,1);
     st_arrow_right_carousel_daltonism = UI_newButton(st_panel->menu, NULL, UI_ARROW,st_arrow_left_accessibility_daltonism_anchor,false,changeDaltonismRight,NULL,NULL,1);
-    UI_flipButton(st_arrow_left_carousel_daltonism);
+    UI_flipButton(st_arrow_left_carousel_daltonism,SDL_FLIP_HORIZONTAL);
     st_text_accessibility_daltonism_anchor = UI_newAnchor(game->menu,x_panel_carousel_text_daltonism,y_panel_carousel_text_daltonism);
     st_text_accessibility_daltonism = UI_newText(game->menu,LM_getTradById("options_menu_accessibility_daltonism_none"),st_text_accessibility_daltonism_anchor, UI_TA_CENTER, UI_TJ_CENTER,white, "./assets/fonts/RulerGold.ttf", 30);
     for(int i=0;i<4;i++)
@@ -582,7 +582,8 @@ void UI_switchToSettings(void *GAME)
     UI_button *button_turret2 = UI_newButton(st_panel->menu,LM_getTradById("options_menu_keybinds_upgrade"),UI_B_DEFAULT,st_title_command_anchor_col_left_row_5,true,NULL,screenShakeOn,screenShakeOff,1.5);
     UI_button *button_turret3 = UI_newButton(st_panel->menu,LM_getTradById("options_menu_keybinds_upgrade"),UI_B_DEFAULT,st_title_command_anchor_col_left_row_6,true,NULL,screenShakeOn,screenShakeOff,1.5);
     UI_button *button_up_arrow = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_left_row_1,true,NULL,screenShakeOn,screenShakeOff,1.5,"UI_icon_key_move_up.png");
-    UI_button *button_down_arrow = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_left_row_2,true,NULL,screenShakeOn,screenShakeOff,1.5,"UI_icon_key_move_down.png");
+    UI_button *button_down_arrow = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_left_row_2,true,NULL,screenShakeOn,screenShakeOff,1.5,NULL);
+    UI_setButtonIcon(button_down_arrow,"UI_icon_key_move_up.png",SDL_FLIP_VERTICAL);
 
     onUpdateSettings();    
 }
