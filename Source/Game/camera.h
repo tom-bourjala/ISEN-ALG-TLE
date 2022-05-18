@@ -18,3 +18,7 @@ void cameraCheckSize();
 void cameraZoom(float zoom);
 void cameraMove(int x, int y);
 void cameraZoomAt(float zoom, int x, int y);
+
+void cameraStartDrag();
+void cameraDrag();
+void cameraEndDrag();

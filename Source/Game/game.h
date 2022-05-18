@@ -44,10 +44,12 @@ typedef struct
     void *selection;
     int mouseX;
     int mouseY;
+    bool mouseLeftDown;
     int winWidth;
     int winHeight;
     int cameraX;
     int cameraY;
+    bool cameraDragging;
     float cameraScale;
 } Game;
 

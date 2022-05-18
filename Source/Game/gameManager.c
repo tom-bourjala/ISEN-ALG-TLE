@@ -35,6 +35,7 @@ void launchEndlessMode(void *game){
     GAME->cameraScale = 0.7f;
     map_node *startNode = GAME->mapManager->currentMap->starts->first->data;
     newGameObject_Robot(GAME, "debug.robot", startNode, 0);
+    cameraCheckSize();
 }
 
 void updateGameManager(){
