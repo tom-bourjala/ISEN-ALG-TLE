@@ -12,6 +12,7 @@
 #include "../Maps/mapManager.h"
 #include "../List/SmartList.h"
 #include "../Language/lang.h"
+#include "../SoundEngine/sound-engine.h"
 
 typedef enum {DEBUG_NULL, DEBUG_HITBOX, DEBUG_PATH, DEBUG_EL} debug;
 typedef enum {GS_LoadingMainMenu, GS_MainMenu, GS_LoadingMap, GS_InGame} gameStatus;
@@ -33,6 +34,8 @@ typedef struct
     mapManager *mapManager;
     langManager *languageManager;
     UI_menu *menu;
+    SoundEngine *soundEngine;
+    float SEMusicWeight;
     list *gameObjects;
     GameObject *coreObj;
     bool isRunning;

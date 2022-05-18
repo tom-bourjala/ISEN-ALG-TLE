@@ -155,6 +155,8 @@ Game *initGame(const char* title, int width, int height, bool fullscreen){
         GAME->isRunning = false;
         printf("\033[1;31mSDL Subsystems Initialising FAILED : %s\033[0m\n", SDL_GetError());
     }
+    GAME->SEMusicWeight = 0;
+    GAME->soundEngine = initSoundEngine(&GAME->SEMusicWeight);
     GAME->mouseX = 0;
     GAME->mouseY = 0;
     GAME->mouseLeftDown = false;
