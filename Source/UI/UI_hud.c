@@ -10,8 +10,6 @@
 static Game *THIS_GAME = NULL;
 static float *core_health_percentage = NULL;
 static float *core_shield_percentage = NULL;
-static float health = 0;
-static float shield = 0;
 
 static char **(*LM_getTradById)(char *idToGet) = NULL;
 
@@ -163,7 +161,9 @@ void eventTurretSelector(void *triggeredActionArea)
 }
 
 static void onUpdate(){
-
+    core *ThisCore = THIS_GAME->coreObj->actor;
+    *core_health_percentage = (float)ThisCore->health/(float)ThisCore->maxHealth;
+    *core_shield_percentage = (float)ThisCore->shield/(float)ThisCore->maxShield;
 }
 
 void UI_initHud(void *GAME)
@@ -207,8 +207,12 @@ void UI_initHud(void *GAME)
     A_HUD_SHIELD_BAR = UI_newAnchor(game->menu, HUD_shield_bar_x, HUD_shield_bar_y);
     A_HUD_HEALTH_BAR = UI_newAnchor(game->menu, HUD_health_bar_x, HUD_health_bar_y);
     core *ThisCore = game->coreObj->actor;
-    UI_progressBar *progressBar_health =  UI_newProgressBar(THIS_GAME,0.01875*THIS_GAME->winWidth, 0.2*THIS_GAME->winHeight,NULL, NULL,A_HUD_HEALTH_BAR,2,1,&ThisCore->health,&ThisCore->maxHealth);
-    UI_progressBar *progressBar_shield =  UI_newProgressBar(THIS_GAME,0.01875*THIS_GAME->winWidth, 0.2*THIS_GAME->winHeight,NULL, NULL,A_HUD_SHIELD_BAR,2,1,&ThisCore->shield,&ThisCore->maxShield);
+    core_health_percentage = malloc(sizeof(float));
+    core_shield_percentage = malloc(sizeof(float));
+    *core_health_percentage = (float)ThisCore->health/(float)ThisCore->maxHealth;
+    *core_shield_percentage = (float)ThisCore->shield/(float)ThisCore->maxShield;
+    UI_progressBar *progressBar_health =  UI_newProgressBar(THIS_GAME,0.01875*THIS_GAME->winWidth, 0.2*THIS_GAME->winHeight,NULL, NULL,A_HUD_HEALTH_BAR,2,1,core_health_percentage,UI_PGB_HEALTH);
+    UI_progressBar *progressBar_shield =  UI_newProgressBar(THIS_GAME,0.01875*THIS_GAME->winWidth, 0.2*THIS_GAME->winHeight,NULL, NULL,A_HUD_SHIELD_BAR,2,1,core_shield_percentage,UI_PGB_SHIELD);
 
     /* Golds */
     UI_anchor *A_PANEL_GOLDS_HUD = UI_newAnchor(game->menu, HUD_golds_panel_x, HUD_golds_panel_y);

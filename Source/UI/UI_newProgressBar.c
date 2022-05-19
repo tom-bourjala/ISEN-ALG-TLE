@@ -1,12 +1,10 @@
 #include "UI_newProgressBar.h"
 
-static float percentage = 0;
-
-UI_progressBar *UI_newProgressBar(Game *game,int width,int height,char *behindTexture, char *frontTexture,UI_anchor *anchor,int sizeFactor,bool vertical,float *currentValue,float *maxValue)
+UI_progressBar *UI_newProgressBar(Game *game,int width,int height,char *behindTexture, char *frontTexture,UI_anchor *anchor,int sizeFactor,bool vertical,float *value,UI_progresBarType type)
 {
     UI_progressBar *progressBar = malloc(sizeof(UI_progressBar));
     progressBar->menu = game->menu;
-    progressBar->game = game;
+    progressBar->type = type;
     progressBar->hidden = false;
     if(!vertical)
     {
@@ -15,20 +13,15 @@ UI_progressBar *UI_newProgressBar(Game *game,int width,int height,char *behindTe
     }
     progressBar->width = width;
     progressBar->height = height;
-    progressBar->currentValue = currentValue;
-    progressBar->maxValue = maxValue;
-    progressBar->percentage = (float)(*progressBar->currentValue)/(float)(*progressBar->maxValue);
+    progressBar->value = value;
     char id[200];
-    getPanelKey(UI_PT_A,id);
+    getProgressBarKey(type,id);
     char idle[255];
     char enabled[255];
-    char disabled[255];
-    sprintf(idle,"UI_panel_%s.png",id);
-    sprintf(enabled,"UI_panel_%s_enabled.png",id);
-    sprintf(disabled,"UI_panel_%s_disabled.png",id);
+    sprintf(idle,"UI_progressBar_%s.png",id);
+    sprintf(enabled,"UI_progressBar_%s_active.png",id);
     progressBar->behind_texture = game->textureManager->getTexture(idle);
     progressBar->front_texture = game->textureManager->getTexture(enabled);
-    progressBar->textureDisabled = game->textureManager->getTexture(disabled);
     progressBar->anchor = anchor;
     progressBar->vertical = vertical;
     progressBar->sizeFactor = sizeFactor;
@@ -37,9 +30,22 @@ UI_progressBar *UI_newProgressBar(Game *game,int width,int height,char *behindTe
     return progressBar; 
 }
 
+void getProgressBarKey(UI_progresBarType type, char *str)
+{
+    switch (type)
+    {
+        case UI_PGB_HEALTH:
+            strcpy(str, "Health");
+            break;
+        case UI_PGB_SHIELD:
+            strcpy(str, "Shield");
+            break;
+    }
+}
+
 void UI_updateProgressBars(UI_progressBar *progressBar)
 {
-    progressBar->percentage = (float)(*progressBar->currentValue)/(float)(*progressBar->maxValue);
+    
 }
 
 void UI_renderProgressBars(UI_progressBar *progressBar){
@@ -54,7 +60,12 @@ void UI_renderProgressBars(UI_progressBar *progressBar){
         }
         int x = this->anchor->getX(game);
         int y = this->anchor->getY(game);
- 
+        int newHeight = this->height*(*this->value);
+        if(newHeight%2!=0) newHeight--;
+        int newWidth = this->width*(*this->value);
+        if(newWidth%2!=0) newWidth--;
+        int newX = x+this->width-newWidth;
+        int newY = y+this->height-newHeight;
         SDL_Rect src_rect = (SDL_Rect){7,7,2,2};
         SDL_Rect dst_rect = (SDL_Rect){x,y,this->width,this->height};
         SDL_RenderCopy(game->renderer, this->behind_texture, &src_rect,&dst_rect);
@@ -97,78 +108,30 @@ void UI_renderProgressBars(UI_progressBar *progressBar){
         if(this->vertical)
         {
             src_rect = (SDL_Rect){7,7,2,2};
-            dst_rect = (SDL_Rect){x,y+this->height*(1-this->percentage),this->width,this->height*this->percentage};
+            dst_rect = (SDL_Rect){x,newY,this->width,newHeight};
             SDL_RenderCopy(game->renderer, this->front_texture, &src_rect,&dst_rect);
 
-            dst_rect=(SDL_Rect){x,y+this->height*(1-this->percentage),this->width,z*this->percentage};
-            src_rect=(SDL_Rect){7,0,2,8};
-            SDL_RenderCopy(game->renderer, this->front_texture,&src_rect,&dst_rect);
-            
-            dst_rect=(SDL_Rect){x+this->width-z,y+this->height*(1-this->percentage),z,this->height*this->percentage};
+            dst_rect=(SDL_Rect){x+this->width-z,newY,z,newHeight};
             src_rect=(SDL_Rect){8,7,8,2};
             SDL_RenderCopy(game->renderer, this->front_texture,&src_rect,&dst_rect);
             
-            dst_rect=(SDL_Rect){x,y+this->height-z,this->width,z};
-            src_rect=(SDL_Rect){7,8,2,8};
-            SDL_RenderCopy(game->renderer, this->front_texture,&src_rect,&dst_rect);
-            
-            dst_rect=(SDL_Rect){x,y+this->height*(1-this->percentage),z,this->height*this->percentage};
+            dst_rect=(SDL_Rect){x,newY,z,newHeight};
             src_rect=(SDL_Rect){0,7,8,2};
-            SDL_RenderCopy(game->renderer, this->front_texture,&src_rect,&dst_rect);
-
-            dst_rect = (SDL_Rect){x,y+this->height*(1-this->percentage),z,z};
-            src_rect = (SDL_Rect){0,0,8,8};
-            SDL_RenderCopy(game->renderer, this->front_texture,&src_rect,&dst_rect);
-            
-            dst_rect = (SDL_Rect){x+this->width-z,y+this->height*(1-this->percentage),z,z};
-            src_rect = (SDL_Rect){8,0,8,8};
-            SDL_RenderCopy(game->renderer, this->front_texture,&src_rect,&dst_rect);
-            
-            dst_rect = (SDL_Rect){x,y+this->height-z,z,z};
-            src_rect = (SDL_Rect){0,8,8,8};
-            SDL_RenderCopy(game->renderer, this->front_texture,&src_rect,&dst_rect);
-
-            dst_rect = (SDL_Rect){x+this->width-z,y+this->height-z,z,z};
-            src_rect = (SDL_Rect){8,8,8,8};
             SDL_RenderCopy(game->renderer, this->front_texture,&src_rect,&dst_rect);
         }
 
         else
         {
             src_rect = (SDL_Rect){7,7,2,2};
-            dst_rect = (SDL_Rect){x+this->width*(1-this->percentage),y,this->width*this->percentage,this->height};
+            dst_rect = (SDL_Rect){newX,y,newWidth,this->height};
             SDL_RenderCopy(game->renderer, this->front_texture, &src_rect,&dst_rect);
 
-            dst_rect=(SDL_Rect){x+this->width*(1-this->percentage),y,this->width*this->percentage,z};
+            dst_rect=(SDL_Rect){newX,y,newWidth,z};
             src_rect=(SDL_Rect){7,0,2,8};
             SDL_RenderCopy(game->renderer, this->front_texture,&src_rect,&dst_rect);
             
-            dst_rect=(SDL_Rect){x,y,z*this->percentage,this->height};
-            src_rect=(SDL_Rect){8,7,8,2};
-            SDL_RenderCopy(game->renderer, this->front_texture,&src_rect,&dst_rect);
-            
-            dst_rect=(SDL_Rect){x+this->width*(1-this->percentage),y+this->height-z,this->width*this->percentage,z};
+            dst_rect=(SDL_Rect){newX,y+this->height-z,newWidth,z};
             src_rect=(SDL_Rect){7,8,2,8};
-            SDL_RenderCopy(game->renderer, this->front_texture,&src_rect,&dst_rect);
-            
-            dst_rect=(SDL_Rect){x+this->width*(1-this->percentage),y,z*this->percentage,this->height};
-            src_rect=(SDL_Rect){0,7,8,2};
-            SDL_RenderCopy(game->renderer, this->front_texture,&src_rect,&dst_rect);
-
-            dst_rect = (SDL_Rect){x+this->width*(1-this->percentage),y,z,z};
-            src_rect = (SDL_Rect){0,0,8,8};
-            SDL_RenderCopy(game->renderer, this->front_texture,&src_rect,&dst_rect);
-            
-            dst_rect = (SDL_Rect){x+this->width-z,y,z,z};
-            src_rect = (SDL_Rect){8,0,8,8};
-            SDL_RenderCopy(game->renderer, this->front_texture,&src_rect,&dst_rect);
-            
-            dst_rect = (SDL_Rect){x+this->width*(1-this->percentage),y+this->height-z,z,z};
-            src_rect = (SDL_Rect){0,8,8,8};
-            SDL_RenderCopy(game->renderer, this->front_texture,&src_rect,&dst_rect);
-
-            dst_rect = (SDL_Rect){x+this->width-z,y+this->height-z,z,z};
-            src_rect = (SDL_Rect){8,8,8,8};
             SDL_RenderCopy(game->renderer, this->front_texture,&src_rect,&dst_rect);
         }
         
