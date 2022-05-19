@@ -153,6 +153,7 @@ typedef struct{
     int sizeFactor;
     UI_panel *parent;
     void (*onToggle)(void *self);
+    UI_textureObject *textureObjectIcon;
 }UI_panelButton;
 
 typedef enum{UI_PGB_SHIELD,UI_PGB_HEALTH} UI_progresBarType;
