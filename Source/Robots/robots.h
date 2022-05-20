@@ -11,6 +11,8 @@ typedef struct{
     SDL_Texture *texture;
     int nOfFrames;
     int currentFrame;
+    int frameWidth;
+    int frameHeight;
 } robot_walk;
 
 typedef struct{

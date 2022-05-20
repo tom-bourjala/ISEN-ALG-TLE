@@ -77,6 +77,7 @@ weaponType getWeaponTypeFromString(char *fileParamString){
     if(!strcmp("BALLISTIC", fileParamString)) return BALLISTIC;
     if(!strcmp("PLASMA", fileParamString)) return PLASMA;
     if(!strcmp("EXPLOSIVE", fileParamString)) return EXPLOSIVE;
+    if(!strcmp("LASER", fileParamString)) return LASER;
     return 0;
 }
 
@@ -117,12 +118,6 @@ projectile *newProjectile(void *game,char *projectileFileName, float xpos, float
             case P_WEAPON_TYPE :
                 createdProjectile->type = getWeaponTypeFromString(stat_value);
                 break;
-            case P_WIDTH :
-                createdProjectile->projectileRenderer.width = atoi(stat_value);
-                break;
-            case P_HEIGHT:
-                createdProjectile->projectileRenderer.height = atoi(stat_value);
-                break;
             case P_NONE :
                 break;
         }
@@ -131,11 +126,15 @@ projectile *newProjectile(void *game,char *projectileFileName, float xpos, float
     char *textureName = malloc(sizeof(char)*50);
     sprintf(textureName, "p_%s.png", createdProjectile->projectileRenderer.texref);
     createdProjectile->projectileRenderer.texture = GAME->textureManager->getTexture(textureName);
+    SDL_QueryTexture(createdProjectile->projectileRenderer.texture, NULL, NULL, &createdProjectile->projectileRenderer.freamWidth, &createdProjectile->projectileRenderer.freamHeight);
+    createdProjectile->projectileRenderer.freamWidth /= createdProjectile->projectileRenderer.nOfFrames;
     createdProjectile->projectileRenderer.currentFrame = 0;
     
     createdProjectile->isFriendly = isFriendly;
     createdProjectile->x = xpos;
     createdProjectile->y = ypos;
+    createdProjectile->width = createdProjectile->projectileRenderer.freamWidth * 2;
+    createdProjectile->height = createdProjectile->projectileRenderer.freamHeight * 2;
     createdProjectile->rotation = rotation;
     createdProjectile->speedx = -createdProjectile->speed * sin(rotation);
     createdProjectile->speedy = -createdProjectile->speed * cos(rotation);
@@ -183,7 +182,7 @@ void projectileUpdate(void *self){
     SDL_GetCurrentDisplayMode(0, DM);
     int wWidth = DM->w;
     int wHeight = DM->h;
-    if(endPosX < -this->projectileRenderer.width || endPosX > wWidth + this->projectileRenderer.width || endPosY < -this->projectileRenderer.height || endPosY > wHeight + this->projectileRenderer.height){
+    if(endPosX < -this->width || endPosX > wWidth + this->width || endPosY < -this->height || endPosY > wHeight + this->height){
         this->delete(this);
         return;
     }
@@ -194,7 +193,7 @@ void projectileUpdate(void *self){
 void projectileRender(void *self){
     projectile *this = self;
     GameObject *parent = this->parent;
-    SDL_Rect rect={ROUND(this->x)+(this->projectileRenderer.width/2),ROUND(this->y),this->projectileRenderer.width, this->projectileRenderer.height};
+    SDL_Rect rect={ROUND(this->x)+(this->width/2),ROUND(this->y),this->width, this->height};
     //NEEED TO FIX THIS
     cameraRenderExUnsquared(this->projectileRenderer.texture, rect, this->projectileRenderer.currentFrame, this->projectileRenderer.nOfFrames, -this->rotation*90/(M_PI/2) + 180, false, false);
 }
