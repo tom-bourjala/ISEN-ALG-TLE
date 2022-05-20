@@ -390,7 +390,6 @@ void loadMusicTrack(const char *DirName, const char *MusicName)
 
 void loadSFX(const char *DirName)
 {
-    printf("%p\n", DirName);
     DIR *dir = opendir(DirName);
     struct dirent *ent;
     if (dir == NULL)
@@ -518,7 +517,7 @@ SoundEngine *initSoundEngine(float *musicWeightControl)
     Mix_AllocateChannels(MAX_CHANNEL_ALLOCATED);
 
     // lis le fichier config.json
-    json_object *json = json_object_from_file("son/config.json");
+    json_object *json = json_object_from_file("assets/sound/config.json");
     // read where to find the FX
     json_object *fxPath = json_object_object_get(json, "effects");
     json_object *dialogPath = json_object_object_get(json, "dialogs");
