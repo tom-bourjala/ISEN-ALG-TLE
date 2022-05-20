@@ -15,7 +15,6 @@ play_menu_sandbox;SANDBOX
 play_menu_back;BACK
 options_menu_video_resolution;SCREEN SIZE
 options_menu_video_fullscreen;FULLSCREEN
-options_menu_video_2560_1440;2560 x 1440
 options_menu_video_1920_1080;1920 x 1080
 options_menu_video_1536_864;1536 x 864
 options_menu_video_1366_768;1366 x 768
