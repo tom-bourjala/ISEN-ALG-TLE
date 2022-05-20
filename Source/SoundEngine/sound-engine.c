@@ -390,6 +390,7 @@ void loadMusicTrack(const char *DirName, const char *MusicName)
 
 void loadSFX(const char *DirName)
 {
+    printf("%p\n", DirName);
     DIR *dir = opendir(DirName);
     struct dirent *ent;
     if (dir == NULL)
