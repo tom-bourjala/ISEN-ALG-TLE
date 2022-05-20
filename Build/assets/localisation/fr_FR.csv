@@ -37,8 +37,8 @@ options_menu_accessibility_daltonism_none;AUCUN
 options_menu_keybinds_up;HAUT
 options_menu_keybinds_down;BAS
 options_menu_keybinds_right;DROITE
-options_menu_keybinds_left;LEFT
-options_menu_keybinds_zoom_in;ZOOMMER
+options_menu_keybinds_left;GAUCHE
+options_menu_keybinds_zoom_in;ZOOMER
 options_menu_keybinds_zoom_out;DEZOOMER
 options_menu_keybinds_turret_1;TOURELLE 1
 options_menu_keybinds_turret_2;TOURELLE 2
