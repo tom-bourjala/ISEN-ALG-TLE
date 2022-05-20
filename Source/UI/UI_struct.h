@@ -26,6 +26,8 @@ typedef struct
     void (*render)();
 }UI_menu;
 
+
+
 typedef struct
 {
     int (*getX)(void *entry);
@@ -119,7 +121,6 @@ typedef struct
 }UI_slider;
 
 typedef enum{UI_PT_A,UI_PT_B,UI_PT_DIAG} UI_panelType;
-
 typedef struct
 {
     UI_anchor *anchorLT;
@@ -152,6 +153,23 @@ typedef struct{
     int sizeFactor;
     UI_panel *parent;
     void (*onToggle)(void *self);
+    UI_textureObject *textureObjectIcon;
 }UI_panelButton;
 
+typedef enum{UI_PGB_SHIELD,UI_PGB_HEALTH} UI_progresBarType;
+
+typedef struct UI_progressBar
+{
+    int width;
+    int height;
+    SDL_Texture *front_texture;
+    SDL_Texture *behind_texture;
+    UI_anchor *anchor;
+    float *value;
+    bool vertical;
+    int sizeFactor;
+    UI_menu *menu;
+    bool hidden;
+    UI_progresBarType type;
+}UI_progressBar;
 #endif

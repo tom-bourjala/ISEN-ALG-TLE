@@ -106,7 +106,6 @@ void UI_renderPanel(void *self){
         dst_rect = (SDL_Rect){x+this->width-z,y+this->height-z,z,z};
         src_rect = (SDL_Rect){8,8,8,8};
         SDL_RenderCopy(game->renderer, this->textureCurrent,&src_rect,&dst_rect);
-        
     }
 }
 
@@ -115,7 +114,6 @@ void UI_FreePanel(void *self){
     free(this);
 }
 
-
 UI_panelButton *UI_newButtonPanel(UI_panel *parent, char **text, SDL_Rect rect, int orientation,void (*onToggle)(void *self))
 {
     UI_panelButton *newButtonPanel = (UI_panelButton*) malloc(sizeof(UI_panelButton));
@@ -123,6 +121,7 @@ UI_panelButton *UI_newButtonPanel(UI_panel *parent, char **text, SDL_Rect rect, 
     SDL_Color white = {255,255,255,255};
     if(text) newButtonPanel->text = UI_newText(parent->menu, text, NULL, UI_TA_CENTER, UI_TJ_CENTER, white, "./assets/fonts/RulerGold.ttf", 15*parent->sizeFactor);
     else newButtonPanel->text = NULL;
+    newButtonPanel->textureObjectIcon = NULL;
     newButtonPanel->isDisabled = false;
     newButtonPanel->isActive = false;
     newButtonPanel->isHover = false;
@@ -157,6 +156,52 @@ UI_panelButton *UI_newButtonPanel(UI_panel *parent, char **text, SDL_Rect rect, 
             break;
     }
     newButtonPanel->textureCurrent = newButtonPanel->textureIdle;
+    appendInList(parent->menu->panelButtons,newButtonPanel);
+    return newButtonPanel;
+}
+
+UI_panelButton *UI_newButtonPanelIcon(UI_panel *parent, SDL_Rect rect, int orientation,void (*onToggle)(void *self),char *icon)
+{
+    UI_panelButton *newButtonPanel = (UI_panelButton*) malloc(sizeof(UI_panelButton));
+    Game *game = parent->menu->game;
+    SDL_Color white = {255,255,255,255};
+    newButtonPanel->text = NULL;
+    newButtonPanel->isDisabled = false;
+    newButtonPanel->isActive = false;
+    newButtonPanel->isHover = false;
+    newButtonPanel->hidden = false;
+    newButtonPanel->rect = rect;
+    newButtonPanel->orientation = orientation;
+    newButtonPanel->sizeFactor = parent->sizeFactor;
+    newButtonPanel->parent = parent;
+    newButtonPanel->onToggle = onToggle;
+    switch (orientation) {
+        case 0:
+            newButtonPanel->textureIdle = game->textureManager->getTexture("UI_tab_n_idle.png");
+            newButtonPanel->textureEnabled = game->textureManager->getTexture("UI_tab_n_enabled.png");
+            newButtonPanel->textureDisabled = game->textureManager->getTexture("UI_tab_n_disabled.png");
+            break;
+        case 1:
+            newButtonPanel->textureIdle = game->textureManager->getTexture("UI_tab_e_idle.png");
+            newButtonPanel->textureEnabled = game->textureManager->getTexture("UI_tab_e_enabled.png");
+            newButtonPanel->textureDisabled = game->textureManager->getTexture("UI_tab_e_disabled.png");
+            break;
+        case 2:
+            newButtonPanel->textureIdle = game->textureManager->getTexture("UI_tab_s_idle.png");
+            newButtonPanel->textureEnabled = game->textureManager->getTexture("UI_tab_s_enabled.png");
+            newButtonPanel->textureDisabled = game->textureManager->getTexture("UI_tab_s_disabled.png");
+            break;
+        case 3:
+            newButtonPanel->textureIdle = game->textureManager->getTexture("UI_tab_w_idle.png");
+            newButtonPanel->textureEnabled = game->textureManager->getTexture("UI_tab_w_enabled.png");
+            newButtonPanel->textureDisabled = game->textureManager->getTexture("UI_tab_w_disabled.png");
+            break;
+        default:
+            break;
+    }
+    newButtonPanel->textureCurrent = newButtonPanel->textureIdle;
+    if(icon!=NULL){newButtonPanel->textureObjectIcon = UI_newStaticTextureObject(parent->menu, (SDL_Rect){0, 0, 0, 0}, newButtonPanel->parent->anchorLT, icon);}
+    else{newButtonPanel->textureObjectIcon = NULL;}
     appendInList(parent->menu->panelButtons,newButtonPanel);
     return newButtonPanel;
 }
@@ -201,7 +246,7 @@ void UI_updateButtonPanel(void *self){
     Game *game = (Game*)this->parent->menu->game;
 
     if(!this->hidden){ 
-        if(!this->isDisabled){
+        if(!this->isDisabled && this->text!=NULL){
             SDL_Rect pRect = getPanelButtonRect(*this);
             int width,height;
             SDL_QueryTexture(this->text->texture,NULL,NULL,&width,&height);
@@ -296,6 +341,19 @@ void UI_renderButtonPanel(void *self)
         dst_rect = (SDL_Rect){pRect.x+pRect.w-z,pRect.y+pRect.h-z,z,z};
         src_rect = (SDL_Rect){8,8,8,8};
         SDL_RenderCopy(game->renderer, this->textureCurrent,&src_rect,&dst_rect);
+
+        if (this->textureObjectIcon != NULL)
+        {
+            if(!this->orientation)
+            {
+                int icon_width, icon_height;
+                SDL_QueryTexture(this->textureObjectIcon->texture, NULL, NULL, &icon_width, &icon_height);
+                icon_width*=2.2;
+                icon_height*=2.2;
+                SDL_Rect rect={x+this->rect.x+this->rect.w/2-icon_width/2,y-this->rect.h/2-icon_height/3,icon_width,icon_height};
+                this->textureObjectIcon->rect = rect;
+            }
+        }
     }
 }
 
