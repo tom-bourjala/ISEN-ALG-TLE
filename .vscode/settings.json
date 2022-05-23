@@ -17,6 +17,8 @@
         "ui_mainmenu.h": "c",
         "camera.h": "c",
         "mapmanager.h": "c",
-        "ui_loading.h": "c"
+        "ui_loading.h": "c",
+        "ui_settingsmenu.h": "c",
+        "stdlib.h": "c"
     }
 }
