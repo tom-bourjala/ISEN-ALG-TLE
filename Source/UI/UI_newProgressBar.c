@@ -25,7 +25,6 @@ UI_progressBar *UI_newProgressBar(Game *game,int width,int height,char *behindTe
     progressBar->anchor = anchor;
     progressBar->vertical = vertical;
     progressBar->sizeFactor = sizeFactor;
-    UI_updateProgressBars(progressBar);
     appendInList(game->menu->progressBars, progressBar);
     return progressBar; 
 }
@@ -43,12 +42,8 @@ void getProgressBarKey(UI_progresBarType type, char *str)
     }
 }
 
-void UI_updateProgressBars(UI_progressBar *progressBar)
-{
-    
-}
-
-void UI_renderProgressBars(UI_progressBar *progressBar){
+void UI_renderProgressBars(void *self){
+    UI_progressBar *progressBar = (UI_progressBar*)self;
     Game *game = progressBar->menu->game;
     UI_progressBar *this = progressBar;
     if(!this->hidden){
@@ -144,7 +139,8 @@ void UI_renderProgressBars(UI_progressBar *progressBar){
     }
 }
 
-void UI_FreeProgressBars(UI_progressBar *progressBar)
+void UI_FreeProgressBars(void *self)
 {
+    UI_progressBar *progressBar = (UI_progressBar*)self;
     free(progressBar);
 }

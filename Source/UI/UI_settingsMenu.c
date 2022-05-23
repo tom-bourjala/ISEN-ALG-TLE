@@ -1,10 +1,18 @@
-#include "UI_settingsMenu.h"
 #include "../Game/game.h"
 #include <stdbool.h>
 #include "../Language/lang.h"
 
 static Game *THIS_GAME = NULL;
 static UI_menu *backStateMenu = NULL;
+static UI_button *selected_button_keyBindings = NULL;
+
+static list *KB_button_bindings = NULL;
+
+typedef struct 
+{
+    UI_button *button;
+    GA_type action;
+}buttonBinding;
 
 int getLT_x(void *none){return 200;}
 int getLT_y(void *none){return 100;}
@@ -61,18 +69,6 @@ static UI_text *st_text_command_turret_3 = NULL;
 static UI_text *st_text_command_pause = NULL;
 static UI_text *st_text_command_sell = NULL;
 static UI_text *st_text_command_upgrade = NULL;
-static UI_button *button_right_arrow;
-static UI_button *button_left_arrow;
-static UI_button *button_zoom_out;
-static UI_button *button_zoom_in;
-static UI_button *button_pause;
-static UI_button *button_sell;
-static UI_button *button_upgrade;
-static UI_button *button_turret1;
-static UI_button *button_turret2;
-static UI_button *button_turret3;
-static UI_button *button_up_arrow;
-static UI_button *button_down_arrow;
     
 
 //ACCESSIBILITY PANEL
@@ -106,10 +102,10 @@ int getPannelMiddle_x(void *none){return THIS_GAME->winWidth/2;}
 int getPannelMiddle_y(void *none){return THIS_GAME->winHeight/2;}
 
 int back_button_anchor_x(void *non){return getPannelMiddle_x(NULL)+st_panel->width/2-125;}
-int back_button_anchor_y(void *non){return getPannelMiddle_y(NULL)+st_panel->height/2-50;}
+int back_button_anchor_y(void *non){return getPannelMiddle_y(NULL)+st_panel->height/2+40;}
 
-int col_left_x(void *none){return st_panel->width/4+getLT_x(NULL);}
-int col_right_x(void *none){return 2*st_panel->width/3+getLT_x(NULL);}
+int col_left_x(void *none){return getLT_x(NULL)+200;}
+int col_right_x(void *none){return  getLT_x(NULL)+st_panel->width-400;}
 int col_left_x_command_button(void *none){return col_left_x(NULL)-80;}
 int col_right_x_command_button(void *none){return col_right_x(NULL)-80;}
 
@@ -139,15 +135,15 @@ int y_panel_carousel(void *none){return st_text_row_2(NULL) - 22;}
 UI_anchor *st_panel_carousel_anchor = NULL;
 UI_panel *st_panel_carousel_lang = NULL;
 
-int x_panel_carousel_text(void *none){return col_right_x(NULL) + 0.0651042*THIS_GAME->winWidth;}
-int y_panel_carousel_text(void *none){return st_text_row_2(NULL) + 0.00463*THIS_GAME->winHeight;}
+int x_panel_carousel_text(void *none){return col_right_x(NULL) + 125;}
+int y_panel_carousel_text(void *none){return st_text_row_2(NULL) + 5;}
 
-int x_panel_carousel_text_daltonism(void *none){return col_right_x(NULL) + 0.0651042*THIS_GAME->winWidth;}
-int y_panel_carousel_text_daltonism(void *none){return st_text_row_2(NULL) + 0.060185*THIS_GAME->winHeight;}
-int x_panel_carousel_daltonism(void *none){return col_right_x(NULL) + 0.0104166*THIS_GAME->winWidth;}
-int y_panel_carousel_daltonism(void *none){return st_text_row_2(NULL) + 0.037037*THIS_GAME->winHeight;}
+int x_panel_carousel_text_daltonism(void *none){return col_right_x(NULL) + 125;}
+int y_panel_carousel_text_daltonism(void *none){return st_text_row_2(NULL) + 65;}
+int x_panel_carousel_daltonism(void *none){return col_right_x(NULL) + 20;}
+int y_panel_carousel_daltonism(void *none){return st_text_row_2(NULL) + 40;}
 int x_arrow_left_daltonism(void *none){return col_right_x(NULL);}
-int x_arrow_right_daltonism(void *none){return col_right_x(NULL) + 0.130208*THIS_GAME->winWidth;}
+int x_arrow_right_daltonism(void *none){return col_right_x(NULL) + 250;}
 
 //LANG
 static UI_text *st_text_lang_choice = NULL;
@@ -212,7 +208,16 @@ void changeCommandsHiddenState(bool hidden){
     st_text_command_pause->hidden = hidden;
     st_text_command_sell->hidden = hidden;
     st_text_command_upgrade->hidden = hidden;
-    button_right_arrow->hidden = hidden;
+
+    void hiddenButtons(void *self)
+    {  
+        buttonBinding *b = self;
+        b->button->hidden = hidden;
+    }
+
+    forEach(KB_button_bindings,hiddenButtons);
+    
+    /*button_right_arrow->hidden = hidden;
     button_right_arrow->textureObjectIcon->hidden = hidden;
     button_left_arrow->hidden = hidden;
     button_left_arrow->textureObjectIcon->hidden = hidden;
@@ -221,21 +226,21 @@ void changeCommandsHiddenState(bool hidden){
     button_zoom_in->hidden = hidden;
     button_zoom_in->textureObjectIcon->hidden = hidden;
     button_pause->hidden = hidden;
-    //button_pause->textureObjectIcon->hidden = hidden;
+    button_pause->textureObjectIcon->hidden = hidden;
     button_sell->hidden = hidden;
-    //button_sell->textureObjectIcon->hidden = hidden;
+    button_sell->textureObjectIcon->hidden = hidden;
     button_upgrade->hidden = hidden;
-    //button_upgrade->textureObjectIcon->hidden = hidden;
+    button_upgrade->textureObjectIcon->hidden = hidden;
     button_turret1->hidden = hidden;
-    //button_turret1->textureObjectIcon->hidden = hidden;
+    button_turret1->textureObjectIcon->hidden = hidden;
     button_turret2->hidden = hidden;
-    //button_turret2->textureObjectIcon->hidden = hidden;
+    button_turret2->textureObjectIcon->hidden = hidden;
     button_turret3->hidden = hidden;
-    //button_turret3->textureObjectIcon->hidden = hidden;
+    button_turret3->textureObjectIcon->hidden = hidden;
     button_up_arrow->hidden = hidden;
     button_up_arrow->textureObjectIcon->hidden = hidden;
     button_down_arrow->hidden = hidden;
-    button_down_arrow->textureObjectIcon->hidden = hidden;
+    button_down_arrow->textureObjectIcon->hidden = hidden;*/
 }
 
 void changeAccessibilityHiddenState(bool hidden){
@@ -260,6 +265,74 @@ void changeAccessibilityHiddenState(bool hidden){
     st_button_accessibility_invert_y_axis->hidden = hidden;
 }
 
+void updateButtonKey(GA_type type,UI_button *button)
+{
+    /*
+    switch(type)
+    {
+        case GA_UP:
+            if(button->text != NULL) button->text->hidden = true;
+            if(button->textureObjectIcon != NULL)
+            {
+                button->textureObjectIcon->hidden = false;
+                UI_setButtonIcon(button,"UI_icon_key_move_up.png",SDL_FLIP_NONE);
+            }
+            else
+            {
+                button->textureObjectIcon = UI_newStaticTextureObject(button->menu, (SDL_Rect){0, 0, 0, 0}, button->anchor, "UI_icon_key_move_up.png");
+            }
+            break;
+        case GA_DOWN:
+            strcpy(string,"GA_DOWN");
+            break;
+        case GA_LEFT:
+            strcpy(string,"GA_LEFT");
+            break;
+        case GA_RIGHT:
+            strcpy(string,"GA_RIGHT");
+            break;
+        case GA_PAUSE:
+            strcpy(string,"GA_PAUSE");
+            break;
+        case GA_SELL:
+            strcpy(string,"GA_SELL");
+            break;
+        case GA_UPGRADE:
+            strcpy(string,"GA_UPGRADE");
+            break;
+        case GA_ZOOMIN:
+            strcpy(string,"GA_ZOOMIN");
+            break;
+        case GA_ZOOMOUT:
+            strcpy(string,"GA_ZOOMOUT");
+            break;
+        case GA_TURRET1:
+            strcpy(string,"GA_TURRET1");
+            break;
+        case GA_TURRET2:
+            strcpy(string,"GA_TURRET2");
+            break;
+        case GA_TURRET3:
+            strcpy(string,"GA_TURRET3");
+            break;
+        default:
+            /*if(button->text != NULL)
+            {
+                strcpy(button->text->text[0],THIS_GAME->keyChosenToString);
+                if(button->textureObjectIcon != NULL)
+                {
+                    button->textureObjectIcon->hidden = true;
+                }
+            }
+            else
+            {
+                button->text = UI_newText(button->menu,LM_getTradById(THIS_GAME->keyChosenToString),button->anchor,UI_TA_CENTER,UI_TJ_CENTER,(SDL_Color){255,255,255,255},"./assets/fonts/RulerGold.ttf", 30);
+                
+            }
+            break;
+    }*/
+}
+
 void onUpdateSettings(){
     //printf("%d x %d\n",THIS_GAME->mouseX,THIS_GAME->mouseY);
     st_panel->width = THIS_GAME->winWidth - (getLT_x(NULL)*2);
@@ -269,12 +342,34 @@ void onUpdateSettings(){
     SDL_GetWindowMaximumSize(THIS_GAME->window,&max_x,&max_y);
     SDL_SetWindowSize(THIS_GAME->window,800+(abs(max_x-800))*(*st_slider_resolution->value),600+(abs(max_x-600))*(*st_slider_resolution->value));
     */
+    /*button_right_arrow->isPressed = false;
+    button_left_arrow->isPressed = false;
+    button_zoom_out->isPressed = false;
+    button_zoom_in->isPressed = false;
+    button_pause->isPressed = false;
+    button_sell->isPressed = false;
+    button_upgrade->isPressed = false;
+    button_turret1->isPressed = false;
+    button_turret2->isPressed = false;
+    button_turret3->isPressed = false;
+    button_up_arrow->isPressed = false;
+    button_down_arrow->isPressed = false;
+    if(THIS_GAME->waitingForInputKey == false && selected_button_keyBindings!=NULL)
+    {
+        selected_button_keyBindings = NULL;
+    }
+    if(selected_button_keyBindings != NULL)
+    {
+        selected_button_keyBindings->isPressed = true;
+    }*/
+
 
     changeGeneralHiddenState(!st_button_general->isActive);
     changeAccessibilityHiddenState(!st_button_accessibility->isActive);
     changeAudioHiddenState(!st_button_audio->isActive);
     changeCommandsHiddenState(!st_button_commands->isActive);
     changeDisplayHiddenState(!st_button_display->isActive);
+    
 }
 
 void switchBack(void)
@@ -426,6 +521,46 @@ void invertYAxisOn(void *self)
 void invertYAxisOff(void *self)
 {
     
+}
+
+void buttonInput(SDL_Keycode code,void *self)
+{
+    buttonBinding *b = self;
+    /* si keycode = -1
+            déselectionner et ne rien faire
+        */
+    b->button->isPressed = false;
+    UI_buttonShowIcon(b->button);
+}
+
+void inputKeyButton(void *self)
+{
+    UI_button *button = self;
+    if(button->isPressed)
+    {
+        KB_handleKeyCode(-1);
+        button->isPressed = false;
+        return;
+    }
+    //button->isPressed = true;
+    UI_buttonHideIcon(button);
+    buttonBinding *found = NULL;
+    void searchBinding(void *self2)
+    {
+        buttonBinding *b = self2;
+        if(b->button == button)
+        {
+            found = b;
+        }
+    }
+    forEach(KB_button_bindings,searchBinding);
+    KB_getInput(buttonInput,found);
+    /*
+    selected_button_keyBindings = button;
+    THIS_GAME->waitingForInputKey = true;
+    THIS_GAME->chosenButtonSettings = button;
+    button->text = malloc(sizeof(UI_text));
+    */
 }
 
 void UI_switchToSettings(void *GAME)
@@ -585,32 +720,71 @@ void UI_switchToSettings(void *GAME)
     st_text_inverse_y_axis = UI_newText(st_panel->menu,LM_getTradById("options_menu_accessibility_inverse_y"),st_title_line_anchor_col_left_row_6, UI_TA_LEFT, UI_TJ_CENTER,white, "./assets/fonts/RulerGold.ttf", 30);
     st_button_accessibility_invert_y_axis = UI_newButton(st_panel->menu, NULL, UI_CHECK_DEFAULT,st_title_line_anchor_col_right_row_6,true,NULL,invertYAxisOn,invertYAxisOff,1);;
     
-    st_text_command_up = UI_newText(st_panel->menu,LM_getTradById("options_menu_keybinds_up"),st_title_line_anchor_col_left_row_1,UI_TA_LEFT,UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf", 30);
-    st_text_command_down = UI_newText(st_panel->menu,LM_getTradById("options_menu_keybinds_down"),st_title_line_anchor_col_left_row_2,UI_TA_LEFT,UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf", 30);
-    st_text_command_right = UI_newText(st_panel->menu,LM_getTradById("options_menu_keybinds_right"),st_title_line_anchor_col_right_row_1,UI_TA_LEFT,UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf", 30);
-    st_text_command_left = UI_newText(st_panel->menu,LM_getTradById("options_menu_keybinds_left"),st_title_line_anchor_col_right_row_2,UI_TA_LEFT,UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf", 30);
-    st_text_command_zoom_in = UI_newText(st_panel->menu,LM_getTradById("options_menu_keybinds_zoom_in"),st_title_line_anchor_col_left_row_3,UI_TA_LEFT,UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf", 30);
-    st_text_command_zoom_out = UI_newText(st_panel->menu,LM_getTradById("options_menu_keybinds_zoom_out"),st_title_line_anchor_col_right_row_3,UI_TA_LEFT,UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf", 30);
-    st_text_command_turret_1 = UI_newText(st_panel->menu,LM_getTradById("options_menu_keybinds_turret_1"),st_title_line_anchor_col_left_row_4,UI_TA_LEFT,UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf", 30);
-    st_text_command_turret_2 = UI_newText(st_panel->menu,LM_getTradById("options_menu_keybinds_turret_2"),st_title_line_anchor_col_left_row_5,UI_TA_LEFT,UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf", 30);
-    st_text_command_turret_3 = UI_newText(st_panel->menu,LM_getTradById("options_menu_keybinds_turret_3"),st_title_line_anchor_col_left_row_6,UI_TA_LEFT,UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf", 30);
-    st_text_command_pause = UI_newText(st_panel->menu,LM_getTradById("options_menu_keybinds_pause"),st_title_line_anchor_col_right_row_4,UI_TA_LEFT,UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf", 30);
-    st_text_command_sell = UI_newText(st_panel->menu,LM_getTradById("options_menu_keybinds_sell"),st_title_line_anchor_col_right_row_5,UI_TA_LEFT,UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf", 30);
-    st_text_command_upgrade = UI_newText(st_panel->menu,LM_getTradById("options_menu_keybinds_upgrade"),st_title_line_anchor_col_right_row_6,UI_TA_LEFT,UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf", 30);
+    st_text_command_up = UI_newText(st_panel->menu,LM_getTradById("options_menu_keybinds_up"),st_title_line_anchor_col_left_row_2,UI_TA_LEFT,UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf", 30);
+    st_text_command_down = UI_newText(st_panel->menu,LM_getTradById("options_menu_keybinds_down"),st_title_line_anchor_col_left_row_3,UI_TA_LEFT,UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf", 30);
+    st_text_command_right = UI_newText(st_panel->menu,LM_getTradById("options_menu_keybinds_right"),st_title_line_anchor_col_right_row_2,UI_TA_LEFT,UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf", 30);
+    st_text_command_left = UI_newText(st_panel->menu,LM_getTradById("options_menu_keybinds_left"),st_title_line_anchor_col_right_row_3,UI_TA_LEFT,UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf", 30);
+    st_text_command_zoom_in = UI_newText(st_panel->menu,LM_getTradById("options_menu_keybinds_zoom_in"),st_title_line_anchor_col_left_row_4,UI_TA_LEFT,UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf", 30);
+    st_text_command_zoom_out = UI_newText(st_panel->menu,LM_getTradById("options_menu_keybinds_zoom_out"),st_title_line_anchor_col_right_row_4,UI_TA_LEFT,UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf", 30);
+    st_text_command_turret_1 = UI_newText(st_panel->menu,LM_getTradById("options_menu_keybinds_turret_1"),st_title_line_anchor_col_left_row_5,UI_TA_LEFT,UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf", 30);
+    st_text_command_turret_2 = UI_newText(st_panel->menu,LM_getTradById("options_menu_keybinds_turret_2"),st_title_line_anchor_col_left_row_6,UI_TA_LEFT,UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf", 30);
+    st_text_command_turret_3 = UI_newText(st_panel->menu,LM_getTradById("options_menu_keybinds_turret_3"),st_title_line_anchor_col_left_row_7,UI_TA_LEFT,UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf", 30);
+    st_text_command_pause = UI_newText(st_panel->menu,LM_getTradById("options_menu_keybinds_pause"),st_title_line_anchor_col_right_row_5,UI_TA_LEFT,UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf", 30);
+    st_text_command_sell = UI_newText(st_panel->menu,LM_getTradById("options_menu_keybinds_sell"),st_title_line_anchor_col_right_row_6,UI_TA_LEFT,UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf", 30);
+    st_text_command_upgrade = UI_newText(st_panel->menu,LM_getTradById("options_menu_keybinds_upgrade"),st_title_line_anchor_col_right_row_7,UI_TA_LEFT,UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf", 30);
     
-    button_right_arrow = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_right_row_1,true,NULL,screenShakeOn,screenShakeOff,1.5,"UI_icon_key_move_right.png");
-    button_left_arrow = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_right_row_2,true,NULL,screenShakeOn,screenShakeOff,1.5,"UI_icon_key_move_left.png");
-    button_zoom_out = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_right_row_3,true,NULL,screenShakeOn,screenShakeOff,1.5,"UI_icon_minus.png");
-    button_zoom_in = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_left_row_3,true,NULL,screenShakeOn,screenShakeOff,1.5,"UI_icon_more.png");
-    button_pause = UI_newButton(st_panel->menu,LM_getTradById("options_menu_keybinds_upgrade"),UI_B_DEFAULT,st_title_command_anchor_col_right_row_4,true,NULL,screenShakeOn,screenShakeOff,1.5);
-    button_sell = UI_newButton(st_panel->menu,LM_getTradById("options_menu_keybinds_upgrade"),UI_B_DEFAULT,st_title_command_anchor_col_right_row_5,true,NULL,screenShakeOn,screenShakeOff,1.5);
-    button_upgrade = UI_newButton(st_panel->menu,LM_getTradById("options_menu_keybinds_upgrade"),UI_B_DEFAULT,st_title_command_anchor_col_right_row_6,true,NULL,screenShakeOn,screenShakeOff,1.5);
-    button_turret1 = UI_newButton(st_panel->menu,LM_getTradById("options_menu_keybinds_upgrade"),UI_B_DEFAULT,st_title_command_anchor_col_left_row_4,true,NULL,screenShakeOn,screenShakeOff,1.5);
-    button_turret2 = UI_newButton(st_panel->menu,LM_getTradById("options_menu_keybinds_upgrade"),UI_B_DEFAULT,st_title_command_anchor_col_left_row_5,true,NULL,screenShakeOn,screenShakeOff,1.5);
-    button_turret3 = UI_newButton(st_panel->menu,LM_getTradById("options_menu_keybinds_upgrade"),UI_B_DEFAULT,st_title_command_anchor_col_left_row_6,true,NULL,screenShakeOn,screenShakeOff,1.5);
-    button_up_arrow = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_left_row_1,true,NULL,screenShakeOn,screenShakeOff,1.5,"UI_icon_key_move_up.png");
-    button_down_arrow = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_left_row_2,true,NULL,screenShakeOn,screenShakeOff,1.5,NULL);
+    UI_button *button_right_arrow = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_right_row_2,true,inputKeyButton,NULL,NULL,1.5,"UI_icon_key_move_right.png");
+    UI_button *button_left_arrow = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_right_row_3,true,inputKeyButton,NULL,NULL,1.5,"UI_icon_key_move_left.png");
+    UI_button *button_zoom_out = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_right_row_4,true,inputKeyButton,NULL,NULL,1.5,"UI_icon_minus.png");
+    UI_button *button_zoom_in = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_left_row_4,true,inputKeyButton,NULL,NULL,1.5,"UI_icon_more.png");
+    UI_button *button_pause = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_right_row_5,true,inputKeyButton,NULL,NULL,1.5,"UI_icon_more.png");
+    UI_button *button_sell = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_right_row_6,true,inputKeyButton,NULL,NULL,1.5,"UI_icon_more.png");
+    UI_button *button_upgrade = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_right_row_7,true,inputKeyButton,NULL,NULL,1.5,"UI_icon_more.png");
+    UI_button *button_turret1 = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_left_row_5,true,inputKeyButton,NULL,NULL,1.5,"UI_icon_more.png");
+    UI_button *button_turret2 = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_left_row_6,true,inputKeyButton,NULL,NULL,1.5,"UI_icon_more.png");
+    UI_button *button_turret3 = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_left_row_7,true,inputKeyButton,NULL,NULL,1.5,"UI_icon_more.png");
+    UI_button *button_up_arrow = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_left_row_2,true,inputKeyButton,NULL,NULL,1.5,"UI_icon_key_move_up.png");
+    UI_button *button_down_arrow = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_left_row_3,true,inputKeyButton,NULL,NULL,1.5,NULL);
     UI_setButtonIcon(button_down_arrow,"UI_icon_key_move_up.png",SDL_FLIP_VERTICAL);
+
+    buttonBinding *temp;
+    KB_button_bindings = newList(COMPARE_PTR);
+    temp = malloc(sizeof(buttonBinding));
+    *temp = (buttonBinding){button_up_arrow,GA_UP};
+    appendInList(KB_button_bindings,temp);
+    temp = malloc(sizeof(buttonBinding));
+    *temp = (buttonBinding){button_down_arrow,GA_DOWN};
+    appendInList(KB_button_bindings,temp);
+    temp = malloc(sizeof(buttonBinding));
+    *temp = (buttonBinding){button_left_arrow,GA_LEFT};
+    appendInList(KB_button_bindings,temp);
+    temp = malloc(sizeof(buttonBinding));
+    *temp = (buttonBinding){button_right_arrow,GA_RIGHT};
+    appendInList(KB_button_bindings,temp);
+    temp = malloc(sizeof(buttonBinding));
+    *temp = (buttonBinding){button_zoom_in,GA_ZOOMIN};
+    appendInList(KB_button_bindings,temp);
+    temp = malloc(sizeof(buttonBinding));
+    *temp = (buttonBinding){button_zoom_out,GA_ZOOMOUT};
+    appendInList(KB_button_bindings,temp);
+    temp = malloc(sizeof(buttonBinding));
+    *temp = (buttonBinding){button_turret1,GA_TURRET1};
+    appendInList(KB_button_bindings,temp);
+    temp = malloc(sizeof(buttonBinding));
+    *temp = (buttonBinding){button_turret2,GA_TURRET2};
+    appendInList(KB_button_bindings,temp);
+    temp = malloc(sizeof(buttonBinding));
+    *temp = (buttonBinding){button_turret3,GA_TURRET3};
+    appendInList(KB_button_bindings,temp);
+    temp = malloc(sizeof(buttonBinding));
+    *temp = (buttonBinding){button_pause,GA_PAUSE};
+    appendInList(KB_button_bindings,temp);
+    temp = malloc(sizeof(buttonBinding));
+    *temp = (buttonBinding){button_upgrade,GA_UPGRADE};
+    appendInList(KB_button_bindings,temp);
+    temp = malloc(sizeof(buttonBinding));
+    *temp = (buttonBinding){button_sell,GA_SELL};
+    appendInList(KB_button_bindings,temp);
 
     onUpdateSettings();    
 }
