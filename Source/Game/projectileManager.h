@@ -7,7 +7,7 @@
 #ifndef PROJECTILEMANAGER_H
 #define PROJECTILEMANAGER_H
 
-typedef enum{BALLISTIC, PLASMA, EXPLOSIVE} weaponType;
+typedef enum{BALLISTIC, PLASMA, EXPLOSIVE, LASER} weaponType;
 
 typedef struct{
     void (*delete)(void *self);
@@ -34,8 +34,8 @@ typedef struct
 typedef struct{
     char* texref;
     SDL_Texture *texture;
-    int width;
-    int height;
+    int freamWidth;
+    int freamHeight;
     int nOfFrames;
     int currentFrame;
     char *animationId;
@@ -53,6 +53,8 @@ typedef struct{
     float rotation;
     float x;
     float y;
+    int width;
+    int height;
     int damage;
     int perforance;
     bool isFriendly;

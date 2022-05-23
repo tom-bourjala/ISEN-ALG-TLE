@@ -16,8 +16,6 @@ typedef enum{ROB_NAME, ROB_TEX_REF, ROB_PROJECTILE_NAME, ROB_WIDTH, ROB_HEIGHT, 
 robotConfigFileParam getRobotConfigFileParamFromString(char *fileParamString){
     if(!strcmp("NAME", fileParamString)) return ROB_NAME;
     if(!strcmp("TEX_REF", fileParamString)) return ROB_TEX_REF;
-    if(!strcmp("WIDTH", fileParamString)) return ROB_WIDTH;
-    if(!strcmp("HEIGHT", fileParamString)) return ROB_HEIGHT;
     if(!strcmp("TEX_ANIM_FRAMES", fileParamString)) return ROB_TEX_ANIM_FRAMES;
     if(!strcmp("WEAPON_DELAY", fileParamString)) return ROB_WEAPON_DELAY;
     if(!strcmp("WEAPON_RANGE", fileParamString)) return ROB_WEAPON_RANGE;
@@ -69,12 +67,6 @@ robot *newRobot(Game GAME, char *robotFileName, int x, int y, map_node *spawnNod
             case ROB_IS_FRIENDLY :
                 createdRobot->isFriendly = true;
                 break;
-            case ROB_WIDTH :
-                createdRobot->width = atoi(stat_value);
-                break;
-            case ROB_HEIGHT:
-                createdRobot->height = atoi(stat_value);
-                break;
             case ROB_PROJECTILE_NAME:
                 createdRobot->projectileName = malloc(sizeof(char)*(strlen(stat_value)+15));
                 sprintf(createdRobot->projectileName, "%s.projectile", stat_value);
@@ -89,6 +81,12 @@ robot *newRobot(Game GAME, char *robotFileName, int x, int y, map_node *spawnNod
     createdRobot->walk.textureName = malloc(sizeof(char)*50);
     sprintf(createdRobot->walk.textureName, "rob_%s_%s_walk.png", createdRobot->isFriendly ? "friendly" : "hostile", createdRobot->texref);
     createdRobot->walk.texture = GAME.textureManager->getTexture(createdRobot->walk.textureName);
+    SDL_QueryTexture(createdRobot->walk.texture, NULL, NULL, &createdRobot->width, &createdRobot->height);
+    createdRobot->width /= createdRobot->walk.nOfFrames;
+    createdRobot->walk.frameWidth = createdRobot->width;
+    createdRobot->walk.frameHeight = createdRobot->height;
+    createdRobot->width *= 2;
+    createdRobot->height *= 2;
     createdRobot->walk.currentFrame = 0;
     createdRobot->seed = seed;
     createdRobot->x = x;
