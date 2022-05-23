@@ -24,8 +24,6 @@ void UI_MenuUpdate(){
     forEach(MENU->panels, UI_updatePanel);
     //Update Panel Buttons
     forEach(MENU->panelButtons, UI_updateButtonPanel);
-    //Update Progress Bars
-    forEach(MENU->progressBars, UI_updateProgressBars);
 }
 
 void UI_MenuClear(){
