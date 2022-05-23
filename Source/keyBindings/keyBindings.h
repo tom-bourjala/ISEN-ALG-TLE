@@ -64,3 +64,10 @@ keyBinding *KB_getKeyBinding(SDL_Keycode key, gameInput input);
 int Comparator(void *needle, void *data);
 
 void printed();
+void printList(list *r);
+
+void KB_getInput(void (*callback)(SDL_Keycode code,void *data),void *data);
+void KB_handleKeyCode(SDL_Keycode code);
+
+
+typedef enum{NONE,GA_UP,GA_DOWN,GA_LEFT,GA_RIGHT,GA_ZOOMIN,GA_ZOOMOUT,GA_TURRET1,GA_TURRET2,GA_TURRET3,GA_PAUSE,GA_SELL,GA_UPGRADE}GA_type;

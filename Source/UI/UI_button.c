@@ -54,6 +54,7 @@ UI_button *UI_newButton(UI_menu *menu, char **text, UI_buttonType type, UI_ancho
     newButton->hidden = false;
     newButton->menu = menu;
     newButton->textureObjectIcon = NULL;
+    newButton->textureObjectIconCache = NULL;
     char strKey[100];
     getButtonStrKey(type, strKey);
     char idleStr[255], hoverStr[255], enabledStr[255], disabledStr[255];
@@ -142,6 +143,7 @@ UI_button *UI_newButtonIcon(UI_menu *menu, UI_buttonType type, UI_anchor *anchor
     {
         newButton->textureObjectIcon = NULL;
     }
+    newButton->textureObjectIconCache = NULL;
     UI_updateButton(newButton);
     appendInList(menu->buttons, newButton);
 
@@ -156,10 +158,30 @@ void UI_flipButton(UI_button *button,SDL_RendererFlip flip)
         button->textureObject->flip = flip;
 }
 
+void UI_buttonHideIcon(UI_button *button)
+{
+    if(!button->textureObjectIcon) return;
+    button->textureObjectIconCache = button->textureObjectIcon;
+    button->textureObjectIcon = NULL;
+    if(button->textureObjectIconCache)
+        button->textureObjectIconCache->hidden = true;
+}
+
+void UI_buttonShowIcon(UI_button *button)
+{
+    if(!button->textureObjectIconCache) return;
+    button->textureObjectIcon = button->textureObjectIconCache;
+    button->textureObjectIconCache = NULL;
+    if(button->textureObjectIcon)
+        button->textureObjectIcon->hidden = false;
+}
+
 void UI_updateButton(void *self)
 {
     UI_button *this = self;
     Game *game = this->menu->game;
+    if(this->textureObjectIcon)
+        this->textureObjectIcon->hidden = this->hidden;
 
     int texHeight, texWidth;
 
@@ -180,14 +202,13 @@ void UI_updateButton(void *self)
         SDL_QueryTexture(this->textureIdle, NULL, NULL, &texWidth, &texHeight);
         int icon_width, icon_height;
         SDL_QueryTexture(this->textureObjectIcon->texture, NULL, NULL, &icon_width, &icon_height);
-        if (texWidth >= texHeight)
-        {
-            rect = (SDL_Rect){this->anchor->getX(game) - ((icon_width * this->sizeFactor) / 2) - 0.025 * texWidth * this->sizeFactor, this->anchor->getY(game) - ((texHeight * this->sizeFactor) / 2) + 0.3 * (texHeight * this->sizeFactor) / 2, texHeight * this->sizeFactor * 0.6, texHeight * this->sizeFactor * 0.6};
-        }
-        else
-        {
-            rect = (SDL_Rect){this->anchor->getX(game) - ((icon_width * this->sizeFactor) / 2) - 0.025 * texWidth * this->sizeFactor, this->anchor->getY(game) - ((texHeight * this->sizeFactor) / 2) + 0.3 * (texHeight * this->sizeFactor) / 2, texWidth * this->sizeFactor * 0.6, texWidth * this->sizeFactor * 0.6};
-        }
+        int L = fmin(texHeight,texWidth);
+        icon_width*=this->sizeFactor;
+        icon_height*=this->sizeFactor;
+        int cx,cy;
+        cx = this->anchor->getX(game);
+        cy = this->anchor->getY(game);
+        rect = (SDL_Rect){cx-icon_width/2,cy-icon_height/2,icon_width,icon_height};
         this->textureObjectIcon->rect = rect;
     }
 
@@ -238,13 +259,15 @@ void UI_ButtonHandleMouseEvent(UI_button *button, bool isDown)
         {
             if (!isDown && isHover)
             {
-                button->isPressed = !button->isPressed;
+                bool cacheIsPressed = button->isPressed;
+                if (button->actionArea->onClick)
+                    button->actionArea->onClick(button);
+                if(cacheIsPressed == button->isPressed)
+                    button->isPressed = !button->isPressed;
                 if (button->onSetOn && button->isPressed)
                     button->onSetOn(button);
                 if (button->onSetOff && !button->isPressed)
                     button->onSetOff(button);
-                if (button->actionArea->onClick)
-                    button->actionArea->onClick(button);
             }
         }
         else
@@ -271,6 +294,9 @@ void UI_FreeButton(void *self)
 void UI_setButtonIcon(UI_button *button, char *icon, SDL_RendererFlip flip)
 {
     Game *game = button->menu->game;
-    button->textureObjectIcon = UI_newStaticTextureObject(game->menu, (SDL_Rect){0, 0, 0, 0}, button->anchor, icon);
-    button->textureObjectIcon->flip = flip;
+    if(icon!=NULL)
+    {
+        button->textureObjectIcon = UI_newStaticTextureObject(game->menu, (SDL_Rect){0, 0, 0, 0}, button->anchor, icon);
+        button->textureObjectIcon->flip = flip;
+    } 
 }

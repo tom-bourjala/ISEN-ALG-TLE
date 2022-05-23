@@ -348,7 +348,9 @@ void UI_renderButtonPanel(void *self)
             {
                 int icon_width, icon_height;
                 SDL_QueryTexture(this->textureObjectIcon->texture, NULL, NULL, &icon_width, &icon_height);
-                SDL_Rect rect={this->rect.x+this->rect.w*3/2-icon_width/2,this->rect.y+this->rect.h*3/2-icon_height/2,icon_width,icon_height};
+                icon_width*=2.2;
+                icon_height*=2.2;
+                SDL_Rect rect={x+this->rect.x+this->rect.w/2-icon_width/2,y-this->rect.h/2-icon_height/3,icon_width,icon_height};
                 this->textureObjectIcon->rect = rect;
             }
         }

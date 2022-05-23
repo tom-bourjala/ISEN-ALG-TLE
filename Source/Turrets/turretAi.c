@@ -36,7 +36,7 @@ GameObject *getClosestEnemyInRange(GameObject turretObject){
     robot *actor = closestTarget->actor;
     float distanceIB = sqrt(pow(actor->x - (turret->x + turret->width/2),2) + pow(actor->y - (turret->y + turret->height/2),2));
     // printf("IB=%f, R=%d\n", distanceIB, turret->range);
-    if(distanceIB <= turret->range)
+    if(distanceIB <= turret->currentState->range)
         return closestTarget;
     else
         return NULL;
@@ -62,9 +62,8 @@ float getDeltaBetweenTwoAngles(float a1, float a2){
 
 void tryShoot(GameObject *turretObject){
     turret *this = turretObject->actor;
-    if(!turretObject->game->animationManager->getAnim(this->canon.animationId)){
-        turretObject->game->animationManager->addAnim(this->canon.animationId, &this->canon.currentFrame, this->canon.nOfFrames, 1);
-        turretObject->game->projectileManager->newProjectile(turretObject->game, this->projectileName, this->x + (this->width/2), this->y + (this->height/2), this->rotation, turretObject);
+    if(!turretObject->game->animationManager->getAnim(this->currentState->canon.animationId)){
+        turretObject->game->animationManager->addAnim(this->currentState->canon.animationId, &this->currentState->canon.currentFrame, this->currentState->canon.nOfFrames, 1);
     }
 }
 
@@ -76,18 +75,19 @@ void updateTurretAi(GameObject *turretObject){
         float currentTurretRotation = turret->rotation;
         float TargetFireAngle = atan2(turret->x + (turret->width/2) - robot->x, turret->y + (turret->height/2) - robot->y);
         float delta = getDeltaBetweenTwoAngles(currentTurretRotation, TargetFireAngle);
-        // printf("CurrentRotation = %f, TargetIdealAngle = %f, delta = %f\n", currentTurretRotation, TargetFireAngle, delta);
-        // printf("Rh = %d, Rw = %d, Th = %d, Tw = %d\n", robot->height,robot->width,turret->height,turret->width);
-        if(fabs(delta) < turret->maxRotationSpeed){
+        if(fabs(delta) < turret->currentState->maxRotationSpeed){
             turret->rotation = TargetFireAngle;
             tryShoot(turretObject);
         } else {
             if(fabs(delta) < M_PI/2.0)
-                turret->rotation += turret->maxRotationSpeed * (delta >= 0 ? -1.0 : 1.0);
+                turret->rotation += turret->currentState->maxRotationSpeed * (delta >= 0 ? -1.0 : 1.0);
             else
-                turret->rotation += turret->maxRotationSpeed * (isEnemyBypassingClockwise(*turretObject, *closestTarget) ? 1.0 : -1.0);
+                turret->rotation += turret->currentState->maxRotationSpeed * (isEnemyBypassingClockwise(*turretObject, *closestTarget) ? 1.0 : -1.0);
         }
         if(turret->rotation > M_PI) turret->rotation -= 2.0*M_PI;
         if(turret->rotation < -M_PI) turret->rotation += 2.0*M_PI;
+    }
+    if(turret->currentState->canon.currentFrame == turret->currentState->canon.fireFrame){
+        turretObject->game->projectileManager->newProjectile(turretObject->game, turret->currentState->projectileName, turret->x + (turret->width/2), turret->y + (turret->height/2), turret->rotation, turretObject);
     }
 }
