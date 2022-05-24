@@ -2,6 +2,7 @@ NAME = robot_debug
 TEX_REF = debug
 
 TEX_ANIM_FRAMES = 6
+TEX_ANIM_DELAY = 3
 SPEED = 5
 LIFE = 100
 PROJECTILE = debug
