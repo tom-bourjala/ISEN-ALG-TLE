@@ -81,13 +81,15 @@ weaponType getWeaponTypeFromString(char *fileParamString){
     return 0;
 }
 
-projectile *newProjectile(void *game,char *projectileFileName, float xpos, float ypos, float rotation, bool isFriendly){
+projectile *newProjectile(void *game, char *projectileFileName, float xpos, float ypos, float rotation, bool isFriendly, void *target){
     projectile *createdProjectile = malloc(sizeof(projectile));
     Game *GAME = game;
     static int id = 0;
+    
     createdProjectile->id = id;
     id++;
 
+    createdProjectile->target = target;
     char path[50];
     sprintf(path, "./assets/projectiles/%s", projectileFileName);
     FILE *projectile_file = fopen(path,"r");
@@ -129,7 +131,10 @@ projectile *newProjectile(void *game,char *projectileFileName, float xpos, float
     SDL_QueryTexture(createdProjectile->projectileRenderer.texture, NULL, NULL, &createdProjectile->projectileRenderer.freamWidth, &createdProjectile->projectileRenderer.freamHeight);
     createdProjectile->projectileRenderer.freamWidth /= createdProjectile->projectileRenderer.nOfFrames;
     createdProjectile->projectileRenderer.currentFrame = 0;
-    
+    if(createdProjectile->projectileRenderer.nOfFrames > 1){
+        createdProjectile->projectileRenderer.animationId = malloc(sizeof(char)*50);
+        sprintf(createdProjectile->projectileRenderer.animationId, "P%s%d", createdProjectile->projectileRenderer.texref, createdProjectile->id);
+    }
     createdProjectile->isFriendly = isFriendly;
     createdProjectile->x = xpos;
     createdProjectile->y = ypos;
@@ -188,6 +193,27 @@ void projectileUpdate(void *self){
     }
     this->x+=this->speedx;
     this->y+=this->speedy;
+    if(this->projectileRenderer.nOfFrames > 1){
+        this->projectileRenderer.currentFrame++;
+        if(this->projectileRenderer.currentFrame >= this->projectileRenderer.nOfFrames){
+            this->projectileRenderer.currentFrame = 0;
+        }
+    }
+    if(this->type == PLASMA && this->target){
+        GameObject *parent = this->parent;
+        GameObject *target = this->target;
+        if(searchDataInList(*parent->game->gameObjects, target)){
+            if(target->isAlive(target)){
+                robot *actor = target->actor;
+                float targetX = actor->x + actor->width/2;
+                float targetY = actor->y + actor->height/2;
+                float rotToTarget = atan2(targetX - this->x, targetY - this->y);
+                this->rotation = ((this->rotation*2.0) + rotToTarget)/3.0;
+                return;
+            }
+        }
+        this->target = NULL;
+    }
 }
 
 void projectileRender(void *self){
@@ -201,13 +227,15 @@ void projectileRender(void *self){
 void projectileDelete(void *self){
     projectile *this = self;
     free(this->projectileRenderer.texref);
-    if(this->projectileRenderer.animationId) free(this->projectileRenderer.animationId);
+    if(this->projectileRenderer.animationId){
+        free(this->projectileRenderer.animationId);
+    }
     deleteInList(PROJECTILE_MANAGER->projectiles, this);
     free(this);
 }
 
-void createProjectile(void *GAME, char *projectileFileName, float xpos, float ypos, float rotation, void *parent){
-    projectile *createdProjectile = newProjectile(GAME, projectileFileName, xpos, ypos, rotation, true);
+void createProjectile(void *GAME, char *projectileFileName, float xpos, float ypos, float rotation, void *parent, void *target){
+    projectile *createdProjectile = newProjectile(GAME, projectileFileName, xpos, ypos, rotation, true, target);
     createdProjectile->parent = parent;
     createdProjectile->update = projectileUpdate;
     createdProjectile->render = projectileRender;

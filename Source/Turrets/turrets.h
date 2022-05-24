@@ -40,6 +40,7 @@ typedef struct{
     int y;
     int width;
     int height;
+    bool turretLock;
     turret_state *currentState;
     list *states;
 } turret;

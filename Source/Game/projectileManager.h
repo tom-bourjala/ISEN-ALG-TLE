@@ -22,7 +22,7 @@ typedef struct{
 typedef struct
 {
     void (*empty)(void);
-    void (*newProjectile)(void *GAME, char *projectileFileName, float xpos, float ypos, float rotation, void *parent);
+    void (*newProjectile)(void *GAME, char *projectileFileName, float xpos, float ypos, float rotation, void *parent, void *target);
     void (*newHit)(int damage, float x, float y, weaponType type, void *parent, void *target);
     void (*updateProjectiles)(void);
     void (*renderProjectiles)(void);
@@ -61,6 +61,7 @@ typedef struct{
     projectileRenderer projectileRenderer;
     projectileManager *manager;
     weaponType type;
+    void *target;
     void *parent;
 } projectile;
 

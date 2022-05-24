@@ -46,7 +46,7 @@ bool isEnemyBypassingClockwise(GameObject turretObject, GameObject target){
     turret *turret = turretObject.actor;
     robot *robot = target.actor;
     float turretAngleFromTarget = atan2(robot->x - (turret->x + turret->width/2), robot->y - (turret->y + turret->height/2));
-    float targetMovingAngle = atan2(robot->speedx, robot->speedy);
+    float targetMovingAngle = robot->rotation;
     float turretAbsoluteMovingAngle = targetMovingAngle - turretAngleFromTarget;
     if(turretAbsoluteMovingAngle > M_PI) turretAbsoluteMovingAngle -= 2.0*M_PI;
     if(turretAbsoluteMovingAngle < -M_PI) turretAbsoluteMovingAngle += 2.0*M_PI;
@@ -87,7 +87,10 @@ void updateTurretAi(GameObject *turretObject){
         if(turret->rotation > M_PI) turret->rotation -= 2.0*M_PI;
         if(turret->rotation < -M_PI) turret->rotation += 2.0*M_PI;
     }
-    if(turret->currentState->canon.currentFrame == turret->currentState->canon.fireFrame){
-        turretObject->game->projectileManager->newProjectile(turretObject->game, turret->currentState->projectileName, turret->x + (turret->width/2), turret->y + (turret->height/2), turret->rotation, turretObject);
+    if(turret->currentState->canon.currentFrame == turret->currentState->canon.fireFrame && !turret->turretLock){
+        turretObject->game->projectileManager->newProjectile(turretObject->game, turret->currentState->projectileName, turret->x + (turret->width/2), turret->y + (turret->height/2), turret->rotation, turretObject, closestTarget);
+        turret->turretLock = true;
+    }else if(turret->currentState->canon.currentFrame != turret->currentState->canon.fireFrame){
+        turret->turretLock = false;
     }
 }

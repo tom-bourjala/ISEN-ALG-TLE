@@ -106,6 +106,7 @@ turret *newTurret(Game GAME,char *turretFileName, int xpos, int ypos){
     createdTurret->x = xpos;
     createdTurret->y = ypos;
     createdTurret->rotation = 0.0;
+    createdTurret->turretLock = false;
     return createdTurret;
 }
 
