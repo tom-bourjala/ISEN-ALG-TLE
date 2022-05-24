@@ -1,0 +1,9 @@
+NAME = robot_robot
+TEX_REF = robot
+
+TEX_ANIM_FRAMES = 8
+SPEED = 5
+LIFE = 30
+PROJECTILE = debug
+WEAPON_DELAY = 10
+WEAPON_RANGE = 20

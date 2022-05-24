@@ -1,0 +1,9 @@
+NAME = robot_bomb
+TEX_REF = bomb
+
+TEX_ANIM_FRAMES = 3
+SPEED = 5
+LIFE = 30
+PROJECTILE = debug
+WEAPON_DELAY = 10
+WEAPON_RANGE = 20
