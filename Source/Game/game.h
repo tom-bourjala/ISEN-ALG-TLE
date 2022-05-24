@@ -14,6 +14,7 @@
 #include "../Language/lang.h"
 #include "../SoundEngine/sound-engine.h"
 #include "../keyBindings/keyBindings.h"
+#include "../Waves/waveManager.h"
 
 typedef enum {DEBUG_NULL, DEBUG_HITBOX, DEBUG_PATH, DEBUG_EL} debug;
 typedef enum {GS_LoadingMainMenu, GS_MainMenu, GS_LoadingMap, GS_InGame} gameStatus;
@@ -36,6 +37,7 @@ typedef struct
     langManager *languageManager;
     UI_menu *menu;
     SoundEngine *soundEngine;
+    waveManager *waveManager;
     float SEMusicWeight;
     list *gameObjects;
     list *keyBindings;
