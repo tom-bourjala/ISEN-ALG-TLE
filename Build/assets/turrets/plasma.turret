@@ -1,4 +1,5 @@
-NAME = turret_debug
+NAME = turret_plasma
+DESCRIPTION = turret_plasma_desc
 TEX_ANIM_FRAMES = 10
 FIRE_FRAME = 5
 

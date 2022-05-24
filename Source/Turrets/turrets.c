@@ -9,10 +9,11 @@
 #include "../Game/camera.h"
 #include "../Game/rendererAddons.h"
 
-typedef enum{TP_NAME, TP_TEX_REF, TP_TEX_ANIM_FRAMES, TP_FIRE_FRAME, TP_ROTATION_SPEED, TP_ROTATION_ACCELERATION, TP_WEAPON_DELAY, TP_WEAPON_RANGE, TP_WEAPON_PROJECTILE_NAME, TP_NEWSTATE, TP_NONE} turretConfigFileParam;
+typedef enum{TP_NAME,TP_DESCRIPTION, TP_TEX_REF, TP_TEX_ANIM_FRAMES, TP_FIRE_FRAME, TP_ROTATION_SPEED, TP_ROTATION_ACCELERATION, TP_WEAPON_DELAY, TP_WEAPON_RANGE, TP_WEAPON_PROJECTILE_NAME, TP_NEWSTATE, TP_NONE} turretConfigFileParam;
 
 turretConfigFileParam getTurretConfigFileParamFromString(char *fileParamString){
     if(!strcmp("NAME", fileParamString)) return TP_NAME;
+    if(!strcmp("DESCRIPTION", fileParamString)) return TP_DESCRIPTION;
     if(!strcmp("TEX_REF", fileParamString)) return TP_TEX_REF;
     if(!strcmp("TEX_ANIM_FRAMES", fileParamString)) return TP_TEX_ANIM_FRAMES;
     if(!strcmp("FIRE_FRAME", fileParamString)) return TP_FIRE_FRAME;
@@ -49,6 +50,9 @@ turret *newTurret(Game GAME,char *turretFileName, int xpos, int ypos){
         switch(getTurretConfigFileParamFromString(stat_name)){
             case TP_NAME:
                 createdTurret->name = GAME.languageManager->getTradById(stat_value);
+                break;
+            case TP_DESCRIPTION:
+                createdTurret->description = GAME.languageManager->getTradById(stat_value);
                 break;
             case TP_TEX_ANIM_FRAMES :
                 nOfFrame = atoi(stat_value);
