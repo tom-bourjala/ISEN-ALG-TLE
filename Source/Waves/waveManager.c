@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include "../Game/game.h"
 #include "../Robots/robots.h"
+#include "./waveGenerator.h"
 
 static waveManager *WAVE_MANAGER = NULL;
 

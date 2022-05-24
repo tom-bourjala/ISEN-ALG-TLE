@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "../Maps/mapManager.h"
-#include "./waveGenerator.h"
 
 typedef struct
 {
