@@ -35,7 +35,6 @@ void launchEndlessMode(void *game){
     GAME->cameraScale = 0.7f;
     map_node *startNode = GAME->mapManager->currentMap->starts->first->data;
     cameraCheckSize();
-    GAME->waveManager->nextWave();
 }
 
 void updateGameManager(){

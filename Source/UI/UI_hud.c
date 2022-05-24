@@ -6,10 +6,12 @@
 #include "../Core/core.h"
 #include "../Turrets/turrets.h"
 #include "UI_newProgressBar.h"
+#include "../Waves/waveManager.h"
 
 static Game *THIS_GAME = NULL;
 static float *core_health_percentage = NULL;
 static float *core_shield_percentage = NULL;
+static UI_button *nextWaveButton = NULL;
 
 static char **(*LM_getTradById)(char *idToGet) = NULL;
 
@@ -126,7 +128,7 @@ void changeSpeed_3(void *none)
 
 void nextWave(void *none)
 {
-
+    THIS_GAME->waveManager->nextWave();
 }
 
 void eventTurretSelector(void *triggeredActionArea)
@@ -164,6 +166,12 @@ static void onUpdate(){
     core *ThisCore = THIS_GAME->coreObj->actor;
     *core_health_percentage = (float)ThisCore->health/(float)ThisCore->maxHealth;
     *core_shield_percentage = (float)ThisCore->shield/(float)ThisCore->maxShield;
+    if (THIS_GAME->waveManager->isWaveActive){
+        nextWaveButton->isDisabled = true;
+    }
+    else {
+        nextWaveButton->isDisabled = false;
+    }
 }
 
 void UI_initHud(void *GAME)
@@ -199,7 +207,7 @@ void UI_initHud(void *GAME)
     int next_font_size = (THIS_GAME->winWidth > 1200) ? 30 : 25;
     float next_size_factor = (THIS_GAME->winWidth > 1200) ? 1.7 : 1.4;
     UI_anchor *A_WAVE_NEXT_HUD = UI_newAnchor(game->menu, HUD_wave_next_x, HUD_wave_next_y);
-    UI_button *HUD_button_wave_next = UI_newButton(HUD_mid_panel->menu,LM_getTradById("hud_next_wave"), UI_B_LONG,A_WAVE_NEXT_HUD,false,nextWave,NULL,NULL,next_size_factor);
+    nextWaveButton = UI_newButton(HUD_mid_panel->menu,LM_getTradById("hud_next_wave"), UI_B_LONG,A_WAVE_NEXT_HUD,false,nextWave,NULL,NULL,next_size_factor);
     UI_anchor *A_WAVE_INFO_HUD = UI_newAnchor(game->menu, HUD_wave_info_x, HUD_wave_info_y);
     UI_text *HUD_text_wave_info = UI_newText(game->menu,LM_getTradById("hud_wave_info"),A_WAVE_INFO_HUD, UI_TA_CENTER, UI_TJ_CENTER,(SDL_Color){255,255,255,255}, "./assets/fonts/RulerGold.ttf", next_font_size);
     
