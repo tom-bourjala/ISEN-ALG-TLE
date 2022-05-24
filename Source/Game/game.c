@@ -12,9 +12,9 @@
 #include "../Turrets/turretUsher.h"
 #include "../Robots/robots.h"
 #include "./camera.h"
+#include "../UI/UI_pause.h"
 
 static Game *GAME = NULL;
-static char** (*LM_getTradById)(char *idToGet) = NULL;
 
 void handleEvents(){
     SDL_Event event;
@@ -57,6 +57,20 @@ void handleEvents(){
                         GAME->key_debug++;
                         if(GAME->key_debug==DEBUG_EL) GAME->key_debug = DEBUG_NULL;
                         break;
+                    case SDLK_ESCAPE:
+                        if(GAME->mapManager->currentMap)
+                        {
+                            GAME->pause = !GAME->pause;
+                            if(GAME->pause)
+                            {
+                                catchPause();
+                            }
+                            else
+                            {
+                                throwPause();
+                            }
+                        }
+                        break;
                 }
                 break;
             default:
@@ -75,15 +89,22 @@ void updateAnimation(void *targetAnim){
 
 void update(){
     GAME->currentCursor = GAME->cursorArrow;
-    if (GAME->waveManager->isWaveActive) GAME->waveManager->update();
-    forEach(GAME->gameObjects, updateGameObject);
-    forEach(GAME->animationManager->animList, updateAnimation);
-    GAME->projectileManager->updateProjectiles();
-    GAME->projectileManager->applyHits();
+    if(!GAME->pause)
+    {
+        if (GAME->waveManager->isWaveActive) GAME->waveManager->update();
+        forEach(GAME->gameObjects, updateGameObject);
+        forEach(GAME->animationManager->animList, updateAnimation);
+        GAME->projectileManager->updateProjectiles();
+        GAME->projectileManager->applyHits();
+    }
+        
     GAME->menu->update();
     SDL_SetCursor(GAME->currentCursor);
-    updateGameManager();
-    if(GAME->mouseLeftDown) cameraDrag();
+    if(!GAME->pause)
+    {
+        updateGameManager();
+        if(GAME->mouseLeftDown) cameraDrag();
+    }
 }
 
 void renderGameObject(void *object){
@@ -94,15 +115,21 @@ void render(){
     SDL_SetRenderDrawColor(GAME->renderer, 55, 55, 55, 255);
     SDL_RenderClear(GAME->renderer);
 
-    //Render MAP
-    if(GAME->mapManager->currentMap) GAME->mapManager->render();
-
-    //Render OBJECTS
-    forEach(GAME->gameObjects, renderGameObject);
-    GAME->projectileManager->renderProjectiles();
-
+    
+    if(!GAME->pause)
+    {
+        //Render MAP
+        if(GAME->mapManager->currentMap) GAME->mapManager->render();
+        
+        //Render OBJECTS
+        forEach(GAME->gameObjects, renderGameObject);
+        GAME->projectileManager->renderProjectiles();
+        
+        //Render UI
+        if(GAME->selection) renderTurretSelection(GAME);
+    }
+    
     //Render UI
-    if(GAME->selection) renderTurretSelection(GAME);
     if(GAME->menu) GAME->menu->render();
     SDL_RenderPresent(GAME->renderer);
 }
@@ -119,6 +146,7 @@ void freeAnimation(void *animationToKill){
 void clean(){
     GAME->textureManager->empty();
     GAME->projectileManager->empty();
+    GAME->projectileManager->free();
     GAME->mapManager->unloadMap();
     GAME->languageManager->clear();
     GAME->menu->clear();
@@ -179,6 +207,7 @@ Game *initGame(const char* title, int width, int height, bool fullscreen){
     GAME->projectileManager = initProjectileManager();
     GAME->mapManager = initMapManager(GAME);
     GAME->languageManager = initLanguageManager();
+    pauseInit(GAME);
     launchMainMenu(GAME);
     GAME->gameObjects = newList(COMPARE_PTR);
     GAME->keyBindings =  KB_init(GAME);
@@ -188,7 +217,7 @@ Game *initGame(const char* title, int width, int height, bool fullscreen){
     GAME->currentCursor = GAME->cursorArrow;
     GAME->winWidth = width;
     GAME->winWidth = height;
-    LM_getTradById = GAME->languageManager->getTradById;
+    GAME->pause = false;
     initCamera(GAME);
     return GAME;
 }

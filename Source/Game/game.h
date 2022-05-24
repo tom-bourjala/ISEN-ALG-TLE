@@ -14,7 +14,7 @@
 #include "../Language/lang.h"
 #include "../SoundEngine/sound-engine.h"
 #include "../keyBindings/keyBindings.h"
-#include "../Waves/waveManager.h"
+#include "../Waves/waveGenerator.h"
 
 typedef enum {DEBUG_NULL, DEBUG_HITBOX, DEBUG_PATH, DEBUG_EL} debug;
 typedef enum {GS_LoadingMainMenu, GS_MainMenu, GS_LoadingMap, GS_InGame} gameStatus;
@@ -58,6 +58,7 @@ typedef struct
     int cameraY;
     bool cameraDragging;
     float cameraScale;
+    bool pause;
 } Game;
 
 Game *initGame(const char* title, int width, int height, bool fullscreen);
@@ -72,3 +73,5 @@ struct GameObject{
     GameObjectType type;
     void *actor;
 };
+
+void deleteGameObject(void *object);
