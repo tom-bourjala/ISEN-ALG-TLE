@@ -20,7 +20,8 @@ int A_RNULL(void *GAME){return 0;}
 int DIAG_X(void *GAME){return 240;}
 int getx_middle(void *GAME){Game *game = GAME; return game->winWidth/2;}
 int gety_middle(void *GAME){Game *game = GAME; return game->winHeight/2;}
-
+int logo_x(void *GAME){Game *game = GAME; return game->winWidth-700;}
+int logo_y(void *GAME){Game *game = GAME; return game->winHeight/2-100;}
 static const int menuInBetween = 150;
 
 int gety_top(void *GAME){return gety_middle(GAME) - menuInBetween;}
@@ -125,7 +126,7 @@ void UI_initMainMenu(void *GAME)
     LM_getTradById = game->languageManager->getTradById;
 
     UI_anchor *A_NULL = UI_newAnchor(game->menu, A_RNULL, A_RNULL);
-
+    UI_anchor *a_logo = UI_newAnchor(game->menu,logo_x,logo_y);
     UI_anchor *AH_PLAY = UI_newAnchor(game->menu, DIAG_X, gety_top);
     UI_anchor *AH_SETTINGS = UI_newAnchor(game->menu, DIAG_X, gety_middle);
     UI_anchor *AH_QUIT = UI_newAnchor(game->menu, DIAG_X, gety_bottom);
@@ -137,7 +138,7 @@ void UI_initMainMenu(void *GAME)
     UI_anchor *AP_BACK = UI_newAnchor(game->menu, DIAG_X, gety_bottomOfRow);
 
     menuBackground = UI_newStaticTextureObject(game->menu, (SDL_Rect) {0,0,1920,1080}, A_NULL, "menu_background.png");
-    menuLogo = UI_newStaticTextureObject(game->menu, (SDL_Rect) {400,400,400,200}, A_NULL, "TLELogo.png");
+    menuLogo = UI_newStaticTextureObject(game->menu, (SDL_Rect) {400,400,400,200}, a_logo, "TLELogo.png");
     // menuBackground->hidden = true;
 
     //Main menu buttons

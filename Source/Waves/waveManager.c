@@ -12,6 +12,7 @@ static waveManager *WAVE_MANAGER = NULL;
 
 void WM_update()
 {
+    if(!WAVE_MANAGER->currentWave) return;
     WAVE_MANAGER->currentWave->clock++;
     static int refreshCount = 0;
     refreshCount++;
@@ -96,6 +97,14 @@ void WM_nextWave()
     wave *newWave = generateNewWave(WAVE_MANAGER->waveNumber, WAVE_MANAGER->difficulty, WAVE_MANAGER);
     WAVE_MANAGER->isWaveActive = true;
     WAVE_MANAGER->currentWave = newWave;
+}
+
+void WM_killWave()
+{
+    WAVE_MANAGER->waveNumber = 0;
+    WAVE_MANAGER->isWaveActive = false;
+    WAVE_MANAGER->currentWave = NULL;
+
 }
 
 waveManager *initWaveManager(void *game)
