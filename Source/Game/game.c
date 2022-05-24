@@ -75,6 +75,7 @@ void updateAnimation(void *targetAnim){
 
 void update(){
     GAME->currentCursor = GAME->cursorArrow;
+    if (GAME->waveManager->isWaveActive) GAME->waveManager->update();
     forEach(GAME->gameObjects, updateGameObject);
     forEach(GAME->animationManager->animList, updateAnimation);
     GAME->projectileManager->updateProjectiles();
@@ -133,6 +134,7 @@ void clean(){
     forEach(GAME->gameObjects, deleteGameObject);
     freeList(GAME->gameObjects);
     KB_free();
+    deleteWaveManager();
     free(GAME);
 }
 
@@ -172,6 +174,7 @@ Game *initGame(const char* title, int width, int height, bool fullscreen){
     GAME->render = render;
     GAME->clean = clean;
     GAME->textureManager = initTexManager(GAME->renderer);
+    GAME->waveManager = initWaveManager(GAME);
     GAME->animationManager = initAnimManager();
     GAME->projectileManager = initProjectileManager();
     GAME->mapManager = initMapManager(GAME);
