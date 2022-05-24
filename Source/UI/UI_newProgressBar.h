@@ -1,3 +1,4 @@
+#pragma once
 #include "UI.h"
 #include "../Game/game.h"
 #include "../Core/core.h"

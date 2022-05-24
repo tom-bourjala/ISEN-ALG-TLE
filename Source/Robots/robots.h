@@ -18,6 +18,17 @@ typedef struct{
 } robot_walk;
 
 typedef struct{
+    char *textureName;
+    SDL_Texture *texture;
+    int nOfFrames;
+    int currentFrame;
+    int animationDelay;
+    int animationDelayCount;
+    int frameWidth;
+    int frameHeight;
+} robot_death;
+
+typedef struct{
     char* name;
     char* texref;
     int id;
@@ -40,11 +51,13 @@ typedef struct{
     int radius;
     bool isFriendly;
     robot_walk walk;
+    robot_death death;
     map_node *targetNode;
     map_node *lastNode;
     char *projectileName;
 } robot;
 
 GameObject *newGameObject_Robot(Game *GAME, char *robotFileName, map_node *spawnNode, int seed);
+void robotDelete(void *self);
 
 #endif

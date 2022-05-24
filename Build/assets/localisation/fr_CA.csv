@@ -47,4 +47,7 @@ options_menu_keybinds_sell;BROCANTER
 options_menu_keybinds_upgrade;AUGMENTER
 hud_next_wave;NEXT WAVE
 hud_wave_info;VAGUE 1
+pause_continue;REPRENDRE
+pause_settings;OPTIONS
+pause_quit;QUITTER
 
