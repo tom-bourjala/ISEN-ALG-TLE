@@ -247,9 +247,13 @@ void createProjectile(void *GAME, char *projectileFileName, float xpos, float yp
 }
 
 
-void clearAndFree(){
+static void clearProjectiles(){
     if(PROJECTILE_MANAGER->projectiles->length) forEach(PROJECTILE_MANAGER->projectiles, projectileDelete);
     if(PROJECTILE_MANAGER->hits->length) forEach(PROJECTILE_MANAGER->hits, hitDelete);
+}
+
+static void clearManager()
+{
     free(PROJECTILE_MANAGER->projectiles);
     free(PROJECTILE_MANAGER->hits);
     free(PROJECTILE_MANAGER);
@@ -269,7 +273,8 @@ void applyHits(){
 
 projectileManager *initProjectileManager(){
     projectileManager *manager = malloc(sizeof(projectileManager));
-    manager->empty = clearAndFree;
+    manager->empty = clearProjectiles;
+    manager->free = clearManager;
     manager->newProjectile = createProjectile;
     manager->newHit = newHit;
     manager->projectiles = newList(COMPARE_PTR);
