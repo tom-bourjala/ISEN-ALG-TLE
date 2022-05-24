@@ -88,7 +88,9 @@ void updateTurretAi(GameObject *turretObject){
         if(turret->rotation < -M_PI) turret->rotation += 2.0*M_PI;
     }
     if(turret->currentState->canon.currentFrame == turret->currentState->canon.fireFrame && !turret->turretLock){
-        turretObject->game->projectileManager->newProjectile(turretObject->game, turret->currentState->projectileName, turret->x + (turret->width/2), turret->y + (turret->height/2), turret->rotation, turretObject, closestTarget);
+        int spawnX = turret->x + (turret->width/2) - ((turret->width/2) * sin(turret->rotation));
+        int spawnY = turret->y + (turret->height/2) - ((turret->height/2) * cos(turret->rotation));
+        turretObject->game->projectileManager->newProjectile(turretObject->game, turret->currentState->projectileName, spawnX, spawnY, turret->rotation, turretObject, getClosestEnemy(*turretObject));
         turret->turretLock = true;
     }else if(turret->currentState->canon.currentFrame != turret->currentState->canon.fireFrame){
         turret->turretLock = false;
