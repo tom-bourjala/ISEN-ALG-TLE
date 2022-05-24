@@ -85,8 +85,8 @@ robot *newRobot(Game GAME, char *robotFileName, int x, int y, map_node *spawnNod
     createdRobot->width /= createdRobot->walk.nOfFrames;
     createdRobot->walk.frameWidth = createdRobot->width;
     createdRobot->walk.frameHeight = createdRobot->height;
-    createdRobot->width *= 2;
-    createdRobot->height *= 2;
+    createdRobot->width *= 1;
+    createdRobot->height *= 1;
     createdRobot->walk.currentFrame = 0;
     createdRobot->seed = seed;
     createdRobot->x = x;
