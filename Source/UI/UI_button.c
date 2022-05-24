@@ -300,3 +300,13 @@ void UI_setButtonIcon(UI_button *button, char *icon, SDL_RendererFlip flip)
         button->textureObjectIcon->flip = flip;
     } 
 }
+
+void UI_setButtonIconFromTex(UI_button *button, SDL_Texture *texture, SDL_RendererFlip flip)
+{
+    Game *game = button->menu->game;
+    if(texture!=NULL)
+    {
+        button->textureObjectIcon = UI_newStaticTextureObjectStatic(game->menu, (SDL_Rect){0, 0, 0, 0}, button->anchor, texture);
+        button->textureObjectIcon->flip = flip;
+    } 
+}

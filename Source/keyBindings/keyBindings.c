@@ -45,7 +45,6 @@ list *KB_init(void *self) {
     Game *game = self;
     bindings = newList(Comparator);
     FILE *keys_file = fopen("keybindings.kb","r");
-    int count_input = 1;
     char *line = malloc(sizeof(char)*255);
     while(fgets(line,255,keys_file)!=NULL)
     {
@@ -53,12 +52,12 @@ list *KB_init(void *self) {
         char *action = malloc(sizeof(char)*255);
         char *char_sdlk = malloc(sizeof(char)*255);
         sscanf(line,"%[^ ] %[^\n]",action,char_sdlk);
+        printf("%s %s\n",action,char_sdlk);
         int int_sdlk = atoi(char_sdlk);
         int kbEnum = getKBEnumFromString(action);
-        KB_add(int_sdlk,count_input);
+        KB_add(int_sdlk,getKBEnumFromString(action));
         free(action);
         free(char_sdlk);
-        count_input++;
     }
     free(line);
     fclose(keys_file);
@@ -133,7 +132,6 @@ void KB_free() {
     FILE *keys_file = fopen("keybindings.kb","w");
     fclose(keys_file);
     forEach(bindings, saveKeysInFile);
-    
     forEach(bindings, free);
     freeList(bindings);
 }
@@ -177,8 +175,8 @@ keyBinding *KB_getKeyBinding(SDL_Keycode key, gameInput input) {
     keyBinding *kb = malloc(sizeof(keyBinding));
     kb->key = key;
     kb->input = input;
-    printf("\033[1;31mSmartList_DEBUG : ITEM DATA %p\n\033[0m", (void*)kb);
     keyBinding *r = searchDataInList(*bindings, kb);
+    free(kb);
     if (r != NULL) {
         return r;
     } else {
