@@ -78,8 +78,11 @@ void cameraRenderExUnsquared(SDL_Texture *tex, SDL_Rect dest, int frame, int nOf
     }
     SDL_RenderCopyEx(GAME->renderer, tex, &src, &dest, angle, NULL, flip);
     //SDL print red rect
-    SDL_SetRenderDrawColor(GAME->renderer, 255, 0, 0, 255);
-    SDL_RenderDrawRect(GAME->renderer, &dest);
+    if(GAME->key_debug != DEBUG_NULL)
+    {
+        SDL_SetRenderDrawColor(GAME->renderer, 255, 0, 0, 255);
+        SDL_RenderDrawRect(GAME->renderer, &dest);
+    }
 }
 
 void cameraCheckSize(){
