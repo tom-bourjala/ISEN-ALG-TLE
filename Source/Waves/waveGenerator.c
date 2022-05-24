@@ -17,6 +17,9 @@ map_node *getSpawnModulo(list *spawns,int spawnId){
         return getDataAtIndex(*spawns,selectedId);
     }
     else {
+        if(spawns->length <= 3)
+            return getDataAtIndex(*spawns,1);
+        
         int selectedId = ((rand()%((spawns->length/2)-1))*2)+1;
         return getDataAtIndex(*spawns,selectedId);
     }
@@ -34,7 +37,7 @@ waveSpawner *newSpawner(int number,int id,int seed, map_node *spawnLocation){
 
 waveChunk *newChunk(){
     waveChunk *newChunk = malloc(sizeof(waveChunk));
-    newChunk->waveSpawner = NULL;
+    newChunk->waveSpawner = newList(COMPARE_PTR);
     newChunk->timer = -1;
     newChunk->treshold = -1;
     return newChunk;
@@ -42,7 +45,7 @@ waveChunk *newChunk(){
 
 wave *newWave(waveManager *parent){
     wave *newWave = malloc(sizeof(wave));
-    newWave->chunks = NULL;
+    newWave->chunks = newList(COMPARE_PTR);
     newWave->clock = -1;
     newWave->parent = parent;
     return newWave;
@@ -53,7 +56,8 @@ void archetype_smallTeam(list *chunks,float weight){
 }
 
 void introToRobots(int waveNumber,wave *currentWave){
-    Game *game = currentWave->parent;
+    waveManager *w = currentWave->parent;
+    Game *game = w->parent;
     list *spawns = game->mapManager->currentMap->starts;
     switch (waveNumber)
     {

@@ -41,3 +41,6 @@ typedef struct
     int treshold;
 } waveChunk;
 
+waveManager *initWaveManager(void *game);
+void deleteWaveManager();
+

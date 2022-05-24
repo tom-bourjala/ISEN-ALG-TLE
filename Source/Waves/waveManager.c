@@ -13,6 +13,11 @@ static waveManager *WAVE_MANAGER = NULL;
 void WM_update()
 {
     WAVE_MANAGER->currentWave->clock++;
+    static int refreshCount = 0;
+    refreshCount++;
+
+    if (refreshCount <10) return;
+    refreshCount = 0;
     Game *game = WAVE_MANAGER->parent;
     int nbOfEnnemiesAlive = 0;
     void checkIfEnnmies(void *go)
@@ -40,13 +45,13 @@ void WM_update()
             switch (this->id)
             {
             case 0:
-                newGameObject_Robot(WAVE_MANAGER->parent,"robot.robot",this->spawnLocation,this->seed);
+                newGameObject_Robot(WAVE_MANAGER->parent,"debug.robot",this->spawnLocation,this->seed);
                 break;
             case 1:
-                newGameObject_Robot(WAVE_MANAGER->parent,"bomb.robot",this->spawnLocation,this->seed);
+                newGameObject_Robot(WAVE_MANAGER->parent,"debug.robot",this->spawnLocation,this->seed);
                 break;
             case 2:
-                newGameObject_Robot(WAVE_MANAGER->parent,"tank.robot",this->spawnLocation,this->seed);
+                newGameObject_Robot(WAVE_MANAGER->parent,"debug.robot",this->spawnLocation,this->seed);
                 break;
             }
         }
@@ -89,6 +94,8 @@ void WM_nextWave()
 {
     WAVE_MANAGER->waveNumber++;
     wave *newWave = generateNewWave(WAVE_MANAGER->waveNumber, WAVE_MANAGER->difficulty, WAVE_MANAGER);
+    WAVE_MANAGER->isWaveActive = true;
+    WAVE_MANAGER->currentWave = newWave;
 }
 
 waveManager *initWaveManager(void *game)
@@ -99,8 +106,12 @@ waveManager *initWaveManager(void *game)
     manager->isWaveActive = false;
     manager->waveNumber = 0;
     manager->difficulty = 0.1;
-    WAVE_MANAGER = manager;
     manager->nextWave = WM_nextWave;
     manager->update = WM_update;
+    WAVE_MANAGER = manager;
     return manager;
+}
+
+void deleteWaveManager(){
+    free(WAVE_MANAGER);
 }
