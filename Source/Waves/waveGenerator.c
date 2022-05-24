@@ -55,6 +55,23 @@ void archetype_smallTeam(list *chunks,float weight){
 
 }
 
+void demoWave(wave *currentWave){
+    waveManager *w = currentWave->parent;
+    Game *game = w->parent;
+    list *spawns = game->mapManager->currentMap->starts;
+    waveChunk *chunk1 = newChunk();
+    appendInList(chunk1->waveSpawner,newSpawner(5,1,0,getSpawnModulo(spawns,0)));
+    appendInList(currentWave->chunks,chunk1);
+    waveChunk *chunk2 = newChunk();
+    chunk2->timer = 100;
+    appendInList(chunk2->waveSpawner,newSpawner(3,0,0,getSpawnModulo(spawns,1)));
+    appendInList(currentWave->chunks,chunk2);
+    waveChunk *chunk3 = newChunk();
+    chunk3->timer = 100;
+    appendInList(chunk3->waveSpawner,newSpawner(1,2,0,getSpawnModulo(spawns,0)));
+    appendInList(currentWave->chunks,chunk3);
+}
+
 void introToRobots(int waveNumber,wave *currentWave){
     waveManager *w = currentWave->parent;
     Game *game = w->parent;
@@ -62,7 +79,7 @@ void introToRobots(int waveNumber,wave *currentWave){
     switch (waveNumber)
     {
     case 1:;
-        waveChunk *chunk1 = newChunk();
+            waveChunk *chunk1 = newChunk();
             appendInList(chunk1->waveSpawner,newSpawner(1,0,0,getSpawnModulo(spawns,0)));
             appendInList(currentWave->chunks,chunk1);
         for (int i=0;i<5;i++){
@@ -112,7 +129,8 @@ wave *generateNewWave(int waveNumber,float difficulty,waveManager *parent){
     srand(waveNumber);
     wave *wave = newWave(parent);
     float weight = waveNumber*difficulty;
-    if (waveNumber < 6) introToRobots(waveNumber,wave);
+    if (waveNumber == 1) demoWave(wave);
+    else if (waveNumber < 6) introToRobots(waveNumber,wave);
     else if(waveNumber <11 && waveNumber >5) introToBombers(waveNumber,wave);
     else if(waveNumber <16 && waveNumber >10) introToTanks(waveNumber,wave);
     else if(waveNumber <21 && waveNumber >15) introToVariants(waveNumber,wave);

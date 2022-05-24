@@ -10,13 +10,14 @@
 #include "../Game/camera.h"
 
 
-typedef enum{ROB_NAME, ROB_TEX_REF, ROB_PROJECTILE_NAME, ROB_WIDTH, ROB_HEIGHT, ROB_SPEED, ROB_TEX_ANIM_FRAMES, ROB_LIFE, ROB_WEAPON_DELAY, ROB_WEAPON_RANGE, ROB_IS_FRIENDLY, ROB_NONE} robotConfigFileParam;
+typedef enum{ROB_NAME, ROB_TEX_REF, ROB_PROJECTILE_NAME, ROB_WIDTH, ROB_HEIGHT, ROB_SPEED, ROB_TEX_ANIM_FRAMES,ROB_TEX_ANIM_DELAY, ROB_LIFE, ROB_WEAPON_DELAY, ROB_WEAPON_RANGE, ROB_IS_FRIENDLY, ROB_NONE} robotConfigFileParam;
 
 
 robotConfigFileParam getRobotConfigFileParamFromString(char *fileParamString){
     if(!strcmp("NAME", fileParamString)) return ROB_NAME;
     if(!strcmp("TEX_REF", fileParamString)) return ROB_TEX_REF;
     if(!strcmp("TEX_ANIM_FRAMES", fileParamString)) return ROB_TEX_ANIM_FRAMES;
+    if(!strcmp("TEX_ANIM_DELAY", fileParamString)) return ROB_TEX_ANIM_DELAY;
     if(!strcmp("WEAPON_DELAY", fileParamString)) return ROB_WEAPON_DELAY;
     if(!strcmp("WEAPON_RANGE", fileParamString)) return ROB_WEAPON_RANGE;
     if(!strcmp("IS_FRIENDLY", fileParamString)) return ROB_IS_FRIENDLY;
@@ -58,6 +59,10 @@ robot *newRobot(Game GAME, char *robotFileName, int x, int y, map_node *spawnNod
             case ROB_TEX_ANIM_FRAMES :
                 createdRobot->walk.nOfFrames = atoi(stat_value);
                 break;
+            case ROB_TEX_ANIM_DELAY :
+                createdRobot->walk.animationDelay = atoi(stat_value);
+                createdRobot->walk.animationDelayCount = atoi(stat_value);
+                break;
             case ROB_WEAPON_DELAY :
                 createdRobot->delay = atoi(stat_value);
                 break;
@@ -85,8 +90,8 @@ robot *newRobot(Game GAME, char *robotFileName, int x, int y, map_node *spawnNod
     createdRobot->width /= createdRobot->walk.nOfFrames;
     createdRobot->walk.frameWidth = createdRobot->width;
     createdRobot->walk.frameHeight = createdRobot->height;
-    createdRobot->width *= 2;
-    createdRobot->height *= 2;
+    createdRobot->width *= 1;
+    createdRobot->height *= 1;
     createdRobot->walk.currentFrame = 0;
     createdRobot->seed = seed;
     createdRobot->x = x;
@@ -110,7 +115,11 @@ void robotUpdate(void *self){
     this->y+=this->speedy;
     this->rotationCache = this->rotation;
     this->rotation = (atan2f(this->targetNode->x - this->lastNode->x, this->targetNode->y - this->lastNode->y)*0.4) + (this->rotationCache*0.6);
-    this->walk.currentFrame = (this->walk.currentFrame + 1) % this->walk.nOfFrames;
+    this->walk.animationDelayCount--;
+    if (this->walk.animationDelayCount <= 0){
+        this->walk.animationDelayCount = this->walk.animationDelay;
+        this->walk.currentFrame = (this->walk.currentFrame + 1) % this->walk.nOfFrames;
+    }
     updateShotBehavior(thisGameObject);
 }
 

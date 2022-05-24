@@ -113,6 +113,7 @@ void cameraMove(int x, int y){
 
 void cameraZoomAt(float zoom, int x, int y){
     SDL_Rect target = {x, y, 0, 0};
+    if(y > GAME->winHeight - 200) return;
     projectRectToCamera_inv(&target);
     int absX = target.x;
     int absY = target.y;
@@ -124,6 +125,7 @@ void cameraZoomAt(float zoom, int x, int y){
 
 void cameraStartDrag(){
     int x = GAME->mouseX, y = GAME->mouseY;
+    if(y > GAME->winHeight - 200) return;
     dragX = x;
     dragY = y;
     dragX_start = x;
@@ -132,6 +134,7 @@ void cameraStartDrag(){
 
 void cameraDrag(){
     int x = GAME->mouseX, y = GAME->mouseY;
+    if(y > GAME->winHeight - 200) return;
     if(abs(x - dragX) + abs(y - dragY) > dragThreshold || GAME->cameraDragging){
         GAME->cameraDragging = true;
         int deltaX = (dragX - x) / GAME->cameraScale;

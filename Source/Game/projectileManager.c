@@ -136,10 +136,10 @@ projectile *newProjectile(void *game, char *projectileFileName, float xpos, floa
         sprintf(createdProjectile->projectileRenderer.animationId, "P%s%d", createdProjectile->projectileRenderer.texref, createdProjectile->id);
     }
     createdProjectile->isFriendly = isFriendly;
-    createdProjectile->x = xpos;
-    createdProjectile->y = ypos;
     createdProjectile->width = createdProjectile->projectileRenderer.freamWidth * 2;
     createdProjectile->height = createdProjectile->projectileRenderer.freamHeight * 2;
+    createdProjectile->x = xpos - createdProjectile->width/2;
+    createdProjectile->y = ypos - createdProjectile->height/2;
     createdProjectile->rotation = rotation;
     createdProjectile->speedx = -createdProjectile->speed * sin(rotation);
     createdProjectile->speedy = -createdProjectile->speed * cos(rotation);

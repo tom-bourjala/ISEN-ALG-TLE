@@ -45,13 +45,13 @@ void WM_update()
             switch (this->id)
             {
             case 0:
-                newGameObject_Robot(WAVE_MANAGER->parent,"debug.robot",this->spawnLocation,this->seed);
+                newGameObject_Robot(WAVE_MANAGER->parent,"robot.robot",this->spawnLocation,this->seed);
                 break;
             case 1:
-                newGameObject_Robot(WAVE_MANAGER->parent,"debug.robot",this->spawnLocation,this->seed);
+                newGameObject_Robot(WAVE_MANAGER->parent,"bomb.robot",this->spawnLocation,this->seed);
                 break;
             case 2:
-                newGameObject_Robot(WAVE_MANAGER->parent,"debug.robot",this->spawnLocation,this->seed);
+                newGameObject_Robot(WAVE_MANAGER->parent,"tank.robot",this->spawnLocation,this->seed);
                 break;
             }
         }
