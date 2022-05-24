@@ -143,7 +143,6 @@ projectile *newProjectile(void *game, char *projectileFileName, float xpos, floa
     createdProjectile->rotation = rotation;
     createdProjectile->speedx = -createdProjectile->speed * sin(rotation);
     createdProjectile->speedy = -createdProjectile->speed * cos(rotation);
-
     return createdProjectile;
 }
 
@@ -153,6 +152,8 @@ void projectileUpdate(void *self){
     float endPosX = this->speedx+this->x;
     float endPosY = this->speedy+this->y;
     list *GameObjects = parent->game->gameObjects;
+    this->speedx = -this->speed * sin(this->rotation);
+    this->speedy = -this->speed * cos(this->rotation);
     for(int index = 0; index < GameObjects->length; index++){
         GameObject *target = getDataAtIndex(*GameObjects, index);
         if(parent->type == GOT_Robot){
@@ -205,10 +206,12 @@ void projectileUpdate(void *self){
         if(searchDataInList(*parent->game->gameObjects, target)){
             if(target->isAlive(target)){
                 robot *actor = target->actor;
-                float targetX = actor->x + actor->width/2;
-                float targetY = actor->y + actor->height/2;
-                float rotToTarget = atan2(targetX - this->x, targetY - this->y);
-                this->rotation = ((this->rotation*2.0) + rotToTarget)/3.0;
+                float targetX = actor->x;
+                float targetY = actor->y;
+                float x = this->x + (this->width/2);
+                float y = this->y + (this->height/2);
+                float rotToTarget = atan2(x-targetX, y-targetY);
+                this->rotation = rotToTarget;
                 return;
             }
         }

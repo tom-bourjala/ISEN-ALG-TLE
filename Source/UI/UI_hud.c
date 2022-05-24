@@ -248,9 +248,6 @@ void UI_initHud(void *GAME)
     UI_anchor *A_PANEL_TURRET_HUD_1 = UI_newAnchor(game->menu, HUD_turret_panel_1_x, HUD_turret_panel_1_y);
     UI_anchor *A_PANEL_TURRET_HUD_2 = UI_newAnchor(game->menu, HUD_turret_panel_2_x, HUD_turret_panel_2_y);
     UI_anchor *A_PANEL_TURRET_HUD_3 = UI_newAnchor(game->menu, HUD_turret_panel_3_x, HUD_turret_panel_3_y);
-    UI_panel *HUD_turret_panel_1 = UI_newPanel(game->menu,0.125*THIS_GAME->winHeight,0.125*THIS_GAME->winHeight, A_PANEL_TURRET_HUD_1, 2, UI_PT_A);
-    UI_panel *HUD_turret_panel_2 = UI_newPanel(game->menu,0.125*THIS_GAME->winHeight,0.125*THIS_GAME->winHeight, A_PANEL_TURRET_HUD_2, 2, UI_PT_A);
-    UI_panel *HUD_turret_panel_3 = UI_newPanel(game->menu,0.125*THIS_GAME->winHeight,0.125*THIS_GAME->winHeight, A_PANEL_TURRET_HUD_3, 2, UI_PT_A);
 
     UI_anchor *A_TEXT_TURRET_HUD_1 = UI_newAnchor(game->menu, HUD_turret_text_1_x, HUD_turret_text_1_y);
     UI_anchor *A_TEXT_TURRET_HUD_2 = UI_newAnchor(game->menu, HUD_turret_text_2_x, HUD_turret_text_2_y);
@@ -281,7 +278,7 @@ void UI_initHud(void *GAME)
         int width = 0.125*THIS_GAME->winHeight;
         int height = 0.125*THIS_GAME->winHeight;
         tmp_selector->text = UI_newText(game->menu,tmp->name,A_text_tmp, UI_TA_CENTER, UI_TJ_CENTER,(SDL_Color){255,255,255,255}, "./assets/fonts/RulerGold.ttf", 20);
-        tmp_selector->panel = UI_newPanel(game->menu,width,height, A_panel_tmp, 2, UI_PT_A);
+        tmp_selector->panel = UI_newPanel(game->menu,width,height, A_panel_tmp, 2, UI_PT_B);
         tmp_selector->actionArea = UI_newActionArea(game->menu, (SDL_Rect) {0,0, width, height}, A_panel_tmp, eventTurretSelector);
         tmp_selector->texObj = UI_newStaticTextureObjectStatic(game->menu, (SDL_Rect) {0,0, width, height}, A_panel_tmp, tmp->thumbnail);
         tmp_selector->turret = tmp;

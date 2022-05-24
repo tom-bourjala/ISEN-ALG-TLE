@@ -58,14 +58,6 @@ typedef struct
     int cameraY;
     bool cameraDragging;
     float cameraScale;
-
-/*
-    bool waitingForInputKey;
-    int keyBindingOrderList;
-    keyBinding *keyChosen;
-    char *keyChosenToString;
-    UI_button *chosenButtonSettings;
-*/
 } Game;
 
 Game *initGame(const char* title, int width, int height, bool fullscreen);

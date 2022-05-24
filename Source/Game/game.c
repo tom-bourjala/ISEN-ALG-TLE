@@ -26,10 +26,6 @@ void handleEvents(){
         switch (event.type)
         {
             case SDL_MOUSEBUTTONDOWN:
-                /*if(GAME->waitingForInputKey)
-                {
-                    GAME->waitingForInputKey = false;
-                }*/
                 handleEvents(-1);
                 if(event.button.button == SDL_BUTTON_LEFT){
                     GAME->mouseLeftDown = true;
@@ -45,10 +41,6 @@ void handleEvents(){
                 }
                 break;
             case SDL_MOUSEWHEEL:
-                /*if(GAME->waitingForInputKey)
-                {
-                    GAME->waitingForInputKey = false;
-                }*/
                 if(event.wheel.y > 0)
                     cameraZoomAt(0.1, GAME->mouseX, GAME->mouseY);
                 else if(event.wheel.y < 0)
@@ -58,21 +50,7 @@ void handleEvents(){
                 GAME->isRunning = false;
                 break;
             case SDL_KEYDOWN:
-                //printf("%s %d\n",SDL_GetKeyName(event.key.keysym.sym),event.key.keysym.sym);
                 KB_handleKeyCode(event.key.keysym.sym);
-                /*if(GAME->waitingForInputKey)
-                {
-                    GAME->waitingForInputKey = false;
-                    if(GAME->keyChosen!=NULL)
-                    {
-                        GAME->keyChosen->key = (SDL_Keycode)(event.key.keysym.sym);
-                        strcpy(GAME->keyChosenToString,SDL_GetKeyName(event.key.keysym.sym));
-                        if(GAME->chosenButtonSettings!=NULL && strlen(GAME->keyChosenToString)!=0)
-                        {
-                            GAME->chosenButtonSettings->text = UI_newText(GAME->chosenButtonSettings->menu,LM_getTradById(GAME->keyChosenToString),GAME->chosenButtonSettings->anchor,UI_TA_CENTER,UI_TJ_CENTER,(SDL_Color){255,255,255,255},"./assets/fonts/ImprovGOLD.ttf", 60);
-                        }
-                    }
-                }*/
                 switch(event.key.keysym.sym)
                 {
                     case SDLK_F12:
@@ -184,19 +162,13 @@ Game *initGame(const char* title, int width, int height, bool fullscreen){
         printf("\033[1;31mSDL Subsystems Initialising FAILED : %s\033[0m\n", SDL_GetError());
     }
     GAME->SEMusicWeight = 0;
-    // GAME->soundEngine = initSoundEngine(&GAME->SEMusicWeight);
+    GAME->soundEngine = initSoundEngine(&GAME->SEMusicWeight);
     GAME->mouseX = 0;
     GAME->mouseY = 0;
     GAME->mouseLeftDown = false;
     GAME->winWidth = 0;
     GAME->winHeight = 0;
     GAME->selection = NULL;
-    /*GAME->keyChosen = NULL;
-    GAME->keyChosenToString = malloc(sizeof(char)*255);
-    GAME->chosenButtonSettings = NULL;
-    memset(GAME->keyChosenToString,0,255);
-    GAME->waitingForInputKey = false;
-    GAME->keyBindingOrderList = -1;*/
     GAME->handleEvents = handleEvents;
     GAME->update = update;
     GAME->render = render;
