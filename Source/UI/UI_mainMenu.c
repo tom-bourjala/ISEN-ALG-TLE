@@ -11,7 +11,6 @@ static UI_button *playButton = NULL;
 static UI_button *settingsButton = NULL;
 static UI_button *quitButton = NULL;
 static UI_button *aboutButton = NULL;
-static UI_button *campaignButton = NULL;
 static UI_button *endlessButton = NULL;
 static UI_button *sandboxButton = NULL;
 static UI_button *backButton = NULL;
@@ -51,14 +50,12 @@ void hidePlayMenu(){
 }
 
 void showHomeMenu(){
-    campaignButton->hidden = true;
     endlessButton->hidden = true;
     sandboxButton->hidden = true;
     backButton->hidden = true;
 }
 
 void hideHomeMenu(){
-    campaignButton->hidden = false;
     endlessButton->hidden = false;
     sandboxButton->hidden = false;
     backButton->hidden = false;
@@ -132,7 +129,7 @@ void UI_initMainMenu(void *GAME)
     UI_anchor *AH_QUIT = UI_newAnchor(game->menu, DIAG_X, gety_bottom);
     // UI_anchor *AH_ABOUT = UI_newAnchor(game->menu, ?, ?);
 
-    UI_anchor *AP_CAMPAIGN = UI_newAnchor(game->menu, DIAG_X, gety_firstInRow);
+  
     UI_anchor *AP_ENDLESS = UI_newAnchor(game->menu, DIAG_X, gety_secondInRow);
     UI_anchor *AP_SANDBOX = UI_newAnchor(game->menu, DIAG_X, gety_thirdInRow);
     UI_anchor *AP_BACK = UI_newAnchor(game->menu, DIAG_X, gety_bottomOfRow);
@@ -148,7 +145,6 @@ void UI_initMainMenu(void *GAME)
     // aboutButton = UI_newButton(THIS_GAME->menu, LM_getTradById("menu_home_about"), UI_B_BIG, AH_ABOUT, false, onClickPrintf, NULL, NULL, 3);
 
     //Play menu buttons
-    campaignButton = UI_newButton(THIS_GAME->menu, LM_getTradById("menu_home_campagin"), UI_B_BIG, AP_CAMPAIGN, false, onClickPrintf, NULL, NULL, 2);
     endlessButton = UI_newButton(THIS_GAME->menu, LM_getTradById("menu_home_endless"), UI_B_BIG, AP_ENDLESS, false, GM_launchEndless, NULL, NULL, 2);
     sandboxButton = UI_newButton(THIS_GAME->menu, LM_getTradById("menu_home_sandbox"), UI_B_BIG, AP_SANDBOX, false, onClickPrintf, NULL, NULL, 2);
     backButton = UI_newButton(THIS_GAME->menu, LM_getTradById("menu_back"), UI_B_BACK, AP_BACK, false, switchToHomeMenu, NULL, NULL, 1.5);
