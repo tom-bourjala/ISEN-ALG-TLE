@@ -55,9 +55,6 @@ void applyHit(void *self){
     }
     if(targetObject->game->key_debug == DEBUG_HITBOX)
         newGameObject_Debug(targetObject->game, this->x, this->y, 600, DO_Hit);
-    if(!targetObject->isAlive(targetObject) && targetObject->type != GOT_Core){
-        targetObject->delete(targetObject);
-    }
     this->delete(this);
 }
 
@@ -149,8 +146,8 @@ projectile *newProjectile(void *game, char *projectileFileName, float xpos, floa
 void projectileUpdate(void *self){
     projectile *this = self;
     GameObject *parent = this->parent;
-    float endPosX = this->speedx+this->x;
-    float endPosY = this->speedy+this->y;
+    float endPosX = this->speedx+this->x + (this->width/2);
+    float endPosY = this->speedy+this->y + (this->height/2);
     list *GameObjects = parent->game->gameObjects;
     this->speedx = -this->speed * sin(this->rotation);
     this->speedy = -this->speed * cos(this->rotation);

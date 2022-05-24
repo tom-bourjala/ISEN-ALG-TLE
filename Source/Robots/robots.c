@@ -10,7 +10,7 @@
 #include "../Game/camera.h"
 
 
-typedef enum{ROB_NAME, ROB_TEX_REF, ROB_PROJECTILE_NAME, ROB_WIDTH, ROB_HEIGHT, ROB_SPEED, ROB_TEX_ANIM_FRAMES,ROB_TEX_ANIM_DELAY, ROB_LIFE, ROB_WEAPON_DELAY, ROB_WEAPON_RANGE, ROB_IS_FRIENDLY, ROB_NONE} robotConfigFileParam;
+typedef enum{ROB_NAME, ROB_TEX_REF, ROB_PROJECTILE_NAME, ROB_WIDTH, ROB_HEIGHT, ROB_SPEED, ROB_TEX_ANIM_FRAMES,ROB_TEX_ANIM_DELAY, ROB_LIFE,ROB_TEX_DEATH_ANIM_FRAMES,ROB_TEX_DEATH_ANIM_DELAY, ROB_WEAPON_DELAY, ROB_WEAPON_RANGE, ROB_IS_FRIENDLY, ROB_NONE} robotConfigFileParam;
 
 
 robotConfigFileParam getRobotConfigFileParamFromString(char *fileParamString){
@@ -18,6 +18,8 @@ robotConfigFileParam getRobotConfigFileParamFromString(char *fileParamString){
     if(!strcmp("TEX_REF", fileParamString)) return ROB_TEX_REF;
     if(!strcmp("TEX_ANIM_FRAMES", fileParamString)) return ROB_TEX_ANIM_FRAMES;
     if(!strcmp("TEX_ANIM_DELAY", fileParamString)) return ROB_TEX_ANIM_DELAY;
+    if(!strcmp("TEX_DEATH_ANIM_FRAMES", fileParamString)) return ROB_TEX_DEATH_ANIM_FRAMES;
+    if(!strcmp("TEX_DEATH_ANIM_DELAY", fileParamString)) return ROB_TEX_DEATH_ANIM_DELAY;
     if(!strcmp("WEAPON_DELAY", fileParamString)) return ROB_WEAPON_DELAY;
     if(!strcmp("WEAPON_RANGE", fileParamString)) return ROB_WEAPON_RANGE;
     if(!strcmp("IS_FRIENDLY", fileParamString)) return ROB_IS_FRIENDLY;
@@ -63,6 +65,13 @@ robot *newRobot(Game GAME, char *robotFileName, int x, int y, map_node *spawnNod
                 createdRobot->walk.animationDelay = atoi(stat_value);
                 createdRobot->walk.animationDelayCount = atoi(stat_value);
                 break;
+            case ROB_TEX_DEATH_ANIM_FRAMES :
+                createdRobot->death.nOfFrames = atoi(stat_value);
+                break;
+            case ROB_TEX_DEATH_ANIM_DELAY :
+                createdRobot->death.animationDelay = atoi(stat_value);
+                createdRobot->death.animationDelayCount = atoi(stat_value);
+                break;
             case ROB_WEAPON_DELAY :
                 createdRobot->delay = atoi(stat_value);
                 break;
@@ -78,21 +87,28 @@ robot *newRobot(Game GAME, char *robotFileName, int x, int y, map_node *spawnNod
                 break;
             case ROB_SPEED:
                 createdRobot->maxSpeed = atof(stat_value);
+                break;
             case ROB_NONE :
                 break;
         }
     }
     fclose(robot_file);
     createdRobot->walk.textureName = malloc(sizeof(char)*50);
+    createdRobot->death.textureName = malloc(sizeof(char)*50);
     sprintf(createdRobot->walk.textureName, "rob_%s_%s_walk.png", createdRobot->isFriendly ? "friendly" : "hostile", createdRobot->texref);
+    sprintf(createdRobot->death.textureName, "rob_%s_%s_death.png", createdRobot->isFriendly ? "friendly" : "hostile", createdRobot->texref);
     createdRobot->walk.texture = GAME.textureManager->getTexture(createdRobot->walk.textureName);
+    createdRobot->death.texture = GAME.textureManager->getTexture(createdRobot->death.textureName);
     SDL_QueryTexture(createdRobot->walk.texture, NULL, NULL, &createdRobot->width, &createdRobot->height);
     createdRobot->width /= createdRobot->walk.nOfFrames;
     createdRobot->walk.frameWidth = createdRobot->width;
     createdRobot->walk.frameHeight = createdRobot->height;
+    createdRobot->death.frameWidth = createdRobot->width;
+    createdRobot->death.frameHeight = createdRobot->height;
     createdRobot->width *= 1;
     createdRobot->height *= 1;
     createdRobot->walk.currentFrame = 0;
+    createdRobot->death.currentFrame = 0;
     createdRobot->seed = seed;
     createdRobot->x = x;
     createdRobot->y = y;
@@ -103,13 +119,40 @@ robot *newRobot(Game GAME, char *robotFileName, int x, int y, map_node *spawnNod
     createdRobot->rotation = 0.0;
     createdRobot->rotationCache = 0.0;
     createdRobot->delayCounter = createdRobot->delay;
-    createdRobot->radius = (createdRobot->width + createdRobot->height)/8;
+    createdRobot->radius = (createdRobot->width + createdRobot->height)/6;
     return createdRobot;
+}
+
+bool robotIsAlive(void *self){
+    GameObject *thisGameObject = self;
+    robot *this = thisGameObject->actor;
+    return this->life > 0;
+}
+
+void robotDelete(void *self){
+    GameObject *thisGameObject = self;
+    robot *this = thisGameObject->actor;
+    free(this->name);
+    free(this->texref);  
+    free(this->walk.textureName);
+    deleteInList(thisGameObject->game->gameObjects, thisGameObject);
+    free(this);
 }
 
 void robotUpdate(void *self){
     GameObject *thisGameObject = self;
     robot *this = thisGameObject->actor;
+    if (!robotIsAlive(self)){
+        this->death.animationDelayCount--;
+        if (this->death.animationDelayCount <= 0){
+            this->death.animationDelayCount = this->death.animationDelay;
+            this->death.currentFrame++;
+            if (this->death.currentFrame >= this->death.nOfFrames){
+                robotDelete(self);
+            }
+        } 
+        return;
+    }    
     updateRobotPathAi(thisGameObject);
     this->x+=this->speedx;
     this->y+=this->speedy;
@@ -127,31 +170,23 @@ void robotRender(void *self){
     GameObject *thisGameObject = self;
     robot *this = thisGameObject->actor;
     SDL_Rect rect={this->x - (this->width/2), this->y - (this->height/2),this->width,this->height};
-    SDL_Rect srcrect={this->walk.currentFrame*64,0,64,64};
-    cameraRenderEx(this->walk.texture, rect, this->walk.currentFrame, -this->rotation*90/(M_PI/2) + 180, false, false);
-    if(thisGameObject->game->key_debug != DEBUG_NULL)
-    {
-        SDL_Color rouge = {255,0,0,255};
-        SDL_SetRenderDrawColor(thisGameObject->game->renderer,rouge.r,rouge.g,rouge.b,rouge.a);
-        DrawCircle(thisGameObject->game->renderer, this->x - thisGameObject->game->cameraX, this->y - thisGameObject->game->cameraY, this->radius);
+    
+    if (robotIsAlive(self)){
+        SDL_Rect srcrect={this->walk.currentFrame*64,0,64,64};
+        cameraRenderEx(this->walk.texture, rect, this->walk.currentFrame, -this->rotation*90/(M_PI/2) + 180, false, false);
+        if(thisGameObject->game->key_debug != DEBUG_NULL)
+        {
+            SDL_Color rouge = {255,0,0,255};
+            SDL_SetRenderDrawColor(thisGameObject->game->renderer,rouge.r,rouge.g,rouge.b,rouge.a);
+            DrawCircle(thisGameObject->game->renderer, this->x - thisGameObject->game->cameraX, this->y - thisGameObject->game->cameraY, this->radius);
+        }
+    }
+    else {
+        SDL_Rect srcrect={this->death.currentFrame*64,0,64,64};
+        cameraRenderEx(this->death.texture, rect, this->death.currentFrame, -this->rotation*90/(M_PI/2) + 180, false, false);
     }
 }
 
-void robotDelete(void *self){
-    GameObject *thisGameObject = self;
-    robot *this = thisGameObject->actor;
-    free(this->name);
-    free(this->texref);  
-    free(this->walk.textureName);
-    deleteInList(thisGameObject->game->gameObjects, thisGameObject);
-    free(this);
-}
-
-bool robotIsAlive(void *self){
-    GameObject *thisGameObject = self;
-    robot *this = thisGameObject->actor;
-    return this->life > 0;
-}
 
 float distTwoPoints(int x1, int y1, int x2, int y2){
     return sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2));

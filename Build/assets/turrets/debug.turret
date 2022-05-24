@@ -1,4 +1,5 @@
 NAME = turret_debug
+DESCRIPTION = turret_debug_desc
 TEX_ANIM_FRAMES = 15
 
 NEW_STATE

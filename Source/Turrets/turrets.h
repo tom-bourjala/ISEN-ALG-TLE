@@ -34,6 +34,7 @@ typedef struct{
 
 typedef struct{
     char** name;
+    char** description;
     int id;
     float rotation;
     int x;
