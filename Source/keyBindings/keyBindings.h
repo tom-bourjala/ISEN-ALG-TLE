@@ -8,18 +8,24 @@
 typedef int gameInput;
 
 //key rebinding item
-typedef struct key_binding
+typedef struct
 {
     SDL_Keycode key;
     gameInput input;
 } keyBinding;
+
+typedef struct
+{
+    SDL_Keycode code;
+    SDL_Texture *texture;
+}keyTexture;
 
 // "KB" stands for "Key Binding"
 
 /* @brief: Initializes the key rebinding library.
  * @return: List pointer to smartList item.
  */
-list *KB_init();
+list *KB_init(void *game);
 
 /* @brief: free the key rebinding library. Removes all items from the list.
  */
@@ -68,6 +74,7 @@ void printList(list *r);
 
 void KB_getInput(void (*callback)(SDL_Keycode code,void *data),void *data);
 void KB_handleKeyCode(SDL_Keycode code);
+list *KB_getKCTA();
 
 
 typedef enum{NONE,GA_UP,GA_DOWN,GA_LEFT,GA_RIGHT,GA_ZOOMIN,GA_ZOOMOUT,GA_TURRET1,GA_TURRET2,GA_TURRET3,GA_PAUSE,GA_SELL,GA_UPGRADE}GA_type;

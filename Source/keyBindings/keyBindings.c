@@ -1,10 +1,12 @@
 #include "keyBindings.h"
+#include "../Game/game.h"
 
 /*
  * Global variables needed for the project
  */
 
-static list *bindings;
+static list *bindings = NULL;
+static list* keyCodeTextureAsso = NULL;
 
 /*
  * Search function for the library to work properly
@@ -39,7 +41,8 @@ int getKBEnumFromString(char *string)
     if(!strcmp(string,"GA_TURRET3")){return GA_TURRET3;}
 }
 
-list *KB_init() {
+list *KB_init(void *self) {
+    Game *game = self;
     bindings = newList(Comparator);
     FILE *keys_file = fopen("keybindings.kb","r");
     int count_input = 1;
@@ -59,6 +62,22 @@ list *KB_init() {
     }
     free(line);
     fclose(keys_file);
+
+    keyTexture *temp = NULL;
+    keyCodeTextureAsso = newList(COMPARE_PTR);
+    temp = malloc(sizeof(keyTexture));
+    *temp = (keyTexture){SDLK_UP,game->textureManager->getTexture("UI_icon_key_move_up.png")};
+    appendInList(keyCodeTextureAsso,temp);
+    temp = malloc(sizeof(keyTexture));
+    *temp = (keyTexture){SDLK_DOWN,game->textureManager->getTexture("UI_icon_key_move_down.png")};
+    appendInList(keyCodeTextureAsso,temp);
+    temp = malloc(sizeof(keyTexture));
+    *temp = (keyTexture){SDLK_LEFT,game->textureManager->getTexture("UI_icon_key_move_left.png")};
+    appendInList(keyCodeTextureAsso,temp);
+    temp = malloc(sizeof(keyTexture));
+    *temp = (keyTexture){SDLK_RIGHT,game->textureManager->getTexture("UI_icon_key_move_right.png")};
+    appendInList(keyCodeTextureAsso,temp);
+
     return bindings;
 }
 
@@ -196,10 +215,16 @@ void KB_getInput(void (*cb)(SDL_Keycode code,void *data),void *d)
 
 void KB_handleKeyCode(SDL_Keycode code)
 {
+    
     if(callback)
     {
         callback(code,data);
         callback = NULL;
         data = NULL;
     }
+}
+
+list *KB_getKCTA()
+{
+    return keyCodeTextureAsso;
 }
