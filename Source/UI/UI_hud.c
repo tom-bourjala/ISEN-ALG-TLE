@@ -235,7 +235,6 @@ void UI_initHud(void *GAME)
     *text_golds_1 = malloc(sizeof(char)*10);
     int font_size = (THIS_GAME->winWidth > 1200) ? 30 : 25;
     gameModeData data = getGameModeData();
-    printf("A : %d , B : %d , C : %d\n",data.currencyA,data.currencyB,data.currencyC);
     char **string = malloc(sizeof(char*));
     *string = malloc(sizeof(char)*5);
     sprintf(*string,"%d",data.currencyA);
