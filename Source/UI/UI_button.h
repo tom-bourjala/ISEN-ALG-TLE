@@ -10,3 +10,4 @@ UI_button *UI_newButtonIcon(UI_menu *menu, UI_buttonType type, UI_anchor *anchor
 void UI_setButtonIcon(UI_button *button, char *icon, SDL_RendererFlip flip);
 void UI_buttonHideIcon(UI_button *button);
 void UI_buttonShowIcon(UI_button *button);
+void UI_setButtonIconFromTex(UI_button *button, SDL_Texture *texture, SDL_RendererFlip flip);

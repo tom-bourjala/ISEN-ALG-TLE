@@ -1,10 +1,11 @@
 #include "../Game/game.h"
 #include <stdbool.h>
 #include "../Language/lang.h"
+#include "../keyBindings/keyBindings.h"
+
 
 static Game *THIS_GAME = NULL;
 static UI_menu *backStateMenu = NULL;
-static UI_button *selected_button_keyBindings = NULL;
 
 static list *KB_button_bindings = NULL;
 
@@ -216,31 +217,6 @@ void changeCommandsHiddenState(bool hidden){
     }
 
     forEach(KB_button_bindings,hiddenButtons);
-    
-    /*button_right_arrow->hidden = hidden;
-    button_right_arrow->textureObjectIcon->hidden = hidden;
-    button_left_arrow->hidden = hidden;
-    button_left_arrow->textureObjectIcon->hidden = hidden;
-    button_zoom_out->hidden = hidden;
-    button_zoom_out->textureObjectIcon->hidden = hidden;
-    button_zoom_in->hidden = hidden;
-    button_zoom_in->textureObjectIcon->hidden = hidden;
-    button_pause->hidden = hidden;
-    button_pause->textureObjectIcon->hidden = hidden;
-    button_sell->hidden = hidden;
-    button_sell->textureObjectIcon->hidden = hidden;
-    button_upgrade->hidden = hidden;
-    button_upgrade->textureObjectIcon->hidden = hidden;
-    button_turret1->hidden = hidden;
-    button_turret1->textureObjectIcon->hidden = hidden;
-    button_turret2->hidden = hidden;
-    button_turret2->textureObjectIcon->hidden = hidden;
-    button_turret3->hidden = hidden;
-    button_turret3->textureObjectIcon->hidden = hidden;
-    button_up_arrow->hidden = hidden;
-    button_up_arrow->textureObjectIcon->hidden = hidden;
-    button_down_arrow->hidden = hidden;
-    button_down_arrow->textureObjectIcon->hidden = hidden;*/
 }
 
 void changeAccessibilityHiddenState(bool hidden){
@@ -265,72 +241,70 @@ void changeAccessibilityHiddenState(bool hidden){
     st_button_accessibility_invert_y_axis->hidden = hidden;
 }
 
-void updateButtonKey(GA_type type,UI_button *button)
+void updateButtonIcon(void *data)
 {
-    /*
-    switch(type)
+    buttonBinding *this = data;
+    if(this->button->isPressed) return;
+    list *keyTextureList = KB_getKCTA();
+    SDL_Keycode code = *((SDL_Keycode*)getDataAtIndex(*KB_getKeys(this->action),0));
+    SDL_Texture *texture_found = NULL;
+    if(!this->button->textureObjectIcon && this->button->textureObjectIconCache) return;
+    void searchTexture(void *asso)
     {
-        case GA_UP:
-            if(button->text != NULL) button->text->hidden = true;
-            if(button->textureObjectIcon != NULL)
-            {
-                button->textureObjectIcon->hidden = false;
-                UI_setButtonIcon(button,"UI_icon_key_move_up.png",SDL_FLIP_NONE);
-            }
-            else
-            {
-                button->textureObjectIcon = UI_newStaticTextureObject(button->menu, (SDL_Rect){0, 0, 0, 0}, button->anchor, "UI_icon_key_move_up.png");
-            }
-            break;
-        case GA_DOWN:
-            strcpy(string,"GA_DOWN");
-            break;
-        case GA_LEFT:
-            strcpy(string,"GA_LEFT");
-            break;
-        case GA_RIGHT:
-            strcpy(string,"GA_RIGHT");
-            break;
-        case GA_PAUSE:
-            strcpy(string,"GA_PAUSE");
-            break;
-        case GA_SELL:
-            strcpy(string,"GA_SELL");
-            break;
-        case GA_UPGRADE:
-            strcpy(string,"GA_UPGRADE");
-            break;
-        case GA_ZOOMIN:
-            strcpy(string,"GA_ZOOMIN");
-            break;
-        case GA_ZOOMOUT:
-            strcpy(string,"GA_ZOOMOUT");
-            break;
-        case GA_TURRET1:
-            strcpy(string,"GA_TURRET1");
-            break;
-        case GA_TURRET2:
-            strcpy(string,"GA_TURRET2");
-            break;
-        case GA_TURRET3:
-            strcpy(string,"GA_TURRET3");
-            break;
-        default:
-            /*if(button->text != NULL)
-            {
-                strcpy(button->text->text[0],THIS_GAME->keyChosenToString);
-                if(button->textureObjectIcon != NULL)
-                {
-                    button->textureObjectIcon->hidden = true;
-                }
-            }
-            else
-            {
-                button->text = UI_newText(button->menu,LM_getTradById(THIS_GAME->keyChosenToString),button->anchor,UI_TA_CENTER,UI_TJ_CENTER,(SDL_Color){255,255,255,255},"./assets/fonts/RulerGold.ttf", 30);
-                
-            }
-            break;
-    }*/
+        keyTexture *kt = asso;
+        
+        if(kt->code == code)
+        {
+            texture_found = kt->texture;
+        }
+    }
+    forEach(keyTextureList,searchTexture);
+    if(texture_found)
+    {
+        if(this->button->text)
+        {
+            deleteInList(this->button->menu->texts,this->button->text);
+            UI_FreeText(this->button->text);
+            this->button->text = NULL;
+        }
+        if(this->button->textureObjectIcon)
+        {
+            this->button->textureObjectIcon->texture = texture_found;
+        }
+        else
+        {
+            UI_setButtonIconFromTex(this->button,texture_found,SDL_FLIP_NONE);
+        }
+    }
+    else
+    {
+        if(this->button->textureObjectIcon)
+        {
+            deleteInList(this->button->menu->textureObjects,this->button->textureObjectIcon);
+            UI_FreeTextureObject(this->button->textureObjectIcon);
+            this->button->textureObjectIcon = NULL;
+        }
+        if(this->button->textureObjectIconCache)
+        {
+            deleteInList(this->button->menu->textureObjects,this->button->textureObjectIconCache);
+            UI_FreeTextureObject(this->button->textureObjectIconCache);
+            this->button->textureObjectIconCache = NULL;
+        }
+        if(this->button->text)
+        {
+            UI_text *text = this->button->text;
+            char **string = text->text;
+            strcpy(*string,SDL_GetKeyName(code));
+        }
+        else
+        {
+            char **string = malloc(sizeof(char*));
+            *string = malloc(sizeof(char)*32);
+            strcpy(*string,SDL_GetKeyName(code));
+            this->button->text = UI_newText(this->button->menu,string,this->button->anchor,UI_TA_CENTER,UI_TJ_CENTER,(SDL_Color){255,255,255,255},"./assets/fonts/RulerGold.ttf",25);
+        }
+    }
+
 }
 
 void onUpdateSettings(){
@@ -342,27 +316,10 @@ void onUpdateSettings(){
     SDL_GetWindowMaximumSize(THIS_GAME->window,&max_x,&max_y);
     SDL_SetWindowSize(THIS_GAME->window,800+(abs(max_x-800))*(*st_slider_resolution->value),600+(abs(max_x-600))*(*st_slider_resolution->value));
     */
-    /*button_right_arrow->isPressed = false;
-    button_left_arrow->isPressed = false;
-    button_zoom_out->isPressed = false;
-    button_zoom_in->isPressed = false;
-    button_pause->isPressed = false;
-    button_sell->isPressed = false;
-    button_upgrade->isPressed = false;
-    button_turret1->isPressed = false;
-    button_turret2->isPressed = false;
-    button_turret3->isPressed = false;
-    button_up_arrow->isPressed = false;
-    button_down_arrow->isPressed = false;
-    if(THIS_GAME->waitingForInputKey == false && selected_button_keyBindings!=NULL)
-    {
-        selected_button_keyBindings = NULL;
-    }
-    if(selected_button_keyBindings != NULL)
-    {
-        selected_button_keyBindings->isPressed = true;
-    }*/
 
+    
+    forEach(KB_button_bindings,updateButtonIcon);
+    //forEach(keyTextureList,updateButtonIcon);
 
     changeGeneralHiddenState(!st_button_general->isActive);
     changeAccessibilityHiddenState(!st_button_accessibility->isActive);
@@ -523,26 +480,43 @@ void invertYAxisOff(void *self)
     
 }
 
-void buttonInput(SDL_Keycode code,void *self)
+
+
+void buttonInput(SDL_Keycode code, void *self)
 {
     buttonBinding *b = self;
-    /* si keycode = -1
-            déselectionner et ne rien faire
-        */
     b->button->isPressed = false;
     UI_buttonShowIcon(b->button);
+    list *l = KB_getKeys(b->action);
+    GA_type *action = getDataAtIndex(*l,0);
+    if(l->length)
+    {
+        void deleteKB(void *self)
+        {
+            SDL_Keycode *key = self;
+            keyBinding *k =  KB_getKeyBinding(*key, b->action);
+            KB_removeKeyBinding(k);
+        }
+        forEach(l,deleteKB);
+    }
+    KB_add(code,b->action);
 }
 
 void inputKeyButton(void *self)
 {
     UI_button *button = self;
+    if(button->text)
+    {
+        deleteInList(button->menu->texts,button->text);
+        UI_FreeText(button->text);
+        button->text = NULL;
+    }
     if(button->isPressed)
     {
         KB_handleKeyCode(-1);
         button->isPressed = false;
         return;
     }
-    //button->isPressed = true;
     UI_buttonHideIcon(button);
     buttonBinding *found = NULL;
     void searchBinding(void *self2)
@@ -555,12 +529,6 @@ void inputKeyButton(void *self)
     }
     forEach(KB_button_bindings,searchBinding);
     KB_getInput(buttonInput,found);
-    /*
-    selected_button_keyBindings = button;
-    THIS_GAME->waitingForInputKey = true;
-    THIS_GAME->chosenButtonSettings = button;
-    button->text = malloc(sizeof(UI_text));
-    */
 }
 
 void UI_switchToSettings(void *GAME)
@@ -733,17 +701,17 @@ void UI_switchToSettings(void *GAME)
     st_text_command_sell = UI_newText(st_panel->menu,LM_getTradById("options_menu_keybinds_sell"),st_title_line_anchor_col_right_row_6,UI_TA_LEFT,UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf", 30);
     st_text_command_upgrade = UI_newText(st_panel->menu,LM_getTradById("options_menu_keybinds_upgrade"),st_title_line_anchor_col_right_row_7,UI_TA_LEFT,UI_TJ_CENTER,white,"./assets/fonts/RulerGold.ttf", 30);
     
-    UI_button *button_right_arrow = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_right_row_2,true,inputKeyButton,NULL,NULL,1.5,"UI_icon_key_move_right.png");
-    UI_button *button_left_arrow = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_right_row_3,true,inputKeyButton,NULL,NULL,1.5,"UI_icon_key_move_left.png");
-    UI_button *button_zoom_out = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_right_row_4,true,inputKeyButton,NULL,NULL,1.5,"UI_icon_minus.png");
-    UI_button *button_zoom_in = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_left_row_4,true,inputKeyButton,NULL,NULL,1.5,"UI_icon_more.png");
-    UI_button *button_pause = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_right_row_5,true,inputKeyButton,NULL,NULL,1.5,"UI_icon_more.png");
-    UI_button *button_sell = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_right_row_6,true,inputKeyButton,NULL,NULL,1.5,"UI_icon_more.png");
-    UI_button *button_upgrade = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_right_row_7,true,inputKeyButton,NULL,NULL,1.5,"UI_icon_more.png");
-    UI_button *button_turret1 = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_left_row_5,true,inputKeyButton,NULL,NULL,1.5,"UI_icon_more.png");
-    UI_button *button_turret2 = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_left_row_6,true,inputKeyButton,NULL,NULL,1.5,"UI_icon_more.png");
-    UI_button *button_turret3 = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_left_row_7,true,inputKeyButton,NULL,NULL,1.5,"UI_icon_more.png");
-    UI_button *button_up_arrow = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_left_row_2,true,inputKeyButton,NULL,NULL,1.5,"UI_icon_key_move_up.png");
+    UI_button *button_right_arrow = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_right_row_2,true,inputKeyButton,NULL,NULL,1.5,NULL);
+    UI_button *button_left_arrow = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_right_row_3,true,inputKeyButton,NULL,NULL,1.5,NULL);
+    UI_button *button_zoom_out = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_right_row_4,true,inputKeyButton,NULL,NULL,1.5,NULL);
+    UI_button *button_zoom_in = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_left_row_4,true,inputKeyButton,NULL,NULL,1.5,NULL);
+    UI_button *button_pause = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_right_row_5,true,inputKeyButton,NULL,NULL,1.5,NULL);
+    UI_button *button_sell = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_right_row_6,true,inputKeyButton,NULL,NULL,1.5,NULL);
+    UI_button *button_upgrade = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_right_row_7,true,inputKeyButton,NULL,NULL,1.5,NULL);
+    UI_button *button_turret1 = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_left_row_5,true,inputKeyButton,NULL,NULL,1.5,NULL);
+    UI_button *button_turret2 = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_left_row_6,true,inputKeyButton,NULL,NULL,1.5,NULL);
+    UI_button *button_turret3 = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_left_row_7,true,inputKeyButton,NULL,NULL,1.5,NULL);
+    UI_button *button_up_arrow = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_left_row_2,true,inputKeyButton,NULL,NULL,1.5,NULL);
     UI_button *button_down_arrow = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_left_row_3,true,inputKeyButton,NULL,NULL,1.5,NULL);
     UI_setButtonIcon(button_down_arrow,"UI_icon_key_move_up.png",SDL_FLIP_VERTICAL);
 

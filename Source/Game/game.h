@@ -13,7 +13,6 @@
 #include "../List/SmartList.h"
 #include "../Language/lang.h"
 #include "../SoundEngine/sound-engine.h"
-#include "../keyBindings/keyBindings.h"
 
 typedef enum {DEBUG_NULL, DEBUG_HITBOX, DEBUG_PATH, DEBUG_EL} debug;
 typedef enum {GS_LoadingMainMenu, GS_MainMenu, GS_LoadingMap, GS_InGame} gameStatus;
@@ -56,14 +55,6 @@ typedef struct
     int cameraY;
     bool cameraDragging;
     float cameraScale;
-
-/*
-    bool waitingForInputKey;
-    int keyBindingOrderList;
-    keyBinding *keyChosen;
-    char *keyChosenToString;
-    UI_button *chosenButtonSettings;
-*/
 } Game;
 
 Game *initGame(const char* title, int width, int height, bool fullscreen);
