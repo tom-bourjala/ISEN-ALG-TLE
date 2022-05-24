@@ -34,9 +34,8 @@ void launchEndlessMode(void *game){
     UI_initHud(GAME);
     GAME->cameraScale = 0.7f;
     map_node *startNode = GAME->mapManager->currentMap->starts->first->data;
-    newGameObject_Robot(GAME, "tank.robot", startNode, 0);
     cameraCheckSize();
-    // GAME->waveManager->nextWave();
+    GAME->waveManager->nextWave();
 }
 
 void updateGameManager(){
