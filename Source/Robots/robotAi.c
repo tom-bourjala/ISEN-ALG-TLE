@@ -10,6 +10,7 @@
 #include "../Robots/robots.h"
 #include "robotAi.h"
 
+static float THRESHOLD_MIN_VELOCITY = 0.7;
 typedef struct{
     float vx;
     float vy;
@@ -47,6 +48,7 @@ vectRot vectAiToVectRot(vectAi ai){
 vectAi crunchVectAi(vectAi vect, float max){
     vectRot vectRot = vectAiToVectRot(vect);
     if(vectRot.v > max) vectRot.v = max;
+    if(vectRot.v < THRESHOLD_MIN_VELOCITY) vectRot.v = 0;
     return vectRotToVectAi(vectRot);
 }
 
@@ -150,8 +152,8 @@ vectAi getVectFireRange(GameObject *robotObj){
     core *core = coreObj->actor;
     int coreX = core->node->x, coreY = core->node->y;
     float delta = distBetweenTwoPoints(coreX, coreY, currentRobot->x, currentRobot->y) - currentRobot->range - (core->radius/2);
-    vectAi result = vectRotToVectAi((vectRot){delta*0.05, atan2f(coreX - currentRobot->x, coreY - currentRobot->y)});
-    return result;
+    vectRot vectToTargetDist = {delta, atan2f(coreX - currentRobot->x, coreY - currentRobot->y)};
+    return vectRotToVectAi(vectToTargetDist);
 }
 
 vectAi getVectBorderProximity(GameObject *robotObj){
@@ -223,10 +225,12 @@ void updateRobotPathAi(GameObject *robotObj){
     vectAi borderProximity = getVectBorderProximity(robotObj);
     if(coreDistance < robot->range*2){
         vectAi vectFireRange = getVectFireRange(robotObj);
-        newSpeedVect.vx = allyProximity.vx + borderProximity.vx + vectFireRange.vx + robot->speedx;
-        newSpeedVect.vy = allyProximity.vy + borderProximity.vy + vectFireRange.vy + robot->speedy;
-        newSpeedVect.vx /= 4;
-        newSpeedVect.vy /= 4;
+        newSpeedVect.vx = allyProximity.vx + borderProximity.vx + robot->speedx;
+        newSpeedVect.vy = allyProximity.vy + borderProximity.vy + robot->speedy;
+        newSpeedVect.vx /= 6;
+        newSpeedVect.vy /= 6;
+        newSpeedVect.vx += vectFireRange.vx;
+        newSpeedVect.vy += vectFireRange.vy;
     }else if(robot->targetNode->next){
         vectAi swarmProximity = getVectSwarmProximity(robotObj);
         vectAi targetNode = getVectTargetNode(robotObj);
