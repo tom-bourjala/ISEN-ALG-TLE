@@ -6,19 +6,18 @@
 #include <stdbool.h>
 #include "../Maps/mapManager.h"
 
-typedef struct wave
+typedef struct
 {
     list *chunks;
-    time_t clock;
+    int clock;
     void *parent;
 } wave;
 
-typedef struct waveManager
+typedef struct
 {
     wave *currentWave;
+    void (*update)(void);
     void (*nextWave)(void);
-    void (*pause)(void);
-    void (*resume)(void);
     bool isWaveActive;
     void *parent;
     int waveNumber;
@@ -26,7 +25,7 @@ typedef struct waveManager
 } waveManager;
 
 
-typedef struct waveSpawner
+typedef struct
 {
     int number;
     int id;
@@ -35,10 +34,10 @@ typedef struct waveSpawner
 }waveSpawner;
 
 
-typedef struct waveChunk
+typedef struct
 {
     list *waveSpawner;
-    time_t timer;
+    int timer;
     int treshold;
 } waveChunk;
 
