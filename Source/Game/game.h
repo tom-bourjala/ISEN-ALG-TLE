@@ -75,3 +75,4 @@ struct GameObject{
 };
 
 void deleteGameObject(void *object);
+void freeAnimation(void *animationToKill);

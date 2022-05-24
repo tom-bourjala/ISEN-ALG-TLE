@@ -43,4 +43,4 @@ typedef struct
 
 waveManager *initWaveManager(void *game);
 void deleteWaveManager();
-
+void WM_killWave();
