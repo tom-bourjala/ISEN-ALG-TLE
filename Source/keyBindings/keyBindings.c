@@ -52,7 +52,6 @@ list *KB_init(void *self) {
         char *action = malloc(sizeof(char)*255);
         char *char_sdlk = malloc(sizeof(char)*255);
         sscanf(line,"%[^ ] %[^\n]",action,char_sdlk);
-        printf("%s %s\n",action,char_sdlk);
         int int_sdlk = atoi(char_sdlk);
         int kbEnum = getKBEnumFromString(action);
         KB_add(int_sdlk,getKBEnumFromString(action));
