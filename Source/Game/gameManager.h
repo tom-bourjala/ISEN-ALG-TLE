@@ -16,3 +16,6 @@ void launchMainMenu(void *GAME);
 void launchEndlessMode(void *GAME);
 
 void updateCurrentGameState(void *GAME);
+
+gameModeData getGameModeData(void);
+void setGameModeData(gameModeData data);

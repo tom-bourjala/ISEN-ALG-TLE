@@ -9,9 +9,10 @@
 #include "../Core/core.h"
 #include "../Robots/robots.h"
 #include "../List/SmartList.h"
+#include "gameManager.h"
 
 static Game *GAME = NULL;
- 
+static gameModeData data = {0,0,0};
 void launchMainMenu(void *game){
     GAME = game;
     UI_initMainMenu(game);
@@ -21,6 +22,9 @@ static GameObject *Core = NULL;
 
 void launchEndlessMode(void *game){
     GAME = game;
+    data .currencyA = 50;
+    data .currencyB = 0;
+    data .currencyC = 0;
     Selection *selection = GAME->selection;
     int mapId = 0;
     if(selection->type == SELECT_MAP){
@@ -41,4 +45,14 @@ void updateGameManager(){
     if(Core){
         core *coreActor = Core->actor;
     }
+}
+
+gameModeData getGameModeData(void)
+{
+    return data;
+}
+
+void setGameModeData(gameModeData d)
+{
+    data = d;
 }

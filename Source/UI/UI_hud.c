@@ -1,3 +1,5 @@
+#include <stdlib.h>
+#include <string.h>
 #include "UI_mainMenu.h"
 #include "../Game/game.h"
 #include "../Game/selection.h"
@@ -7,6 +9,7 @@
 #include "../Turrets/turrets.h"
 #include "UI_newProgressBar.h"
 #include "../Waves/waveManager.h"
+#include "../Game/gameManager.h"
 
 static Game *THIS_GAME = NULL;
 static float *core_health_percentage = NULL;
@@ -53,18 +56,18 @@ int HUD_health_bar_y(void *none){return HUD_mid_panel_y(NULL)+THIS_GAME->winHeig
 /* Golds */
 int HUD_golds_panel_x(void *none){return HUD_panel_x(NULL);}
 int HUD_golds_panel_y(void *none){return HUD_panel_y(NULL);}
-int HUD_text_golds_1_x(void *none){return HUD_panel_x(NULL)+THIS_GAME->winWidth*0.015625;}
+int HUD_text_golds_1_x(void *none){return HUD_panel_x(NULL)+THIS_GAME->winWidth*0.053125;}
 int HUD_text_golds_1_y(void *none){return HUD_panel_y(NULL)+THIS_GAME->winHeight*0.0625;}
-int HUD_text_golds_2_x(void *none){return HUD_panel_x(NULL)+THIS_GAME->winWidth*0.015625;}
+int HUD_text_golds_2_x(void *none){return HUD_panel_x(NULL)+THIS_GAME->winWidth*0.053125;}
 int HUD_text_golds_2_y(void *none){return HUD_panel_y(NULL)+THIS_GAME->winHeight*0.125;}
-int HUD_text_golds_3_x(void *none){return HUD_panel_x(NULL)+THIS_GAME->winWidth*0.015625;}
+int HUD_text_golds_3_x(void *none){return HUD_panel_x(NULL)+THIS_GAME->winWidth*0.053125;}
 int HUD_text_golds_3_y(void *none){return HUD_panel_y(NULL)+THIS_GAME->winHeight*0.1875;}
-int HUD_img_golds_1_x(void *none){return HUD_panel_x(NULL)+THIS_GAME->winWidth*0.078125;}
-int HUD_img_golds_1_y(void *none){return HUD_panel_y(NULL)+THIS_GAME->winHeight*0.0625;}
-int HUD_img_golds_2_x(void *none){return HUD_panel_x(NULL)+THIS_GAME->winWidth*0.078125;}
-int HUD_img_golds_2_y(void *none){return HUD_panel_y(NULL)+THIS_GAME->winHeight*0.125;}
-int HUD_img_golds_3_x(void *none){return HUD_panel_x(NULL)+THIS_GAME->winWidth*0.078125;}
-int HUD_img_golds_3_y(void *none){return HUD_panel_y(NULL)+THIS_GAME->winHeight*0.1875;}
+int HUD_img_golds_1_x(void *none){return HUD_panel_x(NULL)+THIS_GAME->winWidth*0.014625;}
+int HUD_img_golds_1_y(void *none){return HUD_panel_y(NULL)+THIS_GAME->winHeight*0.0625-20;}
+int HUD_img_golds_2_x(void *none){return HUD_panel_x(NULL)+THIS_GAME->winWidth*0.014625;}
+int HUD_img_golds_2_y(void *none){return HUD_panel_y(NULL)+THIS_GAME->winHeight*0.125-20;}
+int HUD_img_golds_3_x(void *none){return HUD_panel_x(NULL)+THIS_GAME->winWidth*0.014625;}
+int HUD_img_golds_3_y(void *none){return HUD_panel_y(NULL)+THIS_GAME->winHeight*0.1875-20;}
 
 /* Turret Selection */
 int HUD_turret_panel_1_x(void *none){return HUD_panel_x(NULL)+THIS_GAME->winWidth*0.121875;}
@@ -224,33 +227,39 @@ void UI_initHud(void *GAME)
 
     /* Golds */
     UI_anchor *A_PANEL_GOLDS_HUD = UI_newAnchor(game->menu, HUD_golds_panel_x, HUD_golds_panel_y);
-    UI_panel *HUD_golds_panel = UI_newPanel(game->menu,0.103125*THIS_GAME->winWidth,0.25*THIS_GAME->winHeight, A_PANEL_GOLDS_HUD, 2, UI_PT_A);
+    UI_panel *HUD_golds_panel = UI_newPanel(game->menu,0.103125*THIS_GAME->winWidth,0.25*THIS_GAME->winHeight, A_PANEL_GOLDS_HUD, 2, UI_PT_B);
     HUD_golds_panel->isActive = true;
 
     UI_anchor *A_TEXT_GOLDS_HUD_1 = UI_newAnchor(game->menu, HUD_text_golds_1_x, HUD_text_golds_1_y);
     char **text_golds_1 = malloc(sizeof(char*));
     *text_golds_1 = malloc(sizeof(char)*10);
     int font_size = (THIS_GAME->winWidth > 1200) ? 30 : 25;
-    strcpy(*text_golds_1,"9999");
-    UI_text *HUD_text_golds_1 = UI_newText(game->menu,text_golds_1,A_TEXT_GOLDS_HUD_1, UI_TA_LEFT, UI_TJ_CENTER,(SDL_Color){255,255,255,255}, "./assets/fonts/RulerGold.ttf", font_size);
+    gameModeData data = getGameModeData();
+    printf("A : %d , B : %d , C : %d\n",data.currencyA,data.currencyB,data.currencyC);
+    char **string = malloc(sizeof(char*));
+    *string = malloc(sizeof(char)*5);
+    sprintf(*string,"%d",data.currencyA);
+    UI_text *HUD_text_golds_1 = UI_newText(game->menu,string,A_TEXT_GOLDS_HUD_1, UI_TA_LEFT, UI_TJ_CENTER,(SDL_Color){255,255,255,255}, "./assets/fonts/RulerGold.ttf", font_size);
     UI_anchor *A_IMG_GOLDS_HUD_1 = UI_newAnchor(game->menu, HUD_img_golds_1_x, HUD_img_golds_1_y);
-    UI_button *HUD_img_golds_1 = UI_newButton(game->menu, NULL, UI_ARROW,A_IMG_GOLDS_HUD_1,false,changeSpeed_1,NULL,NULL,1);
+    UI_textureObject *HUD_img_golds_1 = UI_newStaticTextureObject(game->menu, (SDL_Rect){0,0,32,32},A_IMG_GOLDS_HUD_1,"cur_scrap.png"); // A
 
+    char **string2 = malloc(sizeof(char*));
+    *string2 = malloc(sizeof(char)*5);
+    sprintf(*string2,"%d",data.currencyA);
     UI_anchor *A_TEXT_GOLDS_HUD_2 = UI_newAnchor(game->menu, HUD_text_golds_2_x, HUD_text_golds_2_y);
-    char **text_golds_2 = malloc(sizeof(char*));
-    *text_golds_2 = malloc(sizeof(char)*10);
-    strcpy(*text_golds_2,"1234");
-    UI_text *HUD_text_golds_2 = UI_newText(game->menu,text_golds_2,A_TEXT_GOLDS_HUD_2, UI_TA_LEFT, UI_TJ_CENTER,(SDL_Color){255,255,255,255}, "./assets/fonts/RulerGold.ttf", font_size);
+    sprintf(*string2,"%d",data.currencyB);
+    UI_text *HUD_text_golds_2 = UI_newText(game->menu,string2,A_TEXT_GOLDS_HUD_2, UI_TA_LEFT, UI_TJ_CENTER,(SDL_Color){255,255,255,255}, "./assets/fonts/RulerGold.ttf", font_size);
     UI_anchor *A_IMG_GOLDS_HUD_2 = UI_newAnchor(game->menu, HUD_img_golds_2_x, HUD_img_golds_2_y);
-    UI_button *HUD_img_golds_2 = UI_newButton(game->menu, NULL, UI_ARROW,A_IMG_GOLDS_HUD_2,false,changeSpeed_1,NULL,NULL,1);
+    UI_textureObject *HUD_img_golds_2 = UI_newStaticTextureObject(game->menu, (SDL_Rect){0,0,32,32},A_IMG_GOLDS_HUD_2,"cur_battery.png"); // B
 
+    char **string3 = malloc(sizeof(char*));
+    *string3 = malloc(sizeof(char)*5);
+    sprintf(*string3,"%d",data.currencyA);
     UI_anchor *A_TEXT_GOLDS_HUD_3 = UI_newAnchor(game->menu, HUD_text_golds_3_x, HUD_text_golds_3_y);
-    char **text_golds_3 = malloc(sizeof(char*));
-    *text_golds_3 = malloc(sizeof(char)*10);
-    strcpy(*text_golds_3,"7891");
-    UI_text *HUD_text_golds_3 = UI_newText(game->menu,text_golds_3,A_TEXT_GOLDS_HUD_3, UI_TA_LEFT, UI_TJ_CENTER,(SDL_Color){255,255,255,255}, "./assets/fonts/RulerGold.ttf", font_size);
+    sprintf(*string3,"%d",data.currencyC);
+    UI_text *HUD_text_golds_3 = UI_newText(game->menu,string3,A_TEXT_GOLDS_HUD_3, UI_TA_LEFT, UI_TJ_CENTER,(SDL_Color){255,255,255,255}, "./assets/fonts/RulerGold.ttf", font_size);
     UI_anchor *A_IMG_GOLDS_HUD_3 = UI_newAnchor(game->menu, HUD_img_golds_3_x, HUD_img_golds_3_y);
-    UI_button *HUD_img_golds_3 = UI_newButton(game->menu, NULL, UI_ARROW,A_IMG_GOLDS_HUD_3,false,changeSpeed_1,NULL,NULL,1);
+    UI_textureObject *HUD_img_golds_3 = UI_newStaticTextureObject(game->menu, (SDL_Rect){0,0,32,32},A_IMG_GOLDS_HUD_3,"cur_aicore.png"); // C
 
     /* Turret Selection*/
     UI_anchor *A_PANEL_TURRET_HUD_1 = UI_newAnchor(game->menu, HUD_turret_panel_1_x, HUD_turret_panel_1_y);
