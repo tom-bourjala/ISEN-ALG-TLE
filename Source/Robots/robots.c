@@ -103,7 +103,7 @@ robot *newRobot(Game GAME, char *robotFileName, int x, int y, map_node *spawnNod
     createdRobot->rotation = 0.0;
     createdRobot->rotationCache = 0.0;
     createdRobot->delayCounter = createdRobot->delay;
-    createdRobot->radius = (createdRobot->width + createdRobot->height)/8;
+    createdRobot->radius = (createdRobot->width + createdRobot->height)/6;
     return createdRobot;
 }
 
