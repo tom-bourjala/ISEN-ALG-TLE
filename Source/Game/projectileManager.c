@@ -170,8 +170,8 @@ void projectileUpdate(void *self){
             }
         } else if(target->type == GOT_Robot && target->isAlive(target)){
             robot *actor = target->actor;
-            float targetX = actor->x + actor->width/2;
-            float targetY = actor->y + actor->height/2;
+            float targetX = actor->x;
+            float targetY = actor->y;
             float distEndPointCenter = sqrt(pow(endPosX - targetX,2) + pow(endPosY- targetY,2));
             float r = actor->radius;
             if(distEndPointCenter < r){
