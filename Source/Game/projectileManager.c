@@ -55,9 +55,6 @@ void applyHit(void *self){
     }
     if(targetObject->game->key_debug == DEBUG_HITBOX)
         newGameObject_Debug(targetObject->game, this->x, this->y, 600, DO_Hit);
-    if(!targetObject->isAlive(targetObject) && targetObject->type != GOT_Core){
-        targetObject->delete(targetObject);
-    }
     this->delete(this);
 }
 
