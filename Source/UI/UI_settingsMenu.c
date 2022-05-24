@@ -545,16 +545,16 @@ void UI_switchToSettings(void *GAME)
     st_panel = UI_newPanel(game->menu, 0, 0, A_LC, 2, UI_PT_A);
 
     st_panel->isActive = true;
-    st_button_general = UI_newButtonPanelIcon(st_panel,(SDL_Rect){100,0,200,50}, 0,onMenuSwitch,"UI_icon_key_move_left.png");
+    st_button_general = UI_newButtonPanelIcon(st_panel,(SDL_Rect){100,0,200,50}, 0,onMenuSwitch,"UI_icon_settings.png");
     st_button_general->rect.w *=0.5;
     st_button_general->isActive = true;
-    st_button_display = UI_newButtonPanelIcon(st_panel,(SDL_Rect){200,0,200,50}, 0,onMenuSwitch,"UI_icon_key_move_left.png");
+    st_button_display = UI_newButtonPanelIcon(st_panel,(SDL_Rect){200,0,200,50}, 0,onMenuSwitch,"UI_icon_display.png");
     st_button_display->rect.w *=0.5;
-    st_button_audio = UI_newButtonPanelIcon(st_panel,(SDL_Rect){300,0,200,50}, 0,onMenuSwitch,"UI_icon_key_move_left.png");
+    st_button_audio = UI_newButtonPanelIcon(st_panel,(SDL_Rect){300,0,200,50}, 0,onMenuSwitch,"UI_icon_sound.png");
     st_button_audio->rect.w *=0.5;
-    st_button_commands = UI_newButtonPanelIcon(st_panel,(SDL_Rect){400,0,200,50}, 0,onMenuSwitch,"UI_icon_key_move_left.png");
+    st_button_commands = UI_newButtonPanelIcon(st_panel,(SDL_Rect){400,0,200,50}, 0,onMenuSwitch,"UI_icon_commands.png");
     st_button_commands->rect.w *=0.5;
-    st_button_accessibility = UI_newButtonPanelIcon(st_panel,(SDL_Rect){500,0,200,50}, 0,onMenuSwitch,"UI_icon_key_move_left.png");
+    st_button_accessibility = UI_newButtonPanelIcon(st_panel,(SDL_Rect){500,0,200,50}, 0,onMenuSwitch,"UI_icon_accessibility.png");
     st_button_accessibility->rect.w *=0.5;
     st_button_back = UI_newButton(game->menu, LM_getTradById("menu_settings_back"), UI_B_BACK,anchor_back_button,false,onClear,NULL,NULL,1);
 
