@@ -57,7 +57,7 @@ void introToRobots(int waveNumber,wave *currentWave){
     list *spawns = game->mapManager->currentMap->starts;
     switch (waveNumber)
     {
-    case 1:
+    case 1:;
         waveChunk *chunk1 = newChunk();
             appendInList(chunk1->waveSpawner,newSpawner(1,0,0,getSpawnModulo(spawns,0)));
             appendInList(currentWave->chunks,chunk1);
