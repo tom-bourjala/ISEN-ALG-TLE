@@ -256,7 +256,7 @@ void updateShotBehavior(GameObject *robotObj){
         }else{
             robot->delayCounter = robot->delay;
             float rotation = modulo2Pi(atan2f(core->node->x - robot->x, core->node->y - robot->y) + M_PI);
-            robotObj->game->projectileManager->newProjectile(robotObj->game, robot->projectileName, robot->x, robot->y, rotation, robotObj);
+            robotObj->game->projectileManager->newProjectile(robotObj->game, robot->projectileName, robot->x, robot->y, rotation, robotObj, NULL);
         }
     }
 }

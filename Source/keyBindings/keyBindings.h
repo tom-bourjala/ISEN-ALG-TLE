@@ -1,4 +1,5 @@
 /* Key rebinding lib for TLE. */
+#pragma once
 
 #include "../List/SmartList.h"
 #include <string.h>
