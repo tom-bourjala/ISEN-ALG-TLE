@@ -54,7 +54,7 @@ typedef struct{
 /**
  * @brief Allow to create a new list
  * 
- * @param comparatorFunction 
+ * @param comparatorFunction
  * @return list
  */
 list *newList(compareTwoPointersFunction comparatorFunction);
