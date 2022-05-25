@@ -218,6 +218,7 @@ Game *initGame(const char* title, int width, int height, bool fullscreen){
     GAME->winWidth = width;
     GAME->winWidth = height;
     GAME->pause = false;
+    GAME->speedMultiplicator = 1;
     initCamera(GAME);
     return GAME;
 }

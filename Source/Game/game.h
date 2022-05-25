@@ -59,6 +59,7 @@ typedef struct
     bool cameraDragging;
     float cameraScale;
     bool pause;
+    int speedMultiplicator;
 } Game;
 
 Game *initGame(const char* title, int width, int height, bool fullscreen);

@@ -8,10 +8,11 @@
 #include "../Game/game.h"
 #include "../Game/rendererAddons.h"
 #include "../Game/camera.h"
+#include "../Game/gameManager.h"
 #include "../Core/core.h"
 
 
-typedef enum{ROB_NAME, ROB_TEX_REF, ROB_PROJECTILE_NAME, ROB_WIDTH, ROB_HEIGHT, ROB_SPEED, ROB_TEX_ANIM_FRAMES,ROB_TEX_ANIM_DELAY, ROB_LIFE,ROB_TEX_DEATH_ANIM_FRAMES,ROB_TEX_DEATH_ANIM_DELAY, ROB_WEAPON_DELAY, ROB_WEAPON_RANGE, ROB_IS_FRIENDLY, ROB_NONE} robotConfigFileParam;
+typedef enum{ROB_NAME, ROB_TEX_REF, ROB_PROJECTILE_NAME, ROB_WIDTH, ROB_HEIGHT, ROB_SPEED, ROB_TEX_ANIM_FRAMES,ROB_TEX_ANIM_DELAY, ROB_LIFE,ROB_TEX_DEATH_ANIM_FRAMES,ROB_TEX_DEATH_ANIM_DELAY, ROB_WEAPON_DELAY, ROB_WEAPON_RANGE, ROB_IS_FRIENDLY, ROB_NONE, ROB_LOOT_A,ROB_LOOT_B,ROB_LOOT_C} robotConfigFileParam;
 
 
 robotConfigFileParam getRobotConfigFileParamFromString(char *fileParamString){
@@ -27,6 +28,9 @@ robotConfigFileParam getRobotConfigFileParamFromString(char *fileParamString){
     if(!strcmp("PROJECTILE", fileParamString)) return ROB_PROJECTILE_NAME;
     if(!strcmp("LIFE", fileParamString)) return ROB_LIFE;
     if(!strcmp("SPEED", fileParamString)) return ROB_SPEED;
+    if(!strcmp("LOOT_A", fileParamString)) return ROB_LOOT_A;
+    if(!strcmp("LOOT_B", fileParamString)) return ROB_LOOT_B;
+    if(!strcmp("LOOT_C", fileParamString)) return ROB_LOOT_C;
 
     return ROB_NONE;
 }
@@ -90,6 +94,15 @@ robot *newRobot(Game GAME, char *robotFileName, int x, int y, map_node *spawnNod
             case ROB_SPEED:
                 createdRobot->maxSpeed = atof(stat_value);
                 break;
+            case ROB_LOOT_A:
+                createdRobot->lootA = atoi(stat_value);
+                break;
+            case ROB_LOOT_B:
+                createdRobot->lootB = atoi(stat_value);
+                break;
+            case ROB_LOOT_C:
+                createdRobot->lootC = atoi(stat_value);
+                break;
             case ROB_NONE :
                 break;
         }
@@ -150,6 +163,11 @@ void robotUpdate(void *self){
             this->death.animationDelayCount = this->death.animationDelay;
             this->death.currentFrame++;
             if (this->death.currentFrame >= this->death.nOfFrames){
+                gameModeData newData;
+                newData.currencyA = getGameModeData().currencyA + this->lootA;
+                newData.currencyB = getGameModeData().currencyB + this->lootB;
+                newData.currencyC = getGameModeData().currencyC + this->lootC;
+                setGameModeData(newData);
                 robotDelete(self);
             }
             if (this->death.currentFrame == 2){
