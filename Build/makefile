@@ -21,8 +21,8 @@ TheLastEngineer: $(oFiles)
 debug:
 	gcc -Wall -Wextra ../Source/main.c $(cFilesDebug) $(hFiles) -o TheLastEngineer $(flags) -g3
 
-nodeMap:
-	gcc -Wall -Wextra ../Source/nodeMap.c $(moduleListPathH) $(moduleListPathC) -o nodeMap $(flags) -g3
+nodeMap: $(oFilesNode)
+	gcc -Wall -o nodeMap $(oFilesNode) $(flags) -g3
 
 clear:
 	rm TheLastEngineer $(oFiles)
