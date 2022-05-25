@@ -44,7 +44,7 @@ void updateCurrentGameState(void *GAME);
 /** @brief Gets the data of the current mode of the game
    @return the game mode data
 */
-gameModeData getGameModeData(void);*
+gameModeData getGameModeData(void);
 
 /** @brief Sets the data of the current mode of the game
 *  @param data the game mode data to set to the current one
