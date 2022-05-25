@@ -18,6 +18,7 @@ static UI_button *nextWaveButton = NULL;
 static UI_button *HUD_button_speed_1 = NULL;
 static UI_button *HUD_button_speed_2 = NULL;
 static UI_button *HUD_button_speed_3 = NULL;
+static UI_text *HUD_text_wave_info = NULL;
 
 static char **(*LM_getTradById)(char *idToGet) = NULL;
 
@@ -227,6 +228,16 @@ static void onUpdate(){
         HUD_button_speed_2->isPressed = true;
         HUD_button_speed_3->isPressed = true;
     }
+    char **string = malloc(sizeof(char*));
+    *string = malloc(sizeof(char)*255);
+    memset(*string,0,255);
+    char *trad = *LM_getTradById("hud_wave_info");
+    strcat(*string,trad);
+    strcat(*string," ");
+    char *number = malloc(sizeof(char)*3);
+    sprintf(number,"%d",THIS_GAME->waveManager->waveNumber);
+    strcat(*string,number);
+    HUD_text_wave_info->text = string;
 }
 
 void UI_initHud(void *GAME)
@@ -264,7 +275,7 @@ void UI_initHud(void *GAME)
     UI_anchor *A_WAVE_NEXT_HUD = UI_newAnchor(game->menu, HUD_wave_next_x, HUD_wave_next_y);
     nextWaveButton = UI_newButton(HUD_mid_panel->menu,LM_getTradById("hud_next_wave"), UI_B_LONG,A_WAVE_NEXT_HUD,false,nextWave,NULL,NULL,next_size_factor);
     UI_anchor *A_WAVE_INFO_HUD = UI_newAnchor(game->menu, HUD_wave_info_x, HUD_wave_info_y);
-    UI_text *HUD_text_wave_info = UI_newText(game->menu,LM_getTradById("hud_wave_info"),A_WAVE_INFO_HUD, UI_TA_CENTER, UI_TJ_CENTER,(SDL_Color){255,255,255,255}, "./assets/fonts/RulerGold.ttf", next_font_size);
+    HUD_text_wave_info = UI_newText(game->menu,LM_getTradById("hud_wave_info"),A_WAVE_INFO_HUD, UI_TA_CENTER, UI_TJ_CENTER,(SDL_Color){255,255,255,255}, "./assets/fonts/RulerGold.ttf", next_font_size);
     
     /* Health and Shield bar */
     A_HUD_SHIELD_BAR = UI_newAnchor(game->menu, HUD_shield_bar_x, HUD_shield_bar_y);

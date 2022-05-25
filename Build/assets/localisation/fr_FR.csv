@@ -46,7 +46,7 @@ options_menu_keybinds_pause;PAUSE
 options_menu_keybinds_sell;VENDRE
 options_menu_keybinds_upgrade;AMELIORER
 hud_next_wave;PROCHAINE VAGUE
-hud_wave_info;VAGUE 1
+hud_wave_info;VAGUE
 pause_continue;REPRENDRE
 pause_settings;OPTIONS
 pause_quit;QUITTER
