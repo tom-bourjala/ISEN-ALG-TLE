@@ -24,6 +24,9 @@ debug:
 nodeMap: $(oFilesNode)
 	gcc -Wall -o nodeMap $(oFilesNode) $(flags) -g3
 
+debugNodeMap: 
+	gcc -Wall -Wextra ../Source/nodeMap.c $(cFilesDebug) $(hFiles) -o nodeMap $(flags) -g3
+
 clear:
 	rm TheLastEngineer $(oFiles)
 
