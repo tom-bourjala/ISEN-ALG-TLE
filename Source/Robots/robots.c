@@ -279,10 +279,7 @@ GameObject *newGameObject_Robot(Game *GAME, char *robotFileName, map_node *spawn
             spawnX = Sx1 - decreaseLevel;
             spawnY = Sy1 + (rand()%(Sy2-Sy1));
         }
-        decreaseTryNumber++;
-        // printf("TRY %d,%d\n", spawnX, spawnY);
-    }
-    // printf("1(%d,%d) 2(%d,%d) S(%d,%d)\n", Sx1, Sy1, Sx2, Sy2, spawnX, spawnY);
+        decreaseTryNumber++;}
     robot->x = spawnX;
     robot->y = spawnY;
     GameObject *gameObject = malloc(sizeof(GameObject));

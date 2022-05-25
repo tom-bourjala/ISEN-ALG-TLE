@@ -1,3 +1,11 @@
+/**
+ * @file robots.h
+ * @brief Manage all the robots of the game
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -6,6 +14,8 @@
 #ifndef ROBOT_H
 #define ROBOT_H
 
+/** @brief holds the robot walking state an animation
+*/
 typedef struct{
     char *textureName;
     SDL_Texture *texture;
@@ -17,6 +27,8 @@ typedef struct{
     int frameHeight;
 } robot_walk;
 
+/** @brief holds the robot death state and animation
+*/
 typedef struct{
     char *textureName;
     SDL_Texture *texture;
@@ -28,6 +40,8 @@ typedef struct{
     int frameHeight;
 } robot_death;
 
+/** @brief holds all the information on a robot
+*/
 typedef struct{
     char* name;
     char* texref;
@@ -60,7 +74,16 @@ typedef struct{
     char *projectileName;
 } robot;
 
+/** @brief creates a new robot Game Object
+    @param GAME the current game
+    @param robotFileName the name of the config file for our robot
+    @param spawnNode the spawn location of the robot
+    @param seed the robot pathing
+    @returns the created robot Game Object
+*/
 GameObject *newGameObject_Robot(Game *GAME, char *robotFileName, map_node *spawnNode, int seed);
-void robotDelete(void *self);
 
+void robotDelete(void *self);
+/** @brief deletes a robot
+    @param self the robot himself*/
 #endif
