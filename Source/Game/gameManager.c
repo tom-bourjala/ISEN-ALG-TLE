@@ -33,7 +33,7 @@ void launchEndlessMode(void *game){
     }
     float progress = 0.0f;
     launchLoading(GAME, &progress, "Loading Endless Mode");
-    GAME->mapManager->loadMap("debug", 1920, 1080, &progress);
+    GAME->mapManager->loadMap("final", 1920, 1080, &progress);
     Core = newGameObject_Core(GAME, GAME->mapManager->currentMap->end, 100, 100, 500, 0.5);
     endLoading(GAME);
     UI_initHud(GAME);
