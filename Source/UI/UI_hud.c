@@ -15,6 +15,9 @@ static Game *THIS_GAME = NULL;
 static float *core_health_percentage = NULL;
 static float *core_shield_percentage = NULL;
 static UI_button *nextWaveButton = NULL;
+static UI_button *HUD_button_speed_1 = NULL;
+static UI_button *HUD_button_speed_2 = NULL;
+static UI_button *HUD_button_speed_3 = NULL;
 
 static char **(*LM_getTradById)(char *idToGet) = NULL;
 
@@ -114,19 +117,44 @@ typedef struct{
 
 list *turretSelectors = NULL;
 
-void changeSpeed_1(void *none)
+void changeSpeed_1_ON(void *none)
 {
+    THIS_GAME->speedMultiplicator = 2;
+}
+
+void changeSpeed_1_OFF(void *none)
+{
+    if(THIS_GAME->speedMultiplicator == 2)
+        THIS_GAME->speedMultiplicator = 1;
+    else
+        THIS_GAME->speedMultiplicator = 2;
+}
+
+void changeSpeed_2_ON(void *none)
+{
+   THIS_GAME->speedMultiplicator = 3;
 
 }
 
-void changeSpeed_2(void *none)
+void changeSpeed_2_OFF(void *none)
 {
-
+    if(THIS_GAME->speedMultiplicator == 3)
+        THIS_GAME->speedMultiplicator = 1;
+    else
+        THIS_GAME->speedMultiplicator = 3;
 }
 
-void changeSpeed_3(void *none)
+void changeSpeed_3_ON(void *none)
 {
+    THIS_GAME->speedMultiplicator = 4;
+}
 
+void changeSpeed_3_OFF(void *none)
+{
+    if(THIS_GAME->speedMultiplicator == 4)
+        THIS_GAME->speedMultiplicator = 1;
+    else
+        THIS_GAME->speedMultiplicator = 4;
 }
 
 void nextWave(void *none)
@@ -175,6 +203,30 @@ static void onUpdate(){
     else {
         nextWaveButton->isDisabled = false;
     }
+    if(THIS_GAME->speedMultiplicator == 1)
+    {
+        HUD_button_speed_1->isPressed = false;
+        HUD_button_speed_2->isPressed = false;
+        HUD_button_speed_3->isPressed = false;
+    }
+    else if(THIS_GAME->speedMultiplicator == 2)
+    {
+        HUD_button_speed_1->isPressed = true;
+        HUD_button_speed_2->isPressed = false;
+        HUD_button_speed_3->isPressed = false;
+    }
+    else if(THIS_GAME->speedMultiplicator == 3)
+    {
+        HUD_button_speed_1->isPressed = true;
+        HUD_button_speed_2->isPressed = true;
+        HUD_button_speed_3->isPressed = false;
+    }
+    else if(THIS_GAME->speedMultiplicator == 4)
+    {
+        HUD_button_speed_1->isPressed = true;
+        HUD_button_speed_2->isPressed = true;
+        HUD_button_speed_3->isPressed = true;
+    }
 }
 
 void UI_initHud(void *GAME)
@@ -197,13 +249,13 @@ void UI_initHud(void *GAME)
     /* Speed HUD buttons */
     float speed_size_factor = (THIS_GAME->winWidth > 1200) ? 1.5 : 1.15;
     UI_anchor *A_SPEED_1_HUD = UI_newAnchor(game->menu, HUD_button_speed_1_x, HUD_button_speed_1_y);
-    UI_button *HUD_button_speed_1 = UI_newButton(HUD_mid_panel->menu, NULL, UI_ARROW,A_SPEED_1_HUD,false,changeSpeed_1,NULL,NULL,speed_size_factor);
+    HUD_button_speed_1 = UI_newButton(HUD_mid_panel->menu, NULL, UI_ARROW,A_SPEED_1_HUD,true,NULL,changeSpeed_1_ON,changeSpeed_1_OFF,speed_size_factor);
     UI_flipButton(HUD_button_speed_1,SDL_FLIP_HORIZONTAL);
     UI_anchor *A_SPEED_2_HUD = UI_newAnchor(game->menu, HUD_button_speed_2_x, HUD_button_speed_2_y);
-    UI_button *HUD_button_speed_2 = UI_newButton(HUD_mid_panel->menu, NULL, UI_ARROW,A_SPEED_2_HUD,false,changeSpeed_2,NULL,NULL,speed_size_factor);
+    HUD_button_speed_2 = UI_newButton(HUD_mid_panel->menu, NULL, UI_ARROW,A_SPEED_2_HUD,true,NULL,changeSpeed_2_ON,changeSpeed_2_OFF,speed_size_factor);
     UI_flipButton(HUD_button_speed_2,SDL_FLIP_HORIZONTAL);
     UI_anchor *A_SPEED_3_HUD = UI_newAnchor(game->menu, HUD_button_speed_3_x, HUD_button_speed_3_y);
-    UI_button *HUD_button_speed_3 = UI_newButton(HUD_mid_panel->menu, NULL, UI_ARROW,A_SPEED_3_HUD,false,changeSpeed_3,NULL,NULL,speed_size_factor);
+    HUD_button_speed_3 = UI_newButton(HUD_mid_panel->menu, NULL, UI_ARROW,A_SPEED_3_HUD,true,NULL,changeSpeed_3_ON,changeSpeed_3_OFF,speed_size_factor);
     UI_flipButton(HUD_button_speed_3,SDL_FLIP_HORIZONTAL);
 
     /* Wave info and Next button */
