@@ -50,3 +50,6 @@ hud_wave_info;VAGUE
 pause_continue;REPRENDRE
 pause_settings;OPTIONS
 pause_quit;QUITTER
+turret_artil;Artillerie
+turret_laser;Laser
+turret_plasma;Plasma
