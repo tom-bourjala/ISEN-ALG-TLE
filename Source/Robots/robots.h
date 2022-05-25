@@ -45,6 +45,9 @@ typedef struct{
     int life;
     int shield;
     int maxShield;
+    int lootA;
+    int lootB;
+    int lootC;
     int delay;
     int delayCounter;
     int range;
