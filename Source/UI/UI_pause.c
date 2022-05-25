@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include "UI_pause.h"
 #include "../Game/game.h"
+#include "../Game/selection.h"
+#include "../Game/gameManager.h"
 #include "UI_settingsMenu.h"
 #include "UI_mainMenu.h"
 
@@ -56,6 +58,8 @@ void clickSettings(void *self)
 
 void clickQuit(void *self)
 {
+    endEndlessMode();
+    game->selection = NULL;
     forEach(game->gameObjects, deleteGameObject);
     forEach(game->animationManager->animList, freeAnimation);
     game->projectileManager->empty();
@@ -68,6 +72,7 @@ void clickQuit(void *self)
 void gameOverToMainMenu(void *self)
 {
     game->pause = false;
+    game->selection = NULL;
     UI_initMainMenu(game);
 }
 
@@ -136,7 +141,7 @@ void catchGameOver(){
         
     hud = game->menu;
     game->menu = pause_menu;
-
+    endEndlessMode();
     forEach(game->gameObjects, deleteGameObject);
     forEach(game->animationManager->animList, freeAnimation);
     game->projectileManager->empty();

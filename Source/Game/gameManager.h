@@ -19,3 +19,4 @@ void updateCurrentGameState(void *GAME);
 
 gameModeData getGameModeData(void);
 void setGameModeData(gameModeData data);
+void endEndlessMode();

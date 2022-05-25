@@ -42,6 +42,11 @@ void launchEndlessMode(void *game){
     cameraCheckSize();
 }
 
+void endEndlessMode(){
+    if(Core) deleteGameObject(Core);
+    Core = NULL;
+}
+
 void updateGameManager(){
     if(Core){
         core *coreActor = Core->actor;
