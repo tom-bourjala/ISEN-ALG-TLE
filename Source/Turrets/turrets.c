@@ -9,7 +9,7 @@
 #include "../Game/camera.h"
 #include "../Game/rendererAddons.h"
 
-typedef enum{TP_NAME,TP_DESCRIPTION, TP_TEX_REF, TP_TEX_ANIM_FRAMES, TP_FIRE_FRAME, TP_ROTATION_SPEED, TP_ROTATION_ACCELERATION, TP_WEAPON_DELAY, TP_WEAPON_RANGE, TP_WEAPON_PROJECTILE_NAME, TP_NEWSTATE, TP_NONE} turretConfigFileParam;
+typedef enum{TP_NAME,TP_DESCRIPTION, TP_TEX_REF, TP_TEX_ANIM_FRAMES, TP_FIRE_FRAME, TP_ROTATION_SPEED, TP_ROTATION_ACCELERATION, TP_WEAPON_DELAY, TP_WEAPON_RANGE, TP_WEAPON_PROJECTILE_NAME, TP_NEWSTATE,TP_COST_A,TP_COST_B,TP_COST_C,TP_NONE} turretConfigFileParam;
 
 turretConfigFileParam getTurretConfigFileParamFromString(char *fileParamString){
     if(!strcmp("NAME", fileParamString)) return TP_NAME;
@@ -23,6 +23,9 @@ turretConfigFileParam getTurretConfigFileParamFromString(char *fileParamString){
     if(!strcmp("RANGE", fileParamString)) return TP_WEAPON_RANGE;
     if(!strcmp("PROJECTILE", fileParamString)) return TP_WEAPON_PROJECTILE_NAME;
     if(!strcmp("NEW_STATE", fileParamString)) return TP_NEWSTATE;
+    if(!strcmp("COST_A", fileParamString)) return TP_COST_A;
+    if(!strcmp("COST_B", fileParamString)) return TP_COST_B;
+    if(!strcmp("COST_C", fileParamString)) return TP_COST_C;
     return TP_NONE;
 }
 
@@ -100,6 +103,15 @@ turret *newTurret(Game GAME,char *turretFileName, int xpos, int ypos){
                 break;
             case TP_WEAPON_PROJECTILE_NAME:
                 sprintf(currentState->projectileName, "%s.projectile", stat_value);
+                break;
+            case TP_COST_A:
+                currentState->costA = atoi(stat_value);
+                break;
+            case TP_COST_B:
+                currentState->costB = atoi(stat_value);
+                break;
+            case TP_COST_C:
+                currentState->costC = atoi(stat_value);
                 break;
             default:
                 break;
@@ -179,6 +191,9 @@ turretSelection *newTurretSelection(Game *GAME, char *turretFileName){
     createdTurretSelection->height = srcturret->height;
     createdTurretSelection->radius = srcturret->currentState->range;
     createdTurretSelection->name = srcturret->name;
+    createdTurretSelection->costA = srcturret->currentState->costA;
+    createdTurretSelection->costB = srcturret->currentState->costB;
+    createdTurretSelection->costC = srcturret->currentState->costC;
     SDL_PixelFormatEnum format = SDL_PIXELFORMAT_RGBA8888;
     // SDL_QueryTexture(srcturret->currentState->base.texture, &format, NULL, NULL, NULL);
 

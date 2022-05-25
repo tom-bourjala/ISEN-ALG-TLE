@@ -6,6 +6,14 @@
 #include "turrets.h"
 #include "../Game/selection.h"
 #include "../Game/rendererAddons.h"
+#include "../Game/gameManager.h"
+
+static bool isCostValid(Game *game,turretSelection *turret){
+    if (getGameModeData().currencyA < turret->costA || getGameModeData().currencyB < turret->costB || getGameModeData().currencyC < turret->costC){
+        return false;
+    }
+    else return true;
+}
 
 static bool isPlacementValid(Game *game, SDL_Rect *dest){
     bool valid = true;
@@ -51,7 +59,7 @@ void renderTurretSelection(Game *game){
     turretSelection *turret = selection->selected.turretSelection;
     if(!turret) return;
     SDL_Rect dest = getTurretPlacement(game, turret);
-    if(!isPlacementValid(game, &dest)) cameraRender(turret->forbidden, dest);
+    if(!isPlacementValid(game, &dest)||!isCostValid(game,turret)) cameraRender(turret->forbidden, dest);
     else{
         cameraRender(turret->allowed, dest);
         SDL_SetRenderDrawColor(game->renderer, 255, 255, 255, 100);
@@ -77,9 +85,16 @@ void handleInputTurretSelection(Game *game, SDL_Event *event){
                     if(game->mouseY < game->winHeight - 200){
                         SDL_Rect dest = getTurretPlacement(game, turret);
                         if(isPlacementValid(game, &dest)){
-                            newGameObject_Turret(game, turret->turretId, dest.x, dest.y);
-                            free(selection);
-                            game->selection = NULL;
+                            if (isCostValid(game,turret)){
+                                newGameObject_Turret(game, turret->turretId, dest.x, dest.y);
+                                gameModeData data;
+                                data.currencyA = getGameModeData().currencyA - turret->costA;
+                                data.currencyB = getGameModeData().currencyB - turret->costB;
+                                data.currencyC = getGameModeData().currencyC - turret->costC;
+                                setGameModeData(data);
+                                free(selection);
+                                game->selection = NULL;
+                            }
                         }
                     }
                 }
