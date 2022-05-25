@@ -6,3 +6,4 @@
 void pauseInit(void *g);
 void catchPause();
 void throwPause();
+void catchGameOver();

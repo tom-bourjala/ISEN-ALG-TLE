@@ -5,6 +5,7 @@
 #include "selection.h"
 #include "../UI/UI_loading.h"
 #include "../UI/UI_mainMenu.h"
+#include "../UI/UI_pause.h"
 #include "../UI/UI_hud.h"
 #include "../Core/core.h"
 #include "../Robots/robots.h"
@@ -44,6 +45,9 @@ void launchEndlessMode(void *game){
 void updateGameManager(){
     if(Core){
         core *coreActor = Core->actor;
+        if(coreActor->health <= 0){
+            catchGameOver();
+        }
     }
 }
 
