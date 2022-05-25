@@ -8,6 +8,7 @@
 #include "../Game/game.h"
 #include "../Game/camera.h"
 #include "../Game/rendererAddons.h"
+#include "../Game/gameManager.h"
 
 typedef enum{TP_NAME,TP_DESCRIPTION, TP_TEX_REF, TP_TEX_ANIM_FRAMES, TP_FIRE_FRAME, TP_ROTATION_SPEED, TP_ROTATION_ACCELERATION, TP_WEAPON_DELAY, TP_WEAPON_RANGE, TP_WEAPON_PROJECTILE_NAME, TP_NEWSTATE,TP_COST_A,TP_COST_B,TP_COST_C,TP_NONE} turretConfigFileParam;
 
@@ -243,6 +244,25 @@ turretSelection *newTurretSelection(Game *GAME, char *turretFileName){
     free(srcturret);
 
     return createdTurretSelection;
+}
+
+void *upgradeTurret(turret *turret){
+    int state = searchIndexInList(*turret->states,turret->currentState);
+    turret->currentState = getDataAtIndex(*turret->states,state+1);
+    gameModeData data;
+    data.currencyA = getGameModeData().currencyA - turret->currentState->costA;
+    data.currencyB = getGameModeData().currencyB - turret->currentState->costB;
+    data.currencyC = getGameModeData().currencyC - turret->currentState->costC;
+    setGameModeData(data);
+}
+
+void *sellTurret(turret *turret){
+    turretDelete(turret);
+    gameModeData data;
+    data.currencyA = getGameModeData().currencyA + (75/100)*turret->currentState->costA;
+    data.currencyB = getGameModeData().currencyB + (75/100)*turret->currentState->costB;
+    data.currencyC = getGameModeData().currencyC + (75/100)*turret->currentState->costC;
+    setGameModeData(data);
 }
 
 list *generateTurretsSelection(Game *GAME){
