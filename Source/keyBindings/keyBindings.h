@@ -2,6 +2,7 @@
 #pragma once
 
 #include "../List/SmartList.h"
+#include "../Game/game.h"
 #include <string.h>
 #include <SDL2/SDL.h>
 
@@ -74,7 +75,7 @@ void printed();
 void printList(list *r);
 
 void KB_getInput(void (*callback)(SDL_Keycode code,void *data),void *data);
-void KB_handleKeyCode(SDL_Keycode code);
+void KB_handleKeyCode(SDL_Keycode code, Game *game);
 list *KB_getKCTA();
 
 

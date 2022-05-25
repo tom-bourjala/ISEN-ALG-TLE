@@ -12,6 +12,7 @@
 #include "../Turrets/turretUsher.h"
 #include "../Robots/robots.h"
 #include "./camera.h"
+#include "../keyBindings/keyBindings.h"
 #include "../UI/UI_pause.h"
 
 static Game *GAME = NULL;
@@ -50,26 +51,12 @@ void handleEvents(){
                 GAME->isRunning = false;
                 break;
             case SDL_KEYDOWN:
-                KB_handleKeyCode(event.key.keysym.sym);
+                KB_handleKeyCode(event.key.keysym.sym, GAME);
                 switch(event.key.keysym.sym)
                 {
                     case SDLK_F12:
                         GAME->key_debug++;
                         if(GAME->key_debug==DEBUG_EL) GAME->key_debug = DEBUG_NULL;
-                        break;
-                    case SDLK_ESCAPE:
-                        if(GAME->mapManager->currentMap)
-                        {
-                            GAME->pause = !GAME->pause;
-                            if(GAME->pause)
-                            {
-                                catchPause();
-                            }
-                            else
-                            {
-                                throwPause();
-                            }
-                        }
                         break;
                 }
                 break;

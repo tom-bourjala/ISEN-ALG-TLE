@@ -13,7 +13,6 @@
 #include "../List/SmartList.h"
 #include "../Language/lang.h"
 #include "../SoundEngine/sound-engine.h"
-#include "../keyBindings/keyBindings.h"
 #include "../Waves/waveGenerator.h"
 
 typedef enum {DEBUG_NULL, DEBUG_HITBOX, DEBUG_PATH, DEBUG_EL} debug;

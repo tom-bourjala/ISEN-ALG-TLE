@@ -513,7 +513,7 @@ void inputKeyButton(void *self)
     }
     if(button->isPressed)
     {
-        KB_handleKeyCode(-1);
+        KB_handleKeyCode(-1, button->menu->game);
         button->isPressed = false;
         return;
     }

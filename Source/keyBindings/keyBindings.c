@@ -1,5 +1,10 @@
 #include "keyBindings.h"
 #include "../Game/game.h"
+#include "../Game/camera.h"
+#include "../Turrets/turrets.h"
+#include "../Turrets/turretUsher.h"
+#include "../Game/selection.h"
+#include "../UI/UI_pause.h"
 
 /*
  * Global variables needed for the project
@@ -210,7 +215,7 @@ void KB_getInput(void (*cb)(SDL_Keycode code,void *data),void *d)
     data = d;
 }
 
-void KB_handleKeyCode(SDL_Keycode code)
+void KB_handleKeyCode(SDL_Keycode code, Game *game)
 {
     
     if(callback)
@@ -218,7 +223,80 @@ void KB_handleKeyCode(SDL_Keycode code)
         callback(code,data);
         callback = NULL;
         data = NULL;
+        return;
     }
+    list *inputs = KB_getInputs(code);
+
+    
+
+    void handleInput(void *input) {
+        GA_type *i = input;
+        if(*i == GA_TURRET1 || *i == GA_TURRET2 || *i == GA_TURRET3)
+        {
+            list *tsl = generateTurretsSelection(game);
+            Selection *curSel = game->selection;
+            if(game->selection) free(game->selection);
+            Selection *selection = malloc(sizeof(Selection));
+            selection->type = SELECT_TURRET;
+            switch (*i)
+            {
+            case GA_TURRET1:
+                selection->selected.turretSelection = getDataAtIndex(*tsl, 0);
+                break;
+            case GA_TURRET2:
+                selection->selected.turretSelection = getDataAtIndex(*tsl, 1);
+                break;
+            case GA_TURRET3:
+                selection->selected.turretSelection = getDataAtIndex(*tsl, 2);
+                break;
+            default:
+                break;
+            }
+            game->selection = selection;
+        }
+        switch (*i)
+        {
+        case GA_DOWN:
+            if(!game->pause) cameraMove(0,10);
+            break;
+        case GA_UP:
+            if(!game->pause) cameraMove(0,-10);
+            break;
+        case GA_LEFT:
+            if(!game->pause) cameraMove(-10,0);
+            break;
+        case GA_RIGHT:
+            if(!game->pause) cameraMove(10,0);
+            break;
+        case GA_PAUSE:
+            if(game->mapManager->currentMap)
+            {
+                game->pause = !game->pause;
+                if(game->pause)
+                {
+                    catchPause();
+                }
+                else
+                {
+                    throwPause();
+                }
+            }
+            break;
+        case GA_SELL:
+            break;
+        case GA_UPGRADE:
+            break;
+        case GA_ZOOMIN:
+            if(!game->pause) cameraZoom(0.2);
+            break;
+        case GA_ZOOMOUT:
+            if(!game->pause) cameraZoom(-0.2);
+            break;
+        default:
+            break;
+        }
+    }
+    forEach(inputs, handleInput);
 }
 
 list *KB_getKCTA()
