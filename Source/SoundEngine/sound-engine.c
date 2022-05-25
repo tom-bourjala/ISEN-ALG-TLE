@@ -2,9 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-// pour lire les fichiers json
 #include <json-c/json.h>
-// pour parcourir les dossiers
 #include <dirent.h>
 #include "sound-engine.h"
 #include "listManager.h"
@@ -131,10 +129,10 @@ void resumeTracks()
     {
         if (playingElement->_data->_type == SE_MUSIC || playingElement->_data->_type == SE_MUSIC_FX)
         {
-            if (Mix_Paused(playingElement->_channel) == 1) // est en pause => resume
+            if (Mix_Paused(playingElement->_channel) == 1)
                 Mix_Resume(playingElement->_channel);
             else
-            { // pas en pause => degage
+            {
                 Mix_HaltChannel(playingElement->_channel);
                 PlayingElement *tmp = playingElement;
                 playingElement = playingElement->_next;
@@ -241,7 +239,6 @@ void pause()
 
 void resume()
 {
-    // resume paused channels, and halt played ones
     PlayingElement *Temp = playing._begin, *tmp = NULL;
     while (Temp != NULL)
     {
@@ -291,8 +288,6 @@ void refreshVolume(float master, float music, float effect, float ambient, float
 void MusicCallback(int channel)
 {
     QueuedList queued = {NULL, 0};
-    // le système de queue est beugué de fond en comble
-    // TODO : refaire la queue
     RequestedElement *TMPreq = requested._begin;
     while (TMPreq != NULL)
     {
@@ -300,16 +295,16 @@ void MusicCallback(int channel)
     }
     PlayingElement *Played = getFromPlayingList(&playing, channel);
     if (Played == NULL)
-        return; // n'est plus demandé, ne le rejoue pas
+        return;
     StorageElement *data = Played->_data;
-    if ((data->_type != SE_MUSIC && data->_type != SE_AMBIENT) || // n'est pas a jouer en boucle
-        getFromRequestList(&requested, data) == NULL)             // n'est plus a jouer
+    if ((data->_type != SE_MUSIC && data->_type != SE_AMBIENT) ||
+        getFromRequestList(&requested, data) == NULL)            
     {
         removeFromPlayingList(&playing, Played);
         free(Played);
         return;
     }
-    Played->_channel = Mix_PlayChannel(-1, Played->_data->_audio, 0); // on le rejoue
+    Played->_channel = Mix_PlayChannel(-1, Played->_data->_audio, 0); 
     switch (data->_type)
     {
     case SE_MUSIC:
@@ -328,7 +323,6 @@ void MusicCallback(int channel)
     default:
         break;
     }
-    // TODO : refaire la queue avec verification de poids et de délais
 }
 
 void loadMusicTrack(const char *DirName, const char *MusicName)
@@ -508,17 +502,13 @@ void loadAmbients(const char *DirName)
 SoundEngine *initSoundEngine(float *musicWeightControl)
 {
     if (musicWeight != NULL)
-        // deja initialisé
         return NULL;
 
-    // je savais plus ce qu'il fallait initialiser ou pas, donc j'ai tout pris
     Mix_Init(MIX_INIT_MP3 | MIX_INIT_OGG | MIX_INIT_FLAC | MIX_INIT_MOD | MIX_INIT_MID | MIX_INIT_OPUS);
     Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024);
     Mix_AllocateChannels(MAX_CHANNEL_ALLOCATED);
 
-    // lis le fichier config.json
     json_object *json = json_object_from_file("assets/sound/config.json");
-    // read where to find the FX
     json_object *fxPath = json_object_object_get(json, "effects");
     json_object *dialogPath = json_object_object_get(json, "dialogs");
     json_object *ambientPath = json_object_object_get(json, "ambients");
@@ -530,7 +520,6 @@ SoundEngine *initSoundEngine(float *musicWeightControl)
 
     loadAmbients(json_object_get_string(ambientPath));
 
-    // read all the musics
     int nbMusic = json_object_array_length(musicPath);
     for (int i = 0; i < nbMusic; i++)
     {
@@ -553,20 +542,17 @@ SoundEngine *initSoundEngine(float *musicWeightControl)
 
     SoundEngine *engine = malloc(sizeof(SoundEngine));
 
-    // getters
     engine->getTrack = getTrack;
     engine->getEffect = getEffect;
     engine->getDialog = getDialog;
     engine->getAmbientTrack = getAmbientTrack;
 
-    // players
     engine->playTrack = playTrack;
     engine->playTrackEffect = playTrackEffect;
     engine->playEffect = playEffect;
     engine->playDialog = playDialog;
     engine->playAmbientTrack = playAmbientTrack;
 
-    // stoppers
     engine->stopTracks = stopTracks;
     engine->stopEffect = stopEffect;
 
