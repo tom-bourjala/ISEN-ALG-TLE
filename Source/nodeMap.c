@@ -329,7 +329,7 @@ int main(int argc, const char * argv[]) {
     saveInFile(argv[1], Map);
     printf("File saved.\n");
     free(Map);
-    game->mapManager->loadMap(argv[1], 1200, 800);
+    game->mapManager->loadMap(argv[1], 1200, 800, NULL);
     game->mapManager->render();
     SDL_RenderPresent(game->renderer);
     SDL_Delay(10000);
