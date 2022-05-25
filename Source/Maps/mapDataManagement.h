@@ -1,3 +1,11 @@
+/**
+ * @file mapDataManagement.h
+ * @brief Manages the maps
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
+
 #include "../List/SmartList.h"
 #include <SDL2/SDL.h>
 #include <stdio.h>
