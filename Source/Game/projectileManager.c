@@ -221,6 +221,7 @@ void projectileRender(void *self){
     SDL_Rect rect={ROUND(this->x)+(this->width/2),ROUND(this->y),this->width, this->height};
     //NEEED TO FIX THIS
     cameraRenderExUnsquared(this->projectileRenderer.texture, rect, this->projectileRenderer.currentFrame, this->projectileRenderer.nOfFrames, -this->rotation*90/(M_PI/2) + 180, false, false);
+    
 }
 
 void projectileDelete(void *self){
