@@ -145,6 +145,22 @@ projectile *newProjectile(void *game, char *projectileFileName, float xpos, floa
 void projectileUpdate(void *self){
     projectile *this = self;
     GameObject *parent = this->parent;
+    if(this->type == EXPLOSIVE){
+        this->projectileRenderer.currentFrame++;
+        if(this->projectileRenderer.currentFrame >= this->projectileRenderer.nOfFrames){
+            void areaStrike(void *t){
+                GameObject *target = t;
+                if(target->type == GOT_Robot){
+                    robot *robot = target->actor;
+                    if(sqrt(pow(robot->x - this->x, 2) + pow(robot->y - this->y, 2)) < (this->width+this->height)/2)
+                        newHit(this->damage, robot->x, robot->y, this->type, this->parent, target);
+                }
+            }
+            forEach(parent->game->gameObjects, areaStrike);
+            this->delete(this);
+        }
+        return;
+    }
     float endPosX = this->speedx+this->x + (this->width/2);
     float endPosY = this->speedy+this->y + (this->height/2);
     list *GameObjects = parent->game->gameObjects;

@@ -129,7 +129,9 @@ turret *newTurret(Game GAME,char *turretFileName, int xpos, int ypos){
 
 void turretUpdate(void *self){
     GameObject *thisGameObject = self;
-    updateTurretAi(thisGameObject);
+    turret *thisTurret = thisGameObject->actor;
+    if(thisTurret->currentState->range > 700) updateArtilleryAi(thisGameObject);
+    else updateTurretAi(thisGameObject);
 }
 
 void turretRender(void *self){
