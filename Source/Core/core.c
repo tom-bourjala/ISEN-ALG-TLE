@@ -50,7 +50,7 @@ static void coreRender(void *self){
     int coreWidth = coreTexWidth / coreFrames, coreHeight = coreTexHeight;
     int shieldWidth = shieldTexWidth / shieldFrames, shieldHeight = shieldTexHeight;
     if(this->shield > 0) this->radius = shieldWidth;
-    else this->radius = coreWidth;
+    else this->radius = coreWidth/2;
 
     centerX -= coreWidth / 2;
 

@@ -254,6 +254,11 @@ void updateShotBehavior(GameObject *robotObj){
     robot *robot = robotObj->actor;
     core *core = robotObj->game->coreObj->actor;
     int coreDistance = distBetweenTwoPoints(core->node->x, core->node->y, robot->x, robot->y);
+    if(robot->range == 0){
+        if(coreDistance < (core->radius*1.5)){
+            robot->life = 0;
+        }
+    }
     if(coreDistance < robot->range*1.5){
         if(robot->delayCounter > 0){
             robot->delayCounter--;

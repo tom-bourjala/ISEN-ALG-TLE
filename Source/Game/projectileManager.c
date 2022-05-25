@@ -36,7 +36,6 @@ void newHit(int damage, float x, float y, weaponType type, void *parent, void *t
     createdHit->damage = damage;
     createdHit->x = x;
     createdHit->y = y;
-    createdHit->parent = parent;
     pushInList(PROJECTILE_MANAGER->hits, createdHit);
 }
 
