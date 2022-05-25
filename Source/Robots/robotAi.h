@@ -3,4 +3,6 @@
 #include <stdbool.h>
 #include "../Game/game.h"
 
+/** @brief updates the path for a given robot
+    @param robot the robot concerned*/
 void updateRobotPathAi(GameObject *robot);
