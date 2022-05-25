@@ -163,8 +163,6 @@ void turretDelete(void *self){
 }
 
 bool turretIsAlive(void *self){
-    // GameObject *thisGameObject = self;
-    // turret *this = thisGameObject->actor;
     return true;
 }
 
