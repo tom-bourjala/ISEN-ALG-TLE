@@ -55,21 +55,69 @@ void archetype_smallTeam(list *chunks,float weight){
 
 }
 
-void demoWave(wave *currentWave){
+void demoWave(int waveNumber,wave *currentWave){
     waveManager *w = currentWave->parent;
     Game *game = w->parent;
     list *spawns = game->mapManager->currentMap->starts;
-    waveChunk *chunk1 = newChunk();
-    appendInList(chunk1->waveSpawner,newSpawner(5,1,0,getSpawnModulo(spawns,0)));
-    appendInList(currentWave->chunks,chunk1);
-    waveChunk *chunk2 = newChunk();
-    chunk2->timer = 100;
-    appendInList(chunk2->waveSpawner,newSpawner(3,0,0,getSpawnModulo(spawns,1)));
-    appendInList(currentWave->chunks,chunk2);
-    waveChunk *chunk3 = newChunk();
-    chunk3->timer = 100;
-    appendInList(chunk3->waveSpawner,newSpawner(1,2,0,getSpawnModulo(spawns,0)));
-    appendInList(currentWave->chunks,chunk3);
+    switch (waveNumber)
+    {
+    case 1:;
+        waveChunk *chunk1 = newChunk();
+        appendInList(chunk1->waveSpawner,newSpawner(5,1,0,getSpawnModulo(spawns,0)));
+        appendInList(currentWave->chunks,chunk1);
+        waveChunk *chunk2 = newChunk();
+        chunk2->timer = 100;
+        appendInList(chunk2->waveSpawner,newSpawner(3,0,0,getSpawnModulo(spawns,1)));
+        appendInList(currentWave->chunks,chunk2);
+        waveChunk *chunk3 = newChunk();
+        chunk3->timer = 100;
+        appendInList(chunk3->waveSpawner,newSpawner(1,2,0,getSpawnModulo(spawns,0)));
+        appendInList(currentWave->chunks,chunk3);
+        break;
+    case 2:;
+            waveChunk *chunk4 = newChunk();
+            appendInList(chunk4->waveSpawner,newSpawner(1,2,0,getSpawnModulo(spawns,0)));
+            appendInList(currentWave->chunks,chunk4);
+            waveChunk *chunk5 = newChunk();
+            appendInList(chunk5->waveSpawner,newSpawner(1,2,0,getSpawnModulo(spawns,1)));
+            appendInList(currentWave->chunks,chunk5);
+            for (int i=0;i<5;i++){
+                waveChunk *chunk = newChunk();
+                chunk->timer = 90;
+                appendInList(chunk->waveSpawner,newSpawner(2,0,0,getSpawnModulo(spawns,1)));
+                appendInList(currentWave->chunks,chunk);
+            }
+            for (int i=0;i<=5;i++){
+            waveChunk *chunk = newChunk();
+            chunk->timer = 90;
+            appendInList(chunk->waveSpawner,newSpawner(3,1,0,getSpawnModulo(spawns,2)));
+            appendInList(currentWave->chunks,chunk);
+            }
+        break;
+    case 3:;
+            waveChunk *chunk6 = newChunk();
+            appendInList(chunk6->waveSpawner,newSpawner(3,0,0,getSpawnModulo(spawns,0)));
+            appendInList(currentWave->chunks,chunk6);
+            for (int i=0;i<5;i++){
+                waveChunk *chunk = newChunk();
+                chunk->timer = 90;
+                appendInList(chunk->waveSpawner,newSpawner(3,1,0,getSpawnModulo(spawns,1)));
+                appendInList(currentWave->chunks,chunk);
+            }
+            for (int i=0;i<5;i++){
+                waveChunk *chunk = newChunk();
+                chunk->timer = 90;
+                appendInList(chunk->waveSpawner,newSpawner(1,2,0,getSpawnModulo(spawns,0)));
+                appendInList(currentWave->chunks,chunk);
+            }
+            for (int i=0;i<=5;i++){
+            waveChunk *chunk = newChunk();
+            chunk->timer = 90;
+            appendInList(chunk->waveSpawner,newSpawner(5,1,0,getSpawnModulo(spawns,2)));
+            appendInList(currentWave->chunks,chunk);
+            }
+        break;
+    }
 }
 
 void introToRobots(int waveNumber,wave *currentWave){
@@ -129,7 +177,7 @@ wave *generateNewWave(int waveNumber,float difficulty,waveManager *parent){
     srand(waveNumber);
     wave *wave = newWave(parent);
     float weight = waveNumber*difficulty;
-    if (waveNumber == 1) demoWave(wave);
+    if (waveNumber <= 3) demoWave(waveNumber,wave);
     else if (waveNumber < 6) introToRobots(waveNumber,wave);
     else if(waveNumber <11 && waveNumber >5) introToBombers(waveNumber,wave);
     else if(waveNumber <16 && waveNumber >10) introToTanks(waveNumber,wave);
