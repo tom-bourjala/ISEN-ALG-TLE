@@ -22,6 +22,12 @@ static UI_button *HUD_button_speed_1 = NULL;
 static UI_button *HUD_button_speed_2 = NULL;
 static UI_button *HUD_button_speed_3 = NULL;
 static UI_text *HUD_text_wave_info = NULL;
+static UI_text *HUD_title_right_part = NULL;
+static UI_panel *HUD_right_part_panel = NULL;
+static UI_panel *HUD_right_part_img = NULL;
+static UI_text *HUD_text_1_right_part = NULL;
+static UI_text *HUD_text_2_right_part = NULL;
+static UI_text *HUD_text_3_right_part = NULL;
 
 static char **(*LM_getTradById)(char *idToGet) = NULL;
 
@@ -121,20 +127,57 @@ typedef struct{
 
 list *turretSelectors = NULL;
 
-void changeSpeed_1(void *none)
+void changeSpeed_1_ON(void *none)
 {
-
+    THIS_GAME->speedMultiplicator = 2;
 }
 
-void changeSpeed_2(void *none)
+void changeSpeed_1_OFF(void *none)
 {
-
+    if(THIS_GAME->speedMultiplicator == 2)
+    {
+        THIS_GAME->speedMultiplicator = 1;
+    }
+    else
+    {
+        THIS_GAME->speedMultiplicator = 2;
+    }
 }
 
-void changeSpeed_3(void *none)
+void changeSpeed_2_ON(void *none)
 {
-
+    THIS_GAME->speedMultiplicator = 3;
 }
+
+void changeSpeed_2_OFF(void *none)
+{
+    if(THIS_GAME->speedMultiplicator == 3)
+    {
+        THIS_GAME->speedMultiplicator = 1;
+    }
+    else
+    {
+        THIS_GAME->speedMultiplicator = 3;
+    }
+}
+
+void changeSpeed_3_ON(void *none)
+{
+    THIS_GAME->speedMultiplicator = 4;
+}
+
+void changeSpeed_3_OFF(void *none)
+{
+    if(THIS_GAME->speedMultiplicator == 4)
+    {
+        THIS_GAME->speedMultiplicator = 1;
+    }
+    else
+    {
+        THIS_GAME->speedMultiplicator = 4;
+    }
+}
+
 
 void nextWave(void *none)
 {
@@ -220,6 +263,36 @@ static void onUpdate(){
     sprintf(number,"%d",THIS_GAME->waveManager->waveNumber);
     strcat(*string,number);
     HUD_text_wave_info->text = string;
+
+    Selection *s = THIS_GAME->selection;
+    if(s && s->type == SELECT_TURRET)
+    {
+        HUD_title_right_part->hidden = false;
+        HUD_right_part_panel->hidden = false;
+        HUD_right_part_img->hidden = false;
+        HUD_text_1_right_part->hidden = false;
+        HUD_text_2_right_part->hidden = false;
+        HUD_text_3_right_part->hidden = false;
+        HUD_title_right_part->text = LM_getTradById(*s->selected.turretSelection->name);
+        char** string = malloc(sizeof(char*));
+        *string = malloc(sizeof(char)*255);
+        memset(*string,0,255);
+        strcpy(*string,*LM_getTradById("turret_radius"));
+        strcat(*string," : ");
+        char *number = malloc(sizeof(char)*3);
+        sprintf(number,"%d",s->selected.turretSelection->radius);
+        strcat(*string,number);
+        HUD_text_1_right_part->text = string;
+    }
+    else
+    {
+        HUD_title_right_part->hidden = true;
+        HUD_right_part_panel->hidden = true;
+        HUD_right_part_img->hidden = true;
+        HUD_text_1_right_part->hidden = true;
+        HUD_text_2_right_part->hidden = true;
+        HUD_text_3_right_part->hidden = true;
+    }
 }
 
 void UI_initHud(void *GAME)
@@ -242,13 +315,13 @@ void UI_initHud(void *GAME)
     /* Speed HUD buttons */
     float speed_size_factor = (THIS_GAME->winWidth > 1200) ? 1.5 : 1.15;
     UI_anchor *A_SPEED_1_HUD = UI_newAnchor(game->menu, HUD_button_speed_1_x, HUD_button_speed_1_y);
-    HUD_button_speed_1 = UI_newButton(HUD_mid_panel->menu, NULL, UI_ARROW,A_SPEED_1_HUD,false,changeSpeed_1,NULL,NULL,speed_size_factor);
+    HUD_button_speed_1 = UI_newButton(HUD_mid_panel->menu, NULL, UI_ARROW,A_SPEED_1_HUD,true,NULL,changeSpeed_1_ON,changeSpeed_1_OFF,speed_size_factor);
     UI_flipButton(HUD_button_speed_1,SDL_FLIP_HORIZONTAL);
     UI_anchor *A_SPEED_2_HUD = UI_newAnchor(game->menu, HUD_button_speed_2_x, HUD_button_speed_2_y);
-    HUD_button_speed_2 = UI_newButton(HUD_mid_panel->menu, NULL, UI_ARROW,A_SPEED_2_HUD,false,changeSpeed_2,NULL,NULL,speed_size_factor);
+    HUD_button_speed_2 = UI_newButton(HUD_mid_panel->menu, NULL, UI_ARROW,A_SPEED_2_HUD,true,NULL,changeSpeed_2_ON,changeSpeed_2_OFF,speed_size_factor);
     UI_flipButton(HUD_button_speed_2,SDL_FLIP_HORIZONTAL);
     UI_anchor *A_SPEED_3_HUD = UI_newAnchor(game->menu, HUD_button_speed_3_x, HUD_button_speed_3_y);
-    HUD_button_speed_3 = UI_newButton(HUD_mid_panel->menu, NULL, UI_ARROW,A_SPEED_3_HUD,false,changeSpeed_3,NULL,NULL,speed_size_factor);
+    HUD_button_speed_3 = UI_newButton(HUD_mid_panel->menu, NULL, UI_ARROW,A_SPEED_3_HUD,true,NULL,changeSpeed_3_ON,changeSpeed_3_OFF,speed_size_factor);
     UI_flipButton(HUD_button_speed_3,SDL_FLIP_HORIZONTAL);
 
     /* Wave info and Next button */
@@ -348,31 +421,31 @@ void UI_initHud(void *GAME)
 
     /* HUD right part */
     UI_anchor *A_PANEL_RIGHT_PART_HUD = UI_newAnchor(game->menu, HUD_right_part_panel_x, HUD_right_part_panel_y);
-    UI_panel *HUD_right_part_panel = UI_newPanel(game->menu,0.378125*THIS_GAME->winWidth,0.2*THIS_GAME->winHeight, A_PANEL_RIGHT_PART_HUD, 2, UI_PT_A);
+    HUD_right_part_panel = UI_newPanel(game->menu,0.378125*THIS_GAME->winWidth,0.2*THIS_GAME->winHeight, A_PANEL_RIGHT_PART_HUD, 2, UI_PT_A);
     
     UI_anchor *A_TITLE_RIGHT_PART_HUD = UI_newAnchor(game->menu, HUD_right_part_title_x, HUD_right_part_title_y);
     char **title_right_part = malloc(sizeof(char*));
     *title_right_part = malloc(sizeof(char)*255);
     strcpy(*title_right_part,"SHIELD");
-    UI_text *HUD_title_right_part = UI_newText(game->menu,title_right_part,A_TITLE_RIGHT_PART_HUD, UI_TA_LEFT, UI_TJ_CENTER,(SDL_Color){255,255,255,255}, "./assets/fonts/RulerGold.ttf", 30);
+    HUD_title_right_part = UI_newText(game->menu,title_right_part,A_TITLE_RIGHT_PART_HUD, UI_TA_LEFT, UI_TJ_CENTER,(SDL_Color){255,255,255,255}, "./assets/fonts/RulerGold.ttf", 30);
     
     UI_anchor *A_IMG_RIGHT_PART_HUD = UI_newAnchor(game->menu, HUD_right_part_img_x, HUD_right_part_img_y);
-    UI_panel *HUD_right_part_img = UI_newPanel(game->menu,0.125*THIS_GAME->winHeight,0.125*THIS_GAME->winHeight, A_IMG_RIGHT_PART_HUD, 2, UI_PT_A);
+    HUD_right_part_img = UI_newPanel(game->menu,0.125*THIS_GAME->winHeight,0.125*THIS_GAME->winHeight, A_IMG_RIGHT_PART_HUD, 2, UI_PT_A);
     
     UI_anchor *A_TEXT_1_RIGHT_PART_HUD = UI_newAnchor(game->menu, HUD_right_part_text_1_x, HUD_right_part_text_1_y);
     char **text_1_right_part = malloc(sizeof(char*));
     *text_1_right_part = malloc(sizeof(char)*255);
     strcpy(*text_1_right_part,"text");
-    UI_text *HUD_text_1_right_part = UI_newText(game->menu,text_1_right_part,A_TEXT_1_RIGHT_PART_HUD, UI_TA_LEFT, UI_TJ_CENTER,(SDL_Color){255,255,255,255}, "./assets/fonts/RulerGold.ttf", 30);
+    HUD_text_1_right_part = UI_newText(game->menu,text_1_right_part,A_TEXT_1_RIGHT_PART_HUD, UI_TA_LEFT, UI_TJ_CENTER,(SDL_Color){255,255,255,255}, "./assets/fonts/RulerGold.ttf", 30);
     UI_anchor *A_TEXT_2_RIGHT_PART_HUD = UI_newAnchor(game->menu, HUD_right_part_text_2_x, HUD_right_part_text_2_y);
     char **text_2_right_part = malloc(sizeof(char*));
     *text_2_right_part = malloc(sizeof(char)*255);
     strcpy(*text_2_right_part,"text");
-    UI_text *HUD_text_2_right_part = UI_newText(game->menu,text_2_right_part,A_TEXT_2_RIGHT_PART_HUD, UI_TA_LEFT, UI_TJ_CENTER,(SDL_Color){255,255,255,255}, "./assets/fonts/RulerGold.ttf", 30);
+    HUD_text_2_right_part = UI_newText(game->menu,text_2_right_part,A_TEXT_2_RIGHT_PART_HUD, UI_TA_LEFT, UI_TJ_CENTER,(SDL_Color){255,255,255,255}, "./assets/fonts/RulerGold.ttf", 30);
     UI_anchor *A_TEXT_3_RIGHT_PART_HUD = UI_newAnchor(game->menu, HUD_right_part_text_3_x, HUD_right_part_text_3_y);
     char **text_3_right_part = malloc(sizeof(char*));
     *text_3_right_part = malloc(sizeof(char)*255);
     strcpy(*text_3_right_part,"text");
-    UI_text *HUD_text_3_right_part = UI_newText(game->menu,text_3_right_part,A_TEXT_3_RIGHT_PART_HUD, UI_TA_LEFT, UI_TJ_CENTER,(SDL_Color){255,255,255,255}, "./assets/fonts/RulerGold.ttf", 30);
+    HUD_text_3_right_part = UI_newText(game->menu,text_3_right_part,A_TEXT_3_RIGHT_PART_HUD, UI_TA_LEFT, UI_TJ_CENTER,(SDL_Color){255,255,255,255}, "./assets/fonts/RulerGold.ttf", 30);
     
 }
