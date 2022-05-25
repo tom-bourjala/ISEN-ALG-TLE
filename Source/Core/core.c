@@ -12,7 +12,6 @@ static void coreUpdate(void *self){
     GameObject *thisGameObject = self;
     core *this = thisGameObject->actor;
     if(this->health <= 0){
-        //NOTIFY GAME OVER
         this->radius = 0;
         return;
     }
@@ -107,10 +106,6 @@ GameObject *newGameObject_Core(Game *GAME, map_node *spawnNode, int maxHealth, i
 
 void hitCore(GameObject *target, int damage){
     core *this = target->actor;
-    //printf "hit regiter" in red
-    printf("\033[0;31m");
-    printf("hit core :%d\n", damage);
-    printf("\033[0m");
     if(this->shield > 0){
         this->shield -= damage;
         if(this->shield < 0){
