@@ -6,16 +6,8 @@
 #include "../Game/selection.h"
 #include "../UI/UI_pause.h"
 
-/*
- * Global variables needed for the project
- */
-
 static list *bindings = NULL;
 static list* keyCodeTextureAsso = NULL;
-
-/*
- * Search function for the library to work properly
- */
 
 int Comparator(void *needle, void *data) {
     keyBinding *n1 = needle;
@@ -25,10 +17,6 @@ int Comparator(void *needle, void *data) {
     }
     return 1;
 }
-
-/*
- * Functions required for the library
- */
 
 int getKBEnumFromString(char *string)
 {
