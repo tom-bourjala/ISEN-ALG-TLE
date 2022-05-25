@@ -96,3 +96,23 @@ void updateTurretAi(GameObject *turretObject){
         turret->turretLock = false;
     }
 }
+
+void updateArtilleryAi(GameObject *turretObject){
+    turret *turret = turretObject->actor;
+    GameObject *closestTarget = getClosestEnemyInRange(*turretObject);
+    if(closestTarget){
+        robot *robot = closestTarget->actor;
+        tryShoot(turretObject);
+        if(!turretObject->game->animationManager->getAnim(turret->currentState->canon.animationId)){
+            turretObject->game->animationManager->addAnim(turret->currentState->canon.animationId, &turret->currentState->canon.currentFrame, turret->currentState->canon.nOfFrames, 1);
+        }
+        if(turret->currentState->canon.currentFrame == turret->currentState->canon.fireFrame && !turret->turretLock){
+            int spawnX = robot->x;
+            int spawnY = robot->y;
+            turretObject->game->projectileManager->newProjectile(turretObject->game, turret->currentState->projectileName, spawnX, spawnY, 0, turretObject, getClosestEnemy(*turretObject));
+            turret->turretLock = true;
+        }else if(turret->currentState->canon.currentFrame != turret->currentState->canon.fireFrame){
+            turret->turretLock = false;
+        }
+    }
+}
