@@ -50,6 +50,7 @@ pause_settings;SETTINGS
 pause_quit;QUIT
 hud_next_wave;NEXT WAVE
 hud_wave_info;WAVE
-turret_laser;LASER
-turret_artil;ARTILLERY
-turret_plasma;PLASMA
+turret_laser;Laser
+turret_artil;Artillery
+turret_plasma;Plasma
+turret_radius;Radius
