@@ -242,13 +242,13 @@ void UI_initHud(void *GAME)
     /* Speed HUD buttons */
     float speed_size_factor = (THIS_GAME->winWidth > 1200) ? 1.5 : 1.15;
     UI_anchor *A_SPEED_1_HUD = UI_newAnchor(game->menu, HUD_button_speed_1_x, HUD_button_speed_1_y);
-    UI_button *HUD_button_speed_1 = UI_newButton(HUD_mid_panel->menu, NULL, UI_ARROW,A_SPEED_1_HUD,false,changeSpeed_1,NULL,NULL,speed_size_factor);
+    HUD_button_speed_1 = UI_newButton(HUD_mid_panel->menu, NULL, UI_ARROW,A_SPEED_1_HUD,false,changeSpeed_1,NULL,NULL,speed_size_factor);
     UI_flipButton(HUD_button_speed_1,SDL_FLIP_HORIZONTAL);
     UI_anchor *A_SPEED_2_HUD = UI_newAnchor(game->menu, HUD_button_speed_2_x, HUD_button_speed_2_y);
-    UI_button *HUD_button_speed_2 = UI_newButton(HUD_mid_panel->menu, NULL, UI_ARROW,A_SPEED_2_HUD,false,changeSpeed_2,NULL,NULL,speed_size_factor);
+    HUD_button_speed_2 = UI_newButton(HUD_mid_panel->menu, NULL, UI_ARROW,A_SPEED_2_HUD,false,changeSpeed_2,NULL,NULL,speed_size_factor);
     UI_flipButton(HUD_button_speed_2,SDL_FLIP_HORIZONTAL);
     UI_anchor *A_SPEED_3_HUD = UI_newAnchor(game->menu, HUD_button_speed_3_x, HUD_button_speed_3_y);
-    UI_button *HUD_button_speed_3 = UI_newButton(HUD_mid_panel->menu, NULL, UI_ARROW,A_SPEED_3_HUD,false,changeSpeed_3,NULL,NULL,speed_size_factor);
+    HUD_button_speed_3 = UI_newButton(HUD_mid_panel->menu, NULL, UI_ARROW,A_SPEED_3_HUD,false,changeSpeed_3,NULL,NULL,speed_size_factor);
     UI_flipButton(HUD_button_speed_3,SDL_FLIP_HORIZONTAL);
 
     /* Wave info and Next button */
