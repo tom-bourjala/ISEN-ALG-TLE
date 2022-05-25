@@ -1,3 +1,11 @@
+/**
+ * @file turretUsher.h
+ * @brief Manages the turret selection
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
+
 #pragma once
 
 #include "turrets.h"
