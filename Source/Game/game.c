@@ -105,18 +105,14 @@ void render(){
     
     if(!GAME->pause)
     {
-        //Render MAP
         if(GAME->mapManager->currentMap) GAME->mapManager->render();
         
-        //Render OBJECTS
         forEach(GAME->gameObjects, renderGameObject);
         GAME->projectileManager->renderProjectiles();
         
-        //Render UI
         if(GAME->selection) renderTurretSelection(GAME);
     }
     
-    //Render UI
     if(GAME->menu) GAME->menu->render();
     SDL_RenderPresent(GAME->renderer);
 }
@@ -177,7 +173,6 @@ Game *initGame(const char* title, int width, int height, bool fullscreen){
         printf("\033[1;31mSDL Subsystems Initialising FAILED : %s\033[0m\n", SDL_GetError());
     }
     GAME->SEMusicWeight = 0;
-    //GAME->soundEngine = initSoundEngine(&GAME->SEMusicWeight);
     GAME->mouseX = 0;
     GAME->mouseY = 0;
     GAME->mouseLeftDown = false;
