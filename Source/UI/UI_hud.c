@@ -15,9 +15,9 @@ static Game *THIS_GAME = NULL;
 static float *core_health_percentage = NULL;
 static float *core_shield_percentage = NULL;
 static UI_button *nextWaveButton = NULL;
-static UI_button *HUD_button_speed_1 = NULL;
-static UI_button *HUD_button_speed_2 = NULL;
-static UI_button *HUD_button_speed_3 = NULL;
+static UI_text *text_currencies_1 = NULL;
+static UI_text *text_currencies_2 = NULL;
+static UI_text *text_currencies_3 = NULL;
 
 static char **(*LM_getTradById)(char *idToGet) = NULL;
 
@@ -117,44 +117,19 @@ typedef struct{
 
 list *turretSelectors = NULL;
 
-void changeSpeed_1_ON(void *none)
+void changeSpeed_1(void *none)
 {
-    THIS_GAME->speedMultiplicator = 2;
-}
-
-void changeSpeed_1_OFF(void *none)
-{
-    if(THIS_GAME->speedMultiplicator == 2)
-        THIS_GAME->speedMultiplicator = 1;
-    else
-        THIS_GAME->speedMultiplicator = 2;
-}
-
-void changeSpeed_2_ON(void *none)
-{
-   THIS_GAME->speedMultiplicator = 3;
 
 }
 
-void changeSpeed_2_OFF(void *none)
+void changeSpeed_2(void *none)
 {
-    if(THIS_GAME->speedMultiplicator == 3)
-        THIS_GAME->speedMultiplicator = 1;
-    else
-        THIS_GAME->speedMultiplicator = 3;
+
 }
 
-void changeSpeed_3_ON(void *none)
+void changeSpeed_3(void *none)
 {
-    THIS_GAME->speedMultiplicator = 4;
-}
 
-void changeSpeed_3_OFF(void *none)
-{
-    if(THIS_GAME->speedMultiplicator == 4)
-        THIS_GAME->speedMultiplicator = 1;
-    else
-        THIS_GAME->speedMultiplicator = 4;
 }
 
 void nextWave(void *none)
@@ -197,35 +172,15 @@ static void onUpdate(){
     core *ThisCore = THIS_GAME->coreObj->actor;
     *core_health_percentage = (float)ThisCore->health/(float)ThisCore->maxHealth;
     *core_shield_percentage = (float)ThisCore->shield/(float)ThisCore->maxShield;
+    gameModeData data = getGameModeData();
+    sprintf(*text_currencies_1->text,"%d",data.currencyA);
+    sprintf(*text_currencies_2->text,"%d",data.currencyB);
+    sprintf(*text_currencies_3->text,"%d",data.currencyC);
     if (THIS_GAME->waveManager->isWaveActive){
         nextWaveButton->isDisabled = true;
     }
     else {
         nextWaveButton->isDisabled = false;
-    }
-    if(THIS_GAME->speedMultiplicator == 1)
-    {
-        HUD_button_speed_1->isPressed = false;
-        HUD_button_speed_2->isPressed = false;
-        HUD_button_speed_3->isPressed = false;
-    }
-    else if(THIS_GAME->speedMultiplicator == 2)
-    {
-        HUD_button_speed_1->isPressed = true;
-        HUD_button_speed_2->isPressed = false;
-        HUD_button_speed_3->isPressed = false;
-    }
-    else if(THIS_GAME->speedMultiplicator == 3)
-    {
-        HUD_button_speed_1->isPressed = true;
-        HUD_button_speed_2->isPressed = true;
-        HUD_button_speed_3->isPressed = false;
-    }
-    else if(THIS_GAME->speedMultiplicator == 4)
-    {
-        HUD_button_speed_1->isPressed = true;
-        HUD_button_speed_2->isPressed = true;
-        HUD_button_speed_3->isPressed = true;
     }
 }
 
@@ -249,13 +204,13 @@ void UI_initHud(void *GAME)
     /* Speed HUD buttons */
     float speed_size_factor = (THIS_GAME->winWidth > 1200) ? 1.5 : 1.15;
     UI_anchor *A_SPEED_1_HUD = UI_newAnchor(game->menu, HUD_button_speed_1_x, HUD_button_speed_1_y);
-    HUD_button_speed_1 = UI_newButton(HUD_mid_panel->menu, NULL, UI_ARROW,A_SPEED_1_HUD,true,NULL,changeSpeed_1_ON,changeSpeed_1_OFF,speed_size_factor);
+    UI_button *HUD_button_speed_1 = UI_newButton(HUD_mid_panel->menu, NULL, UI_ARROW,A_SPEED_1_HUD,false,changeSpeed_1,NULL,NULL,speed_size_factor);
     UI_flipButton(HUD_button_speed_1,SDL_FLIP_HORIZONTAL);
     UI_anchor *A_SPEED_2_HUD = UI_newAnchor(game->menu, HUD_button_speed_2_x, HUD_button_speed_2_y);
-    HUD_button_speed_2 = UI_newButton(HUD_mid_panel->menu, NULL, UI_ARROW,A_SPEED_2_HUD,true,NULL,changeSpeed_2_ON,changeSpeed_2_OFF,speed_size_factor);
+    UI_button *HUD_button_speed_2 = UI_newButton(HUD_mid_panel->menu, NULL, UI_ARROW,A_SPEED_2_HUD,false,changeSpeed_2,NULL,NULL,speed_size_factor);
     UI_flipButton(HUD_button_speed_2,SDL_FLIP_HORIZONTAL);
     UI_anchor *A_SPEED_3_HUD = UI_newAnchor(game->menu, HUD_button_speed_3_x, HUD_button_speed_3_y);
-    HUD_button_speed_3 = UI_newButton(HUD_mid_panel->menu, NULL, UI_ARROW,A_SPEED_3_HUD,true,NULL,changeSpeed_3_ON,changeSpeed_3_OFF,speed_size_factor);
+    UI_button *HUD_button_speed_3 = UI_newButton(HUD_mid_panel->menu, NULL, UI_ARROW,A_SPEED_3_HUD,false,changeSpeed_3,NULL,NULL,speed_size_factor);
     UI_flipButton(HUD_button_speed_3,SDL_FLIP_HORIZONTAL);
 
     /* Wave info and Next button */
@@ -290,7 +245,7 @@ void UI_initHud(void *GAME)
     char **string = malloc(sizeof(char*));
     *string = malloc(sizeof(char)*5);
     sprintf(*string,"%d",data.currencyA);
-    UI_text *HUD_text_golds_1 = UI_newText(game->menu,string,A_TEXT_GOLDS_HUD_1, UI_TA_LEFT, UI_TJ_CENTER,(SDL_Color){255,255,255,255}, "./assets/fonts/RulerGold.ttf", font_size);
+    text_currencies_1 = UI_newText(game->menu,string,A_TEXT_GOLDS_HUD_1, UI_TA_LEFT, UI_TJ_CENTER,(SDL_Color){255,255,255,255}, "./assets/fonts/RulerGold.ttf", font_size);
     UI_anchor *A_IMG_GOLDS_HUD_1 = UI_newAnchor(game->menu, HUD_img_golds_1_x, HUD_img_golds_1_y);
     UI_textureObject *HUD_img_golds_1 = UI_newStaticTextureObject(game->menu, (SDL_Rect){0,0,32,32},A_IMG_GOLDS_HUD_1,"cur_scrap.png"); // A
 
@@ -299,7 +254,7 @@ void UI_initHud(void *GAME)
     sprintf(*string2,"%d",data.currencyA);
     UI_anchor *A_TEXT_GOLDS_HUD_2 = UI_newAnchor(game->menu, HUD_text_golds_2_x, HUD_text_golds_2_y);
     sprintf(*string2,"%d",data.currencyB);
-    UI_text *HUD_text_golds_2 = UI_newText(game->menu,string2,A_TEXT_GOLDS_HUD_2, UI_TA_LEFT, UI_TJ_CENTER,(SDL_Color){255,255,255,255}, "./assets/fonts/RulerGold.ttf", font_size);
+    text_currencies_2 = UI_newText(game->menu,string2,A_TEXT_GOLDS_HUD_2, UI_TA_LEFT, UI_TJ_CENTER,(SDL_Color){255,255,255,255}, "./assets/fonts/RulerGold.ttf", font_size);
     UI_anchor *A_IMG_GOLDS_HUD_2 = UI_newAnchor(game->menu, HUD_img_golds_2_x, HUD_img_golds_2_y);
     UI_textureObject *HUD_img_golds_2 = UI_newStaticTextureObject(game->menu, (SDL_Rect){0,0,32,32},A_IMG_GOLDS_HUD_2,"cur_battery.png"); // B
 
@@ -308,7 +263,7 @@ void UI_initHud(void *GAME)
     sprintf(*string3,"%d",data.currencyA);
     UI_anchor *A_TEXT_GOLDS_HUD_3 = UI_newAnchor(game->menu, HUD_text_golds_3_x, HUD_text_golds_3_y);
     sprintf(*string3,"%d",data.currencyC);
-    UI_text *HUD_text_golds_3 = UI_newText(game->menu,string3,A_TEXT_GOLDS_HUD_3, UI_TA_LEFT, UI_TJ_CENTER,(SDL_Color){255,255,255,255}, "./assets/fonts/RulerGold.ttf", font_size);
+    text_currencies_3 = UI_newText(game->menu,string3,A_TEXT_GOLDS_HUD_3, UI_TA_LEFT, UI_TJ_CENTER,(SDL_Color){255,255,255,255}, "./assets/fonts/RulerGold.ttf", font_size);
     UI_anchor *A_IMG_GOLDS_HUD_3 = UI_newAnchor(game->menu, HUD_img_golds_3_x, HUD_img_golds_3_y);
     UI_textureObject *HUD_img_golds_3 = UI_newStaticTextureObject(game->menu, (SDL_Rect){0,0,32,32},A_IMG_GOLDS_HUD_3,"cur_aicore.png"); // C
 
