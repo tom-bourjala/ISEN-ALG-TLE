@@ -8,6 +8,7 @@
 #include "../Game/game.h"
 #include "../Game/rendererAddons.h"
 #include "../Game/camera.h"
+#include "../Core/core.h"
 
 
 typedef enum{ROB_NAME, ROB_TEX_REF, ROB_PROJECTILE_NAME, ROB_WIDTH, ROB_HEIGHT, ROB_SPEED, ROB_TEX_ANIM_FRAMES,ROB_TEX_ANIM_DELAY, ROB_LIFE,ROB_TEX_DEATH_ANIM_FRAMES,ROB_TEX_DEATH_ANIM_DELAY, ROB_WEAPON_DELAY, ROB_WEAPON_RANGE, ROB_IS_FRIENDLY, ROB_NONE} robotConfigFileParam;
@@ -44,6 +45,7 @@ robot *newRobot(Game GAME, char *robotFileName, int x, int y, map_node *spawnNod
     char stat_name[255];
     char stat_value[255];
     createdRobot->isFriendly = false;
+    createdRobot->projectileName = NULL;
     while(fgets(line_cache,255,robot_file) != NULL){
         sscanf(line_cache,"%[^ ] = %[^\n]", stat_name, stat_value);
         switch(getRobotConfigFileParamFromString(stat_name)){
@@ -119,7 +121,7 @@ robot *newRobot(Game GAME, char *robotFileName, int x, int y, map_node *spawnNod
     createdRobot->rotation = 0.0;
     createdRobot->rotationCache = 0.0;
     createdRobot->delayCounter = createdRobot->delay;
-    createdRobot->radius = (createdRobot->width + createdRobot->height)/6;
+    createdRobot->radius = (createdRobot->width + createdRobot->height)/7;
     return createdRobot;
 }
 
@@ -150,6 +152,16 @@ void robotUpdate(void *self){
             if (this->death.currentFrame >= this->death.nOfFrames){
                 robotDelete(self);
             }
+            if (this->death.currentFrame == 2){
+                if(this->range == 0){
+                    core *core = thisGameObject->game->coreObj->actor;
+                    float dist = sqrt(pow(this->x - core->node->x, 2) + pow(this->y - core->node->y, 2));
+                    if(dist < (core->radius*1.7)){
+                        thisGameObject->game->projectileManager->newHit(30, this->x, this->y, BALLISTIC, NULL, thisGameObject->game->coreObj);
+                    }
+                }
+                this->death.currentFrame++;
+            }
         } 
         return;
     }    
@@ -172,7 +184,6 @@ void robotRender(void *self){
     SDL_Rect rect={this->x - (this->width/2), this->y - (this->height/2),this->width,this->height};
     
     if (robotIsAlive(self)){
-        SDL_Rect srcrect={this->walk.currentFrame*64,0,64,64};
         cameraRenderEx(this->walk.texture, rect, this->walk.currentFrame, -this->rotation*90/(M_PI/2) + 180, false, false);
         if(thisGameObject->game->key_debug != DEBUG_NULL)
         {
@@ -182,7 +193,6 @@ void robotRender(void *self){
         }
     }
     else {
-        SDL_Rect srcrect={this->death.currentFrame*64,0,64,64};
         cameraRenderEx(this->death.texture, rect, this->death.currentFrame, -this->rotation*90/(M_PI/2) + 180, false, false);
     }
 }
