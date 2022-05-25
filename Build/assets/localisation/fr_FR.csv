@@ -53,3 +53,4 @@ turret_laser;Laser
 turret_artil;Artillerie
 turret_plasma;Plasma
 turret_radius;Portee
+GAME_OVER; GAME OVER

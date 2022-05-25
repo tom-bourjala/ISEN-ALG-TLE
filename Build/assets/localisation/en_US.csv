@@ -54,4 +54,4 @@ turret_artil;Artillery
 turret_plasma;Plasma
 turret_radius;Radius
 MENU_BACK;BACK
-ME
+GAME_OVER; GAME OVER
