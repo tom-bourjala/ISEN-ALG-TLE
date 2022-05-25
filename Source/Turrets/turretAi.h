@@ -4,3 +4,4 @@
 #include "../Game/game.h"
 
 void updateTurretAi(GameObject *turret);
+void updateArtilleryAi(GameObject *turretObject);

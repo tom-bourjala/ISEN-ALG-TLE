@@ -27,6 +27,9 @@ typedef struct{
     turret_canon canon;
     int delay;
     int range;
+    int costA;
+    int costB;
+    int costC;
     char *projectileName;
     float maxRotationSpeed;
     float maxRotationAcceleration;
@@ -53,6 +56,9 @@ typedef struct{
     int width;
     int height;
     int radius;
+    int costA;
+    int costB;
+    int costC;
     SDL_Texture *thumbnail;
     SDL_Texture *allowed;
     SDL_Texture *forbidden;
