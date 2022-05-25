@@ -122,7 +122,7 @@ typedef struct
 *  @param width the width of the current window of the game
 *  @param height the height of the current window of the game
 *  @param fullscreen boolean that checks if the game is in fullscreen mode (1 = fullscreen) (0 = windowed)
-   @return the main game system created
+*  @return the main game system created
 */
 Game *initGame(const char* title, int width, int height, bool fullscreen);
 
