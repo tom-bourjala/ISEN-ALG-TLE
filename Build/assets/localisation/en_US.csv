@@ -9,10 +9,9 @@ menu_settings_back;BACK
 menu_settings_audio;AUDIO
 menu_settings_commands;COMMANDS
 menu_settings_accessibility;ACCESSIBILITY
-play_menu_campaign;CAMPAIGN
-play_menu_endless;ENDLESS
-play_menu_sandbox;SANDBOX
-play_menu_back;BACK
+menu_home_endless;ENDLESS
+menu_home_sandbox;SANDBOX
+menu_back;BACK
 options_menu_video_resolution;SCREEN SIZE
 options_menu_video_fullscreen;FULLSCREEN
 options_menu_video_1920_1080;1920 x 1080
@@ -54,3 +53,5 @@ turret_laser;Laser
 turret_artil;Artillery
 turret_plasma;Plasma
 turret_radius;Radius
+MENU_BACK;BACK
+ME

@@ -1,18 +1,17 @@
 lang_id;fr_CA
 lang_name;QUEBECOIS
-main_menu_play;S'AMUSER
-main_menu_settings;PARAMETRES
-main_menu_quit;PARTIR
+menu_home_play;S'AMUSER
+menu_home_settings;PARAMETRES
+menu_home_quit;PARTIR
 menu_settings_general;CAPITAINE
 menu_settings_display;AFFICHAGE
 menu_settings_back;ARRIERE
 menu_settings_audio;ECOUTE
 menu_settings_commands;COMMANDES
 menu_settings_accessibility;ACCESSIBILITE
-play_menu_campaign;PRAIRIE
-play_menu_endless;SANS BOUT
-play_menu_sandbox;BOÎTE À SABLE
-play_menu_back;ARRIERE
+menu_home_endless;SANS BOUT
+menu_home_sandbox;BOÎTE À SABLE
+menu_back;ARRIERE
 options_menu_video_1920_1080;1920 x 1080
 options_menu_video_1536_864;1536 x 864
 options_menu_video_1366_768;1366 x 768

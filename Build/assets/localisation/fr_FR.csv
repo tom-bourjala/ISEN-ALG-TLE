@@ -1,18 +1,17 @@
 lang_id;fr_FR
 lang_name;FRANCAIS
-main_menu_play;JOUER
-main_menu_settings;PARAMETRES
-main_menu_quit;QUITTER
+menu_home_play;JOUER
+menu_home_settings;PARAMETRES
+menu_home_quit;QUITTER
 menu_settings_general;GENERAL
 menu_settings_display;AFFICHAGE
 menu_settings_back;RETOUR
 menu_settings_audio;AUDIO
 menu_settings_commands;COMMANDES
 menu_settings_accessibility;ACCESSIBILITE
-play_menu_campaign;CAMPAGNE
-play_menu_endless;LIBRE
-play_menu_sandbox;BAC À SABLE
-play_menu_back;RETOUR
+menu_home_endless;LIBRE
+menu_home_sandbox;BAC À SABLE
+menu_back;RETOUR
 options_menu_video_1920_1080;1920 x 1080
 options_menu_video_1536_864;1536 x 864
 options_menu_video_1366_768;1366 x 768
@@ -45,7 +44,7 @@ options_menu_keybinds_turret_3;TOURELLE 3
 options_menu_keybinds_pause;PAUSE
 options_menu_keybinds_sell;VENDRE
 options_menu_keybinds_upgrade;AMELIORER
-hud_next_wave;PROCHAINE VAGUE
+hud_next_wave;Nouv. Vague
 hud_wave_info;VAGUE
 pause_continue;REPRENDRE
 pause_settings;OPTIONS
