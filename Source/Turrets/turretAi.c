@@ -17,7 +17,7 @@ GameObject *getClosestEnemy(GameObject turretObject){
     float minDist = FLT_MAX;
     for(int index = 0; index < GameObjects->length; index++){
         GameObject *target = getDataAtIndex(*GameObjects, index);
-        if(target->type == GOT_Robot){
+        if(target->type == GOT_Robot && target->isAlive(target)){
             robot *actor = target->actor;
             float distanceIB = sqrt(pow(actor->x - (turret->x + turret->width/2),2) + pow(actor->y - (turret->y + turret->height/2),2));
             if(distanceIB <= minDist){
