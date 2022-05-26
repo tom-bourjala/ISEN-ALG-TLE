@@ -8,6 +8,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include "SmartList.h"
 
 int COMPARE_PTR(void *data1, void *data2){
@@ -158,6 +159,30 @@ void deleteInList(list *list, void *data){
     int index = searchIndexInList(*list, data);
     if(index != -404) deleteItemAtIndex(list, index);
     else printf("\033[1;31mSmartList_ERROR : Item to Delete not found (%p)\n\033[0m", data);
+}
+
+void sortList(list *listToSort, compareTwoPointersFunction comparatorFunction, bool ascending){
+    if(!comparatorFunction) comparatorFunction = listToSort->comparator;
+    list *sortedList = newList(listToSort->comparator);
+    chainItem *item = listToSort->first;
+    while(item != NULL){
+        chainItem *sortItem = sortedList->first;
+        int indexFound = 0;
+        while(sortItem != NULL){
+            if(comparatorFunction(sortItem->data, item->data) > 0 && ascending || comparatorFunction(sortItem->data, item->data) < 0 && !ascending){
+                break;
+            }
+            indexFound++;
+            sortItem = sortItem->next;
+        }
+        chainItem *newSortedItem = newChainItem(item->data);
+        putItemAtIndex(sortedList, newSortedItem, indexFound);
+        item = item->next;
+    }
+    updateIndexMap(sortedList, 0);
+    emptyList(listToSort);
+    *listToSort = *sortedList;
+    free(sortedList);
 }
 
 void emptyList(list *list){

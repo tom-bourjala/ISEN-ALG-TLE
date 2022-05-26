@@ -9,6 +9,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 #ifndef SMART_LIST
 #define SMART_LIST
@@ -142,6 +143,15 @@ void *searchDataInList(list list, void *data);
  * @param function Function to execute for each data
  */
 void forEach(list *list, void (*function)(void *data));
+
+/**
+ * @brief Sort a list based on a specified function
+ * 
+ * @param list List of data to sort
+ * @param function Function to compare two data, use list comparator if NULL
+ * @param ascending If true, sort in ascending order, else sort in descending order
+ */
+void sortList(list *listToSort, compareTwoPointersFunction comparatorFunction, bool ascending);
 
 /**
  * @brief Delete All Items in the list
