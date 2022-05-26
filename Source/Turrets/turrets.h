@@ -93,3 +93,13 @@ GameObject *newGameObject_Turret(Game *GAME, char *turretFileName, int xpos, int
     @return the list of turrets for the bottom of the HUD
 */
 list *generateTurretsSelection(Game *GAME);
+
+/** @brief upgrade a turret to next state
+    @param this the turret to upgrade
+*/
+void upgradeTurret(GameObject *this);
+
+/** @brief sell a turret
+    @param this the turret to sell
+*/
+void sellTurret(GameObject *this);
