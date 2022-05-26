@@ -152,7 +152,9 @@ void projectileUpdate(void *self){
                 GameObject *target = t;
                 if(target->type == GOT_Robot){
                     robot *robot = target->actor;
-                    if(sqrt(pow(robot->x - this->x, 2) + pow(robot->y - this->y, 2)) < (this->width+this->height)/2)
+                    float x = this->x + (this->width/2);
+                    float y = this->y + (this->height/2);
+                    if(sqrt(pow(robot->x - x, 2) + pow(robot->y - y, 2)) < (this->width/2))
                         newHit(this->damage, robot->x, robot->y, this->type, this->parent, target);
                 }
             }
