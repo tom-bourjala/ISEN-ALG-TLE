@@ -255,6 +255,7 @@ turretSelection *newTurretSelection(Game *GAME, char *turretFileName){
 
 void upgradeTurret(GameObject *this){
     if(!this) return;
+    if(this->type != GOT_Turret) return;
     turret *turret = this->actor;
     int state = searchIndexInList(*turret->states,turret->currentState);
     turret_state *next = getDataAtIndex(*turret->states,state+1);
@@ -272,6 +273,7 @@ void upgradeTurret(GameObject *this){
 
 void sellTurret(GameObject *this){
     if(!this) return;
+    if(this->type != GOT_Turret) return;
     turret *turret = this->actor;
     gameModeData data = getGameModeData();
     data.currencyA += turret->currentState->costA;

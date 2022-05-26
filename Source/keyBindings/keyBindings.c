@@ -2,6 +2,7 @@
 #include "../Game/game.h"
 #include "../Game/camera.h"
 #include "../Turrets/turrets.h"
+#include "../Robots/robots.h"
 #include "../Turrets/turretUsher.h"
 #include "../Game/selection.h"
 #include "../Game/gameManager.h"
@@ -204,7 +205,7 @@ void KB_getInput(void (*cb)(SDL_Keycode code,void *data),void *d)
     data = d;
 }
 
-static GameObject *getObjectUnderMouse(Game *game){
+GameObject *getObjectUnderMouse(Game *game){
     int mx = game->mouseX;
     int my = game->mouseY;
     GameObject *obj = NULL;
@@ -218,13 +219,21 @@ static GameObject *getObjectUnderMouse(Game *game){
                 obj = o;
             }
         }
+        if(o->type == GOT_Robot){
+            robot *r = o->actor;
+            SDL_Rect robotArea = (SDL_Rect){r->x,r->y,r->width,r->height};
+            projectRectToCamera(&robotArea);
+            if(SDL_PointInRect(&(SDL_Point){mx,my},&robotArea)){
+                obj = o;
+            }
+        }
     }
     forEach(game->gameObjects,getObjUnderMouse);
     return obj;
 }
+
 void KB_handleKeyCode(SDL_Keycode code, Game *game)
 {
-    
     if(callback)
     {
         callback(code,data);

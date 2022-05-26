@@ -115,7 +115,10 @@ list *KB_getKCTA();
  */
 typedef enum{NONE,GA_UP,GA_DOWN,GA_LEFT,GA_RIGHT,GA_ZOOMIN,GA_ZOOMOUT,GA_TURRET1,GA_TURRET2,GA_TURRET3,GA_PAUSE,GA_SELL,GA_UPGRADE}GA_type;
 
+
 /**
- * @brief: get the list of associations of keyTexture
- * @return a list of the association of keyTexture
-*/
+ * @brief get the current GameObject under the mouse cursor
+ * @param Game the current main game system
+ * @return the current GameObject under the mouse cursor
+ */
+GameObject *getObjectUnderMouse(Game *game);

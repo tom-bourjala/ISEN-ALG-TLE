@@ -53,11 +53,16 @@ SDL_Rect getTurretPlacement(Game *game, turretSelection *selection){
 }
 
 void renderTurretSelection(Game *game){
-    if(!game->selection) return;
+    if(!game->selection){
+        SDL_ShowCursor(SDL_ENABLE);
+        return;
+    }
     Selection *selection = game->selection;
-    if(selection->type != SELECT_TURRET) return;
+    if(selection->type != SELECT_TURRET || !selection->selected.turretSelection){
+        SDL_ShowCursor(SDL_ENABLE);
+        return;
+    }
     turretSelection *turret = selection->selected.turretSelection;
-    if(!turret) return;
     SDL_Rect dest = getTurretPlacement(game, turret);
     if(!isPlacementValid(game, &dest)||!isCostValid(game,turret)) cameraRender(turret->forbidden, dest);
     else{
@@ -71,6 +76,9 @@ void renderTurretSelection(Game *game){
         SDL_SetRenderDrawColor(game->renderer, 255, 255, 255, 100);
         DrawCircle(game->renderer, dest.x+(dest.w/2), dest.y+(dest.h/2), turret->radius-4);
     }
+    if(game->mouseY < game->winHeight - 200){
+        SDL_ShowCursor(SDL_DISABLE);
+    }else SDL_ShowCursor(SDL_ENABLE);
 }
 
 void handleInputTurretSelection(Game *game, SDL_Event *event){

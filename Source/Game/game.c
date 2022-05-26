@@ -27,7 +27,6 @@ void handleEvents(){
         switch (event.type)
         {
             case SDL_MOUSEBUTTONDOWN:
-                handleEvents(-1);
                 if(event.button.button == SDL_BUTTON_LEFT){
                     GAME->mouseLeftDown = true;
                     GAME->menu->handleEvent(true);
@@ -111,6 +110,7 @@ void render(){
         GAME->projectileManager->renderProjectiles();
         
         if(GAME->selection) renderTurretSelection(GAME);
+        else SDL_ShowCursor(SDL_ENABLE);
     }
     
     if(GAME->menu) GAME->menu->render();
