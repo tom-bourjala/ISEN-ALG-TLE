@@ -3,6 +3,7 @@
 
 #define MAX_CHANNEL_ALLOCATED 512
 
+/** @brief Holds the SoundEngine content and functions */
 typedef struct SoundEngine
 {
     /** @brief Fetch a music track from the assets folder.
