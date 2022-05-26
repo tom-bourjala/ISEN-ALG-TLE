@@ -50,9 +50,9 @@ void launchEndlessMode(void *game){
 void launchSandboxMode(void *game){
     GAME = game;
     sandbox = true;
-    data.currencyA = 9999;
-    data.currencyB = 9999;
-    data.currencyC = 9999;
+    data.currencyA = 999;
+    data.currencyB = 999;
+    data.currencyC = 999;
     launchGameMode();
 }
 
@@ -80,8 +80,8 @@ gameModeData getGameModeData(void)
 void setGameModeData(gameModeData d)
 {
     if(sandbox) return;
-    if(d.currencyA > 9999) d.currencyA = 9999;
-    if(d.currencyB > 9999) d.currencyB = 9999;
-    if(d.currencyC > 9999) d.currencyC = 9999;
+    if(d.currencyA > 999) d.currencyA = 999;
+    if(d.currencyB > 999) d.currencyB = 999;
+    if(d.currencyC > 999) d.currencyC = 999;
     data = d;
 }
