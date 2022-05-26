@@ -253,22 +253,31 @@ turretSelection *newTurretSelection(Game *GAME, char *turretFileName){
     return createdTurretSelection;
 }
 
-void *upgradeTurret(turret *turret){
+void upgradeTurret(GameObject *this){
+    if(!this) return;
+    turret *turret = this->actor;
     int state = searchIndexInList(*turret->states,turret->currentState);
-    turret->currentState = getDataAtIndex(*turret->states,state+1);
-    gameModeData data;
-    data.currencyA = getGameModeData().currencyA - turret->currentState->costA;
-    data.currencyB = getGameModeData().currencyB - turret->currentState->costB;
-    data.currencyC = getGameModeData().currencyC - turret->currentState->costC;
-    setGameModeData(data);
+    turret_state *next = getDataAtIndex(*turret->states,state+1);
+    gameModeData data = getGameModeData();
+    if(next){
+        if(next->costA <= data.currencyA && next->costB <= data.currencyB && next->costC <= data.currencyC){
+            turret->currentState = next;
+            data.currencyA -= turret->currentState->costA;
+            data.currencyB -= turret->currentState->costB;
+            data.currencyC -= turret->currentState->costC;
+            setGameModeData(data);
+        }
+    }
 }
 
-void *sellTurret(turret *turret){
-    turretDelete(turret);
-    gameModeData data;
-    data.currencyA = getGameModeData().currencyA + (75/100)*turret->currentState->costA;
-    data.currencyB = getGameModeData().currencyB + (75/100)*turret->currentState->costB;
-    data.currencyC = getGameModeData().currencyC + (75/100)*turret->currentState->costC;
+void sellTurret(GameObject *this){
+    if(!this) return;
+    turret *turret = this->actor;
+    gameModeData data = getGameModeData();
+    data.currencyA += turret->currentState->costA;
+    data.currencyB += turret->currentState->costB;
+    data.currencyC += turret->currentState->costC;
+    turretDelete(this);
     setGameModeData(data);
 }
 
