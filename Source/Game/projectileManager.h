@@ -6,6 +6,7 @@
  * 
  */
 
+#pragma once
 #include <SDL2/SDL.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -36,6 +37,8 @@ typedef struct{
     void *target;
 } hit;
 
+typedef struct projectile projectile;
+
 /**
  * @brief Structure that holds the projectile manager
  */
@@ -58,7 +61,7 @@ typedef struct
     *  @param parent the parent of the projectile
     *  @param target the target of the projectile
     */
-    void (*newProjectile)(void *GAME, char *projectileFileName, float xpos, float ypos, float rotation, void *parent, void *target);
+    projectile *(*newProjectile)(void *GAME, char *projectileFileName, float xpos, float ypos, float rotation, void *parent, void *target);
     
     /** @brief Creates a new hit
     *  @param damage the damage of the hit
@@ -103,7 +106,7 @@ typedef struct{
 
 /** @brief Structure that holds the projectile
     */
-typedef struct{
+typedef struct projectile{
     /** @brief Updates a projectile
     *  @param self the projectile to be updated
     */
@@ -142,6 +145,11 @@ typedef struct{
     void *target;
     void *parent;
 } projectile;
+
+/** @brief Delete a projectile
+ * @param self the projectile to be deleted
+    */
+void projectileDelete(void *self);
 
 /** @brief Creates and inits the projectile manager
  *  @return the projectile manager created

@@ -252,13 +252,14 @@ void projectileDelete(void *self){
     free(this);
 }
 
-void createProjectile(void *GAME, char *projectileFileName, float xpos, float ypos, float rotation, void *parent, void *target){
+projectile *createProjectile(void *GAME, char *projectileFileName, float xpos, float ypos, float rotation, void *parent, void *target){
     projectile *createdProjectile = newProjectile(GAME, projectileFileName, xpos, ypos, rotation, true, target);
     createdProjectile->parent = parent;
     createdProjectile->update = projectileUpdate;
     createdProjectile->render = projectileRender;
     createdProjectile->delete = projectileDelete;
     pushInList(PROJECTILE_MANAGER->projectiles, createdProjectile);
+    return createdProjectile;
 }
 
 
