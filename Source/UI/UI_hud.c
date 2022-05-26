@@ -309,7 +309,7 @@ static void onUpdate(){
         memset(*string,0,255);
         strcpy(*string,*LM_getTradById("turret_radius"));
         strcat(*string," : ");
-        char *number = malloc(sizeof(char)*3);
+        char *number = malloc(sizeof(char)*255);
         sprintf(number,"%d",s->selected.turretSelection->radius);
         strcat(*string,number);
         HUD_text_1_right_part->text = string;
