@@ -1,4 +1,18 @@
-#include "UI_newProgressBar.h"
+#include "UI_progressBar.h"
+
+
+void getProgressBarKey(UI_progresBarType type, char *str)
+{
+    switch (type)
+    {
+        case UI_PGB_HEALTH:
+            strcpy(str, "Health");
+            break;
+        case UI_PGB_SHIELD:
+            strcpy(str, "Shield");
+            break;
+    }
+}
 
 UI_progressBar *UI_newProgressBar(Game *game,int width,int height,char *behindTexture, char *frontTexture,UI_anchor *anchor,int sizeFactor,bool vertical,float *value,UI_progresBarType type)
 {
@@ -27,19 +41,6 @@ UI_progressBar *UI_newProgressBar(Game *game,int width,int height,char *behindTe
     progressBar->sizeFactor = sizeFactor;
     appendInList(game->menu->progressBars, progressBar);
     return progressBar; 
-}
-
-void getProgressBarKey(UI_progresBarType type, char *str)
-{
-    switch (type)
-    {
-        case UI_PGB_HEALTH:
-            strcpy(str, "Health");
-            break;
-        case UI_PGB_SHIELD:
-            strcpy(str, "Shield");
-            break;
-    }
 }
 
 void UI_renderProgressBars(void *self){
