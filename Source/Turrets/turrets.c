@@ -9,6 +9,7 @@
 #include "../Game/camera.h"
 #include "../Game/rendererAddons.h"
 #include "../Game/gameManager.h"
+#include "../Game/projectileManager.h"
 
 typedef enum{TP_NAME,TP_DESCRIPTION, TP_TEX_REF, TP_TEX_ANIM_FRAMES, TP_FIRE_FRAME, TP_ROTATION_SPEED, TP_ROTATION_ACCELERATION, TP_WEAPON_DELAY, TP_WEAPON_RANGE, TP_WEAPON_PROJECTILE_NAME, TP_NEWSTATE,TP_COST_A,TP_COST_B,TP_COST_C,TP_NONE} turretConfigFileParam;
 
@@ -193,6 +194,12 @@ turretSelection *newTurretSelection(Game *GAME, char *turretFileName){
     createdTurretSelection->costA = srcturret->currentState->costA;
     createdTurretSelection->costB = srcturret->currentState->costB;
     createdTurretSelection->costC = srcturret->currentState->costC;
+    int fireDelay = srcturret->currentState->delay;
+    createdTurretSelection->firerate = 60/fireDelay;
+    projectile *srcprojectile = GAME->projectileManager->newProjectile(GAME, srcturret->currentState->projectileName, 0, 0, 0, NULL, NULL);
+    createdTurretSelection->damage = srcprojectile->damage;
+    projectileDelete(srcprojectile);
+
     SDL_PixelFormatEnum format = SDL_PIXELFORMAT_RGBA8888;
     // SDL_QueryTexture(srcturret->currentState->base.texture, &format, NULL, NULL, NULL);
 
@@ -276,5 +283,12 @@ list *generateTurretsSelection(Game *GAME){
         }
     }
     closedir(dir);
+    int compareTurretSelection(void *a, void *b){
+        turretSelection *a_turret = (turretSelection *)a;
+        turretSelection *b_turret = (turretSelection *)b;
+        return a_turret->costA - b_turret->costA;
+    }
+    sortList(turrets, compareTurretSelection, true);
+    // sort list by cost
     return turrets;
 }

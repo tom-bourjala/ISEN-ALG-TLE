@@ -69,6 +69,8 @@ typedef struct{
     int width;
     int height;
     int radius;
+    int firerate;
+    int damage;
     int costA;
     int costB;
     int costC;
