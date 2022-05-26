@@ -65,6 +65,7 @@ void endCurrentMode(){
 void updateGameManager(){
     if(Core){
         core *coreActor = Core->actor;
+        if(!GAME->waveManager->isWaveActive) coreActor->rechargeDelayCounter = 0;
         if(coreActor->health <= 0){
             catchGameOver();
         }
