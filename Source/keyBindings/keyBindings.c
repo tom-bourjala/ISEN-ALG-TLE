@@ -204,6 +204,24 @@ void KB_getInput(void (*cb)(SDL_Keycode code,void *data),void *d)
     data = d;
 }
 
+static GameObject *getObjectUnderMouse(Game *game){
+    int mx = game->mouseX;
+    int my = game->mouseY;
+    GameObject *obj = NULL;
+    void getObjUnderMouse(void *self){
+        GameObject *o = self;
+        if(o->type == GOT_Turret){
+            turret *t = o->actor;
+            SDL_Rect turretArea = (SDL_Rect){t->x,t->y,t->width,t->height};
+            projectRectToCamera(&turretArea);
+            if(SDL_PointInRect(&(SDL_Point){mx,my},&turretArea)){
+                obj = o;
+            }
+        }
+    }
+    forEach(game->gameObjects,getObjUnderMouse);
+    return obj;
+}
 void KB_handleKeyCode(SDL_Keycode code, Game *game)
 {
     
@@ -215,8 +233,6 @@ void KB_handleKeyCode(SDL_Keycode code, Game *game)
         return;
     }
     list *inputs = KB_getInputs(code);
-
-    
 
     void handleInput(void *input) {
         GA_type *i = input;
@@ -303,8 +319,10 @@ void KB_handleKeyCode(SDL_Keycode code, Game *game)
             }
             break;
         case GA_SELL:
+            sellTurret(getObjectUnderMouse(game));
             break;
         case GA_UPGRADE:
+            upgradeTurret(getObjectUnderMouse(game));
             break;
         case GA_ZOOMIN:
             if(!game->pause) cameraZoom(0.2);
