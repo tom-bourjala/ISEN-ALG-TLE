@@ -114,6 +114,19 @@ void GM_launchEndless(void *self){
     launchEndlessMode(THIS_GAME);
 }
 
+void GM_launchSandbox(void *self){
+    if(THIS_GAME->selection){
+        Selection *toFree = THIS_GAME->selection;
+        free(toFree);
+    }
+    Selection *selection = malloc(sizeof(Selection));
+    selection->type = SELECT_MAP;
+    selection->selected.mapId = 1;
+    THIS_GAME->selection = selection;
+    launchSandboxMode(THIS_GAME);
+}
+
+
 void UI_initMainMenu(void *GAME)
 {
     THIS_GAME = GAME;
@@ -146,7 +159,7 @@ void UI_initMainMenu(void *GAME)
 
     //Play menu buttons
     endlessButton = UI_newButton(THIS_GAME->menu, LM_getTradById("menu_home_endless"), UI_B_BIG, AP_ENDLESS, false, GM_launchEndless, NULL, NULL, 2);
-    sandboxButton = UI_newButton(THIS_GAME->menu, LM_getTradById("menu_home_sandbox"), UI_B_BIG, AP_SANDBOX, false, onClickPrintf, NULL, NULL, 2);
+    sandboxButton = UI_newButton(THIS_GAME->menu, LM_getTradById("menu_home_sandbox"), UI_B_BIG, AP_SANDBOX, false, GM_launchSandbox, NULL, NULL, 2);
     backButton = UI_newButton(THIS_GAME->menu, LM_getTradById("menu_back"), UI_B_BACK, AP_BACK, false, switchToHomeMenu, NULL, NULL, 1.5);
 
     switchToHomeMenu(NULL);

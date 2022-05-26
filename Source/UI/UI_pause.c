@@ -58,7 +58,7 @@ void clickSettings(void *self)
 
 void clickQuit(void *self)
 {
-    endEndlessMode();
+    endCurrentMode();
     game->selection = NULL;
     forEach(game->gameObjects, deleteGameObject);
     forEach(game->animationManager->animList, freeAnimation);
@@ -141,7 +141,7 @@ void catchGameOver(){
         
     hud = game->menu;
     game->menu = pause_menu;
-    endEndlessMode();
+    endCurrentMode();
     forEach(game->gameObjects, deleteGameObject);
     forEach(game->animationManager->animList, freeAnimation);
     game->projectileManager->empty();

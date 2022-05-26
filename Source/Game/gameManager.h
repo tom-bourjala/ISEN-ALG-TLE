@@ -36,6 +36,11 @@ void launchMainMenu(void *GAME);
 */
 void launchEndlessMode(void *GAME);
 
+/** @brief Launches the sandbox mode
+*  @param GAME the current main game system
+*/
+void launchSandboxMode(void *game);
+
 /** @brief Updates the game states
 *  @param GAME the current main game system to be updated
 */
@@ -51,6 +56,7 @@ gameModeData getGameModeData(void);
 */
 void setGameModeData(gameModeData data);
 
-/** @brief Frees the core if the endless mode isn't running anymore
+/** @brief Quit current game mode
 */
+void endCurrentMode();
 void endEndlessMode();

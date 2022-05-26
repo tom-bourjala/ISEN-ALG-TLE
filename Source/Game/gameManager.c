@@ -13,6 +13,8 @@
 
 static Game *GAME = NULL;
 static gameModeData data = {0,0,0};
+static bool sandbox = false;
+
 void launchMainMenu(void *game){
     GAME = game;
     UI_initMainMenu(game);
@@ -20,11 +22,7 @@ void launchMainMenu(void *game){
 
 static GameObject *Core = NULL;
 
-void launchEndlessMode(void *game){
-    GAME = game;
-    data .currencyA = 50;
-    data .currencyB = 0;
-    data .currencyC = 0;
+static void launchGameMode(){
     Selection *selection = GAME->selection;
     int mapId = 0;
     if(selection->type == SELECT_MAP){
@@ -37,11 +35,29 @@ void launchEndlessMode(void *game){
     endLoading(GAME);
     UI_initHud(GAME);
     GAME->cameraScale = 0.7f;
-    map_node *startNode = GAME->mapManager->currentMap->starts->first->data;
     cameraCheckSize();
 }
 
-void endEndlessMode(){
+void launchEndlessMode(void *game){
+    GAME = game;
+    sandbox = false;
+    data.currencyA = 50;
+    data.currencyB = 0;
+    data.currencyC = 0;
+    launchGameMode();
+}
+
+void launchSandboxMode(void *game){
+    GAME = game;
+    sandbox = true;
+    data.currencyA = 9999;
+    data.currencyB = 9999;
+    data.currencyC = 9999;
+    launchGameMode();
+}
+
+
+void endCurrentMode(){
     if(Core) deleteGameObject(Core);
     Core = NULL;
 }
@@ -62,5 +78,9 @@ gameModeData getGameModeData(void)
 
 void setGameModeData(gameModeData d)
 {
+    if(sandbox) return;
+    if(d.currencyA > 9999) d.currencyA = 9999;
+    if(d.currencyB > 9999) d.currencyB = 9999;
+    if(d.currencyC > 9999) d.currencyC = 9999;
     data = d;
 }
