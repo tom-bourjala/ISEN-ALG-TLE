@@ -1,5 +1,5 @@
 #include "UI_manager.h"
-#include "UI_newProgressBar.h"
+#include "UI_progressBar.h"
 #include "../Game/game.h"
 #include <stdbool.h>
 

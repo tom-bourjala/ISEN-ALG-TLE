@@ -7,7 +7,7 @@
 #include <stdbool.h>
 #include "../Core/core.h"
 #include "../Turrets/turrets.h"
-#include "UI_newProgressBar.h"
+#include "UI_progressBar.h"
 #include "../Waves/waveManager.h"
 #include "../Game/gameManager.h"
 
