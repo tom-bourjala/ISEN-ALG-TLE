@@ -147,6 +147,7 @@ void clean(){
     KB_free();
     deleteWaveManager();
     free(GAME);
+    exit(0);
 }
 
 Game *initGame(const char* title, int width, int height, bool fullscreen){

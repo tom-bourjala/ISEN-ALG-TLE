@@ -108,7 +108,7 @@ void catchPause()
 {
     hud = game->menu;
     game->menu = pause_menu;
-    
+    SDL_ShowCursor(SDL_ENABLE);
     title->hidden = false;
     title_Game_Over->hidden = true;
     button_continue->hidden = false;
@@ -141,6 +141,7 @@ void catchGameOver(){
         
     hud = game->menu;
     game->menu = pause_menu;
+    SDL_ShowCursor(SDL_ENABLE);
     endCurrentMode();
     forEach(game->gameObjects, deleteGameObject);
     forEach(game->animationManager->animList, freeAnimation);
