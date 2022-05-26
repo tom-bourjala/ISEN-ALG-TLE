@@ -4,6 +4,7 @@
 #include "../Turrets/turrets.h"
 #include "../Turrets/turretUsher.h"
 #include "../Game/selection.h"
+#include "../Game/gameManager.h"
 #include "../UI/UI_pause.h"
 
 static list *bindings = NULL;
@@ -221,9 +222,40 @@ void KB_handleKeyCode(SDL_Keycode code, Game *game)
         GA_type *i = input;
         if(*i == GA_TURRET1 || *i == GA_TURRET2 || *i == GA_TURRET3)
         {
+            if(!isGameModeActive()) return;
             list *tsl = generateTurretsSelection(game);
             Selection *curSel = game->selection;
-            if(game->selection) free(game->selection);
+            if(curSel && curSel->type == SELECT_TURRET){
+                turretSelection *current = curSel->selected.turretSelection;
+                switch (*i)
+                {
+                    case GA_TURRET1:;
+                        turretSelection *t0 = getDataAtIndex(*tsl,0);
+                        if(!strcmp(current->turretId, t0->turretId)){
+                            free(curSel);
+                            game->selection = NULL;
+                            return;
+                        }
+                        break;
+                    case GA_TURRET2:;
+                        turretSelection *t1 = getDataAtIndex(*tsl,1);
+                        if(!strcmp(current->turretId, t1->turretId)){
+                            free(curSel);
+                            game->selection = NULL;
+                            return;
+                        }
+                        break;
+                    case GA_TURRET3:;
+                        turretSelection *t2 = getDataAtIndex(*tsl,2);
+                        if(!strcmp(current->turretId, t2->turretId)){
+                            free(curSel);
+                            game->selection = NULL;
+                            return;
+                        }
+                        break;
+                }
+            }
+            if(curSel) free(curSel);
             Selection *selection = malloc(sizeof(Selection));
             selection->type = SELECT_TURRET;
             switch (*i)

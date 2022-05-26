@@ -72,6 +72,10 @@ void updateGameManager(){
     }
 }
 
+bool isGameModeActive(){
+    return Core != NULL;
+}
+
 gameModeData getGameModeData(void)
 {
     return data;

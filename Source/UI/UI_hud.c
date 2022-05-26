@@ -224,7 +224,7 @@ void eventTurretSelector(void *triggeredActionArea)
         if(THIS_GAME->selection){
             Selection *currentSelection = THIS_GAME->selection;
             if(currentSelection->type == SELECT_TURRET){
-                turretSelection *currentTurret = currentSelection->selected.turretSelection; 
+                turretSelection *currentTurret = currentSelection->selected.turretSelection;
                 if(currentTurret == selected->turret){
                     free(currentSelection);
                     THIS_GAME->selection = NULL;
@@ -396,8 +396,12 @@ static void onUpdate(){
     void updateTurretSelector(void *self){
         turretSelector *this = self;
         gameModeData data = getGameModeData();
-        if(s && s->type == SELECT_TURRET && s->selected.turretSelection == this->turret){
-            this->panel->isActive = true;
+        if(s && s->type == SELECT_TURRET){
+            turretSelection *selected = s->selected.turretSelection;
+            if(!strcmp(this->turret->turretId,selected->turretId))
+                this->panel->isActive = true;
+            else
+                this->panel->isActive = false;
         } else this->panel->isActive = false;
         if(data.currencyA >= this->turret->costA && data.currencyB >= this->turret->costB && data.currencyC >= this->turret->costC){
             this->panel->isDisabled = false;

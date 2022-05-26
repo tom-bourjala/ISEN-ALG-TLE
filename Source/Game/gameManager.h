@@ -60,3 +60,4 @@ void setGameModeData(gameModeData data);
 */
 void endCurrentMode();
 void endEndlessMode();
+bool isGameModeActive();
