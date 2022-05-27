@@ -25,6 +25,7 @@ static UI_text *HUD_text_wave_info = NULL;
 static UI_text *HUD_title_right_part = NULL;
 static UI_panel *HUD_right_part_panel = NULL;
 static UI_textureObject *HUD_right_part_img = NULL;
+static UI_textureObject *HUD_right_part_img_render = NULL;
 static UI_panel *HUD_right_part_img_panel = NULL;
 static UI_text *HUD_text_1_right_part = NULL;
 static UI_text *HUD_text_2_right_part = NULL;
@@ -280,80 +281,124 @@ static void onUpdate(){
         HUD_button_speed_3->isPressed = true;
     }
 
-    char **string = malloc(sizeof(char*));
-    *string = malloc(sizeof(char)*255);
-    memset(*string,0,255);
-    char *trad = *LM_getTradById("hud_wave_info");
-    strcat(*string,trad);
-    strcat(*string," ");
-    char *number = malloc(sizeof(char)*3);
-    sprintf(number,"%d",THIS_GAME->waveManager->waveNumber);
-    strcat(*string,number);
-    HUD_text_wave_info->text = string;
+    char *tradHudWaveInfo = *LM_getTradById("hud_wave_info");
+    sprintf(*HUD_text_wave_info->text,"%s %d",tradHudWaveInfo,THIS_GAME->waveManager->waveNumber);
 
     Selection *s = THIS_GAME->selection;
-    if(s && s->type == SELECT_TURRET)
+    if(s && (s->type == SELECT_TURRET || s->type == SELECT_GAMEOBJECT))
     {
         HUD_title_right_part->hidden = false;
         HUD_right_part_panel->hidden = false;
         HUD_right_part_img_panel->hidden = false;
-        HUD_right_part_img->hidden = false;
         HUD_text_1_right_part->hidden = false;
         HUD_text_2_right_part->hidden = false;
         HUD_text_3_right_part->hidden = false;
 
-        HUD_title_right_part->text = LM_getTradById(*s->selected.turretSelection->name);
 
-        char** string = malloc(sizeof(char*));
-        *string = malloc(sizeof(char)*255);
-        memset(*string,0,255);
-        strcpy(*string,*LM_getTradById("turret_radius"));
-        strcat(*string," : ");
-        char *number = malloc(sizeof(char)*255);
-        sprintf(number,"%d",s->selected.turretSelection->radius);
-        strcat(*string,number);
-        HUD_text_1_right_part->text = string;
+        int costA = -1;
+        int costB = -1;
+        int costC = -1;
+        if(s->type == SELECT_TURRET)
+            {
+            HUD_title_right_part->text = LM_getTradById(*s->selected.turretSelection->name);
+            HUD_right_part_img_render->hidden = true;
+            HUD_right_part_img->hidden = false;
 
-        char** string2 = malloc(sizeof(char*));
-        *string2 = malloc(sizeof(char)*255);
-        memset(*string2,0,255);
-        strcpy(*string2,*LM_getTradById("turret_fire_rate"));
-        strcat(*string2," : ");
-        char *number2 = malloc(sizeof(char)*3);
-        sprintf(number2,"%d",s->selected.turretSelection->firerate);
-        strcat(*string2,number2);
-        HUD_text_2_right_part->text = string2;
+            char *tradTurretRadius = *LM_getTradById("turret_radius");
+            sprintf(*HUD_text_1_right_part->text,"%s : %d",tradTurretRadius, s->selected.turretSelection->radius);
 
-        char** string3 = malloc(sizeof(char*));
-        *string3 = malloc(sizeof(char)*255);
-        memset(*string3,0,255);
-        strcpy(*string3,*LM_getTradById("turret_damage"));
-        strcat(*string3," : ");
-        char *number3 = malloc(sizeof(char)*3);
-        sprintf(number3,"%d",s->selected.turretSelection->damage);
-        strcat(*string3,number3);
-        HUD_text_3_right_part->text = string3;
+            char *tradTurretDamage = *LM_getTradById("turret_damage");
+            sprintf(*HUD_text_2_right_part->text,"%s : %d",tradTurretDamage, s->selected.turretSelection->damage);
 
-        turretSelection *selected = s->selected.turretSelection;
-        HUD_right_part_img->texture = selected->thumbnail;
-        if(selected->costA > 0){
-            HUD_item_1_right_part->hidden = false;
-            HUD_item_text_1_right_part->hidden = false;
-            sprintf(*HUD_item_text_1_right_part->text,"%d",selected->costA);
-            if(data.currencyA >= selected->costA)
-                HUD_item_text_1_right_part->color = (SDL_Color){255,255,255,255};
-            else 
-                HUD_item_text_1_right_part->color = (SDL_Color){255,25,25,255};
+            char *tradTurretFireRate = *LM_getTradById("turret_fire_rate");
+            sprintf(*HUD_text_3_right_part->text,"%s : %d",tradTurretFireRate, s->selected.turretSelection->firerate);
+
+            turretSelection *selected = s->selected.turretSelection;
+            HUD_right_part_img->texture = selected->thumbnail;
+            costA = selected->costA;
+            costB = selected->costB;
+            costC = selected->costC;
+
+        }else if(s->type == SELECT_GAMEOBJECT){
+            HUD_right_part_img_render->hidden = false;
+            HUD_right_part_img->hidden = true;
+            GameObject *selected = s->selected.gameObject;
+            switch (selected->type)
+            {
+            case GOT_Turret:
+                {   
+                    turret *turret = selected->actor;
+                    HUD_title_right_part->text = LM_getTradById(*turret->name);
+                    turret_state *nextState = getDataAtIndex(*turret->states,searchIndexInList(*turret->states,turret->currentState)+1);
+                    projectile *currentprojectile = selected->game->projectileManager->newProjectile(selected->game,turret->currentState->projectileName,0,0,0,NULL, NULL);
+                    projectile *nextProjectile = NULL;
+                    char *tradTurretRadius = *LM_getTradById("turret_radius");
+                    char *tradTurretDamage = *LM_getTradById("turret_damage");
+                    char *tradTurretFireRate = *LM_getTradById("turret_fire_rate");
+                    if(nextState){
+                        nextProjectile = selected->game->projectileManager->newProjectile(selected->game,nextState->projectileName,0,0,0,NULL, NULL);
+                        costA = nextState->costA;
+                        costB = nextState->costB;
+                        costC = nextState->costC;
+                        sprintf(*HUD_text_1_right_part->text,"%s : %d (> %d)",tradTurretRadius, turret->currentState->range, nextState->range);
+                        sprintf(*HUD_text_2_right_part->text,"%s : %d (> %d)",tradTurretDamage, currentprojectile->damage, nextProjectile->damage);
+                        sprintf(*HUD_text_3_right_part->text,"%s : %d (> %d)",tradTurretFireRate, 60/(turret->currentState->delay + turret->currentState->canon.nOfFrames), 60/(nextState->delay + nextState->canon.nOfFrames));
+                        projectileDelete(nextProjectile);
+                    }else{
+                        sprintf(*HUD_text_1_right_part->text,"%s : %d",tradTurretRadius, turret->currentState->range);
+                        sprintf(*HUD_text_2_right_part->text,"%s : %d",tradTurretDamage, currentprojectile->damage);
+                        sprintf(*HUD_text_3_right_part->text,"%s : %d",tradTurretFireRate, 60/(turret->currentState->delay + turret->currentState->canon.nOfFrames));
+                    }
+                    projectileDelete(currentprojectile);
+                    if(HUD_right_part_img_render->texture){
+                        SDL_DestroyTexture(HUD_right_part_img_render->texture);
+                        HUD_right_part_img_render->texture = NULL;
+                    }
+                    SDL_PixelFormatEnum format = SDL_PIXELFORMAT_RGBA8888;
+                    HUD_right_part_img_render->texture = SDL_CreateTexture(selected->game->renderer, format, SDL_TEXTUREACCESS_TARGET,turret->width,turret->height);
+                    SDL_SetTextureBlendMode(HUD_right_part_img_render->texture, SDL_BLENDMODE_BLEND);
+                    SDL_SetRenderTarget(selected->game->renderer, HUD_right_part_img_render->texture);
+
+                    int oldX = turret->x;
+                    int oldY = turret->y;
+                    turret->x = 0;
+                    turret->y = 0;
+                    float camScale = selected->game->cameraScale;
+                    int camX = selected->game->cameraX;
+                    int camY = selected->game->cameraY;
+                    selected->game->cameraScale = 1.0;
+                    selected->game->cameraX = 0;
+                    selected->game->cameraY = 0;
+                    selected->render(selected);
+                    selected->game->cameraScale = camScale;
+                    selected->game->cameraX = camX;
+                    selected->game->cameraY = camY;
+                    turret->x = oldX;
+                    turret->y = oldY;
+                    SDL_SetRenderTarget(selected->game->renderer, NULL);
+                    break;
+                }
+            default:
+                break;
+            }
+        }
+        if(costA > 0){
+                HUD_item_1_right_part->hidden = false;
+                HUD_item_text_1_right_part->hidden = false;
+                sprintf(*HUD_item_text_1_right_part->text,"%d",costA);
+                if(data.currencyA >= costA)
+                    HUD_item_text_1_right_part->color = (SDL_Color){255,255,255,255};
+                else 
+                    HUD_item_text_1_right_part->color = (SDL_Color){255,25,25,255};
         }else{
             HUD_item_1_right_part->hidden = true;
             HUD_item_text_1_right_part->hidden = true;
         }
-
-        if(selected->costB > 0){
+        if(costB > 0){
             HUD_item_2_right_part->hidden = false;
             HUD_item_text_2_right_part->hidden = false;
-            sprintf(*HUD_item_text_2_right_part->text,"%d",selected->costB);
-            if(data.currencyB >= selected->costB)
+            sprintf(*HUD_item_text_2_right_part->text,"%d",costB);
+            if(data.currencyB >= costB)
                 HUD_item_text_2_right_part->color = (SDL_Color){255,255,255,255};
             else 
                 HUD_item_text_2_right_part->color = (SDL_Color){255,25,25,255};
@@ -362,11 +407,11 @@ static void onUpdate(){
             HUD_item_text_2_right_part->hidden = true;
         }
 
-        if(selected->costC > 0){
+        if(costC > 0){
             HUD_item_3_right_part->hidden = false;
             HUD_item_text_3_right_part->hidden = false;
-            sprintf(*HUD_item_text_3_right_part->text,"%d",selected->costC);
-            if(data.currencyC >= selected->costC)
+            sprintf(*HUD_item_text_3_right_part->text,"%d",costC);
+            if(data.currencyC >= costC)
                 HUD_item_text_3_right_part->color = (SDL_Color){255,255,255,255};
             else 
                 HUD_item_text_3_right_part->color = (SDL_Color){255,25,25,255};
@@ -374,13 +419,12 @@ static void onUpdate(){
             HUD_item_3_right_part->hidden = true;
             HUD_item_text_3_right_part->hidden = true;
         }
-    }
-    else
-    {
+    } else {
         HUD_title_right_part->hidden = true;
         HUD_right_part_panel->hidden = true;
         HUD_right_part_img_panel->hidden = true;
         HUD_right_part_img->hidden = true;
+        HUD_right_part_img_render->hidden = true;
         HUD_text_1_right_part->hidden = true;
         HUD_text_2_right_part->hidden = true;
         HUD_text_3_right_part->hidden = true;
@@ -453,7 +497,10 @@ void UI_initHud(void *GAME)
     UI_anchor *A_WAVE_NEXT_HUD = UI_newAnchor(game->menu, HUD_wave_next_x, HUD_wave_next_y);
     nextWaveButton = UI_newButton(HUD_mid_panel->menu,LM_getTradById("hud_next_wave"), UI_B_LONG,A_WAVE_NEXT_HUD,false,nextWave,NULL,NULL,next_size_factor);
     UI_anchor *A_WAVE_INFO_HUD = UI_newAnchor(game->menu, HUD_wave_info_x, HUD_wave_info_y);
-    HUD_text_wave_info = UI_newText(game->menu,LM_getTradById("hud_wave_info"),A_WAVE_INFO_HUD, UI_TA_CENTER, UI_TJ_CENTER,(SDL_Color){255,255,255,255}, "./assets/fonts/RulerGold.ttf", next_font_size);
+    char **strWaveInfo = malloc(sizeof(char*));
+    *strWaveInfo = malloc(sizeof(char)*255);
+    sprintf(*strWaveInfo,"WAVE X");
+    HUD_text_wave_info = UI_newText(game->menu,strWaveInfo,A_WAVE_INFO_HUD, UI_TA_CENTER, UI_TJ_CENTER,(SDL_Color){255,255,255,255}, "./assets/fonts/RulerGold.ttf", next_font_size);
     
     /* Health and Shield bar */
     A_HUD_SHIELD_BAR = UI_newAnchor(game->menu, HUD_shield_bar_x, HUD_shield_bar_y);
@@ -469,7 +516,6 @@ void UI_initHud(void *GAME)
     /* Golds */
     UI_anchor *A_PANEL_GOLDS_HUD = UI_newAnchor(game->menu, HUD_curr_panel_x, HUD_curr_panel_y);
     UI_panel *HUD_curr_panel = UI_newPanel(game->menu,0.103125*THIS_GAME->winWidth,0.25*THIS_GAME->winHeight, A_PANEL_GOLDS_HUD, 2, UI_PT_B);
-    HUD_curr_panel->isActive = true;
 
     UI_anchor *A_TEXT_GOLDS_HUD_1 = UI_newAnchor(game->menu, HUD_text_curr_1_x, HUD_text_curr_1_y);
     char **text_curr_1 = malloc(sizeof(char*));
@@ -555,9 +601,9 @@ void UI_initHud(void *GAME)
     HUD_title_right_part = UI_newText(game->menu,title_right_part,A_TITLE_RIGHT_PART_HUD, UI_TA_LEFT, UI_TJ_CENTER,(SDL_Color){255,255,255,255}, "./assets/fonts/RulerGold.ttf", 30);
     
     UI_anchor *A_IMG_RIGHT_PART_HUD = UI_newAnchor(game->menu, HUD_right_part_img_panel_x, HUD_right_part_img_panel_y);
-    HUD_right_part_img_panel = UI_newPanel(game->menu,0.125*THIS_GAME->winHeight,0.125*THIS_GAME->winHeight, A_IMG_RIGHT_PART_HUD, 2, UI_PT_A);
+    HUD_right_part_img_panel = UI_newPanel(game->menu,0.125*THIS_GAME->winHeight,0.125*THIS_GAME->winHeight, A_IMG_RIGHT_PART_HUD, 2, UI_PT_B);
     HUD_right_part_img = UI_newStaticTextureObjectStatic(game->menu, (SDL_Rect){0,0,0.125*THIS_GAME->winHeight,0.125*THIS_GAME->winHeight}, A_IMG_RIGHT_PART_HUD, NULL);
-
+    HUD_right_part_img_render = UI_newStaticTextureObjectStatic(game->menu, (SDL_Rect){0,0,0.125*THIS_GAME->winHeight,0.125*THIS_GAME->winHeight}, A_IMG_RIGHT_PART_HUD, NULL);
     UI_anchor *A_TEXT_1_RIGHT_PART_HUD = UI_newAnchor(game->menu, HUD_right_part_text_1_x, HUD_right_part_text_1_y);
     char **text_1_right_part = malloc(sizeof(char*));
     *text_1_right_part = malloc(sizeof(char)*255);

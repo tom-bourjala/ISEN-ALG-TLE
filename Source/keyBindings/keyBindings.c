@@ -221,7 +221,7 @@ GameObject *getObjectUnderMouse(Game *game){
         }
         if(o->type == GOT_Robot){
             robot *r = o->actor;
-            SDL_Rect robotArea = (SDL_Rect){r->x,r->y,r->width,r->height};
+            SDL_Rect robotArea = (SDL_Rect){r->x -(r->width/2)-10,r->y-(r->height/2)-10,r->width+10,r->height+10};
             projectRectToCamera(&robotArea);
             if(SDL_PointInRect(&(SDL_Point){mx,my},&robotArea)){
                 obj = o;
@@ -299,6 +299,11 @@ void KB_handleKeyCode(SDL_Keycode code, Game *game)
             }
             game->selection = selection;
         }
+        GameObject *obj = getObjectUnderMouse(game);
+        Selection *selection = game->selection;
+        GameObject *selected = NULL;
+        if(selection && selection->type == SELECT_GAMEOBJECT)
+            selected = selection->selected.gameObject;
         switch (*i)
         {
         case GA_DOWN:
@@ -328,10 +333,14 @@ void KB_handleKeyCode(SDL_Keycode code, Game *game)
             }
             break;
         case GA_SELL:
-            sellTurret(getObjectUnderMouse(game));
+            if(selected && selected->type == GOT_Turret)
+                sellTurret(selected);
+            else sellTurret(obj);
             break;
         case GA_UPGRADE:
-            upgradeTurret(getObjectUnderMouse(game));
+            if(selected && selected->type == GOT_Turret)
+                upgradeTurret(selected);
+            else upgradeTurret(obj);
             break;
         case GA_ZOOMIN:
             if(!game->pause) cameraZoom(0.2);

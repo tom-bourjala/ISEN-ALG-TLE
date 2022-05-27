@@ -8,6 +8,7 @@
 #include "rendererAddons.h"
 #include "gameManager.h"
 #include "selection.h"
+#include "renderSelector.h"
 #include "../Turrets/turrets.h"
 #include "../Turrets/turretUsher.h"
 #include "../Robots/robots.h"
@@ -31,6 +32,20 @@ void handleEvents(){
                     GAME->mouseLeftDown = true;
                     GAME->menu->handleEvent(true);
                     if(GAME->mouseY < GAME->winHeight - 200) cameraStartDrag();
+                    Selection *selection = GAME->selection;
+                    if(!selection || selection->type != SELECT_TURRET){
+                        if(selection) free(selection);
+                        GAME->selection = NULL;
+                        GameObject *goum = getObjectUnderMouse(GAME);
+                        if(goum){
+                            if(goum->type == GOT_Turret || goum->type == GOT_Robot || goum->type == GOT_Core){
+                                selection = malloc(sizeof(Selection));
+                                selection->type = SELECT_GAMEOBJECT;
+                                selection->selected.gameObject = goum;
+                                GAME->selection = selection;
+                            }
+                        }
+                    }
                 }
                 break;
             case SDL_MOUSEBUTTONUP:
@@ -86,10 +101,20 @@ void update(){
         
     GAME->menu->update();
     SDL_SetCursor(GAME->currentCursor);
-    if(!GAME->pause)
-    {
+        
+    Selection *selection = GAME->selection;
+    if(selection && selection->type == SELECT_GAMEOBJECT){
+        if(!searchDataInList(*GAME->gameObjects, selection->selected.gameObject)){
+            free(selection);
+            GAME->selection = NULL;
+        }
+    }
+    if(!GAME->pause){
         updateGameManager();
         if(GAME->mouseLeftDown) cameraDrag();
+    }else if(selection){
+        free(selection);
+        GAME->selection = NULL;
     }
 }
 
@@ -106,6 +131,7 @@ void render(){
     {
         if(GAME->mapManager->currentMap) GAME->mapManager->render();
         
+        renderSelection(GAME);
         forEach(GAME->gameObjects, renderGameObject);
         GAME->projectileManager->renderProjectiles();
         

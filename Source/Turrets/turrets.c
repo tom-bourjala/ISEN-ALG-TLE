@@ -194,7 +194,7 @@ turretSelection *newTurretSelection(Game *GAME, char *turretFileName){
     createdTurretSelection->costA = srcturret->currentState->costA;
     createdTurretSelection->costB = srcturret->currentState->costB;
     createdTurretSelection->costC = srcturret->currentState->costC;
-    int fireDelay = srcturret->currentState->delay;
+    int fireDelay = srcturret->currentState->delay + srcturret->currentState->canon.nOfFrames;
     createdTurretSelection->firerate = 60/fireDelay;
     projectile *srcprojectile = GAME->projectileManager->newProjectile(GAME, srcturret->currentState->projectileName, 0, 0, 0, NULL, NULL);
     createdTurretSelection->damage = srcprojectile->damage;
