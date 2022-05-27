@@ -84,6 +84,7 @@ void demoWave(int waveNumber,wave *currentWave){
             for (int i=0;i<5;i++){
                 waveChunk *chunk = newChunk();
                 chunk->timer = 90;
+                chunk->treshold = 0;
                 appendInList(chunk->waveSpawner,newSpawner(2,0,0,getSpawnModulo(spawns,1)));
                 appendInList(currentWave->chunks,chunk);
             }
@@ -94,27 +95,32 @@ void demoWave(int waveNumber,wave *currentWave){
             appendInList(currentWave->chunks,chunk);
             }
         break;
-    case 3:;
+    default:;
             waveChunk *chunk6 = newChunk();
-            appendInList(chunk6->waveSpawner,newSpawner(3,0,0,getSpawnModulo(spawns,0)));
+            appendInList(chunk6->waveSpawner,newSpawner(waveNumber,0,0,getSpawnModulo(spawns,0)));
             appendInList(currentWave->chunks,chunk6);
-            for (int i=0;i<5;i++){
+            for (int i=0;i<2+waveNumber;i++){
                 waveChunk *chunk = newChunk();
                 chunk->timer = 90;
-                appendInList(chunk->waveSpawner,newSpawner(3,1,0,getSpawnModulo(spawns,1)));
+                chunk->treshold = 3;
+                appendInList(chunk->waveSpawner,newSpawner(waveNumber,1,0,getSpawnModulo(spawns,i)));
+                appendInList(chunk->waveSpawner,newSpawner(i%2,2,0,getSpawnModulo(spawns,i)));
                 appendInList(currentWave->chunks,chunk);
             }
-            for (int i=0;i<5;i++){
+            for (int i=0;i<2+waveNumber;i++){
                 waveChunk *chunk = newChunk();
                 chunk->timer = 90;
-                appendInList(chunk->waveSpawner,newSpawner(1,2,0,getSpawnModulo(spawns,0)));
+                chunk->treshold = 5;
+                appendInList(chunk->waveSpawner,newSpawner(waveNumber/3,2,0,getSpawnModulo(spawns,i)));
+                appendInList(chunk->waveSpawner,newSpawner(waveNumber,1,0,getSpawnModulo(spawns,0)));
                 appendInList(currentWave->chunks,chunk);
             }
-            for (int i=0;i<=5;i++){
-            waveChunk *chunk = newChunk();
-            chunk->timer = 90;
-            appendInList(chunk->waveSpawner,newSpawner(5,1,0,getSpawnModulo(spawns,2)));
-            appendInList(currentWave->chunks,chunk);
+            for (int i=0;i<=2+waveNumber;i++){
+                waveChunk *chunk = newChunk();
+                chunk->timer = 90;
+                appendInList(chunk->waveSpawner,newSpawner(waveNumber*2,1,0,getSpawnModulo(spawns,0)));
+                appendInList(chunk->waveSpawner,newSpawner(waveNumber*2,1,0,getSpawnModulo(spawns,1)));
+                appendInList(currentWave->chunks,chunk);
             }
         break;
     }
@@ -177,7 +183,7 @@ wave *generateNewWave(int waveNumber,float difficulty,waveManager *parent){
     srand(waveNumber);
     wave *wave = newWave(parent);
     float weight = waveNumber*difficulty;
-    if (waveNumber <= 3) demoWave(waveNumber,wave);
+    if (waveNumber) demoWave(waveNumber,wave);
     else if (waveNumber < 6) introToRobots(waveNumber,wave);
     else if(waveNumber <11 && waveNumber >5) introToBombers(waveNumber,wave);
     else if(waveNumber <16 && waveNumber >10) introToTanks(waveNumber,wave);

@@ -8,6 +8,7 @@
 #include "rendererAddons.h"
 #include "gameManager.h"
 #include "selection.h"
+#include "renderSelector.h"
 #include "../Turrets/turrets.h"
 #include "../Turrets/turretUsher.h"
 #include "../Robots/robots.h"
@@ -27,11 +28,24 @@ void handleEvents(){
         switch (event.type)
         {
             case SDL_MOUSEBUTTONDOWN:
-                handleEvents(-1);
                 if(event.button.button == SDL_BUTTON_LEFT){
                     GAME->mouseLeftDown = true;
                     GAME->menu->handleEvent(true);
                     if(GAME->mouseY < GAME->winHeight - 200) cameraStartDrag();
+                    Selection *selection = GAME->selection;
+                    if(!selection || selection->type != SELECT_TURRET){
+                        if(selection) free(selection);
+                        GAME->selection = NULL;
+                        GameObject *goum = getObjectUnderMouse(GAME);
+                        if(goum){
+                            if(goum->type == GOT_Turret || goum->type == GOT_Robot || goum->type == GOT_Core){
+                                selection = malloc(sizeof(Selection));
+                                selection->type = SELECT_GAMEOBJECT;
+                                selection->selected.gameObject = goum;
+                                GAME->selection = selection;
+                            }
+                        }
+                    }
                 }
                 break;
             case SDL_MOUSEBUTTONUP:
@@ -49,6 +63,7 @@ void handleEvents(){
                 break;
             case SDL_QUIT:
                 GAME->isRunning = false;
+                GAME->clean();
                 break;
             case SDL_KEYDOWN:
                 KB_handleKeyCode(event.key.keysym.sym, GAME);
@@ -87,10 +102,20 @@ void update(){
         
     GAME->menu->update();
     SDL_SetCursor(GAME->currentCursor);
-    if(!GAME->pause)
-    {
+        
+    Selection *selection = GAME->selection;
+    if(selection && selection->type == SELECT_GAMEOBJECT){
+        if(!searchDataInList(*GAME->gameObjects, selection->selected.gameObject)){
+            free(selection);
+            GAME->selection = NULL;
+        }
+    }
+    if(!GAME->pause){
         updateGameManager();
         if(GAME->mouseLeftDown) cameraDrag();
+    }else if(selection){
+        free(selection);
+        GAME->selection = NULL;
     }
 }
 
@@ -105,18 +130,16 @@ void render(){
     
     if(!GAME->pause)
     {
-        //Render MAP
         if(GAME->mapManager->currentMap) GAME->mapManager->render();
         
-        //Render OBJECTS
+        renderSelection(GAME);
         forEach(GAME->gameObjects, renderGameObject);
         GAME->projectileManager->renderProjectiles();
         
-        //Render UI
         if(GAME->selection) renderTurretSelection(GAME);
+        else SDL_ShowCursor(SDL_ENABLE);
     }
     
-    //Render UI
     if(GAME->menu) GAME->menu->render();
     SDL_RenderPresent(GAME->renderer);
 }
@@ -151,6 +174,7 @@ void clean(){
     KB_free();
     deleteWaveManager();
     free(GAME);
+    exit(0);
 }
 
 Game *initGame(const char* title, int width, int height, bool fullscreen){
@@ -177,7 +201,6 @@ Game *initGame(const char* title, int width, int height, bool fullscreen){
         printf("\033[1;31mSDL Subsystems Initialising FAILED : %s\033[0m\n", SDL_GetError());
     }
     GAME->SEMusicWeight = 0;
-    //GAME->soundEngine = initSoundEngine(&GAME->SEMusicWeight);
     GAME->mouseX = 0;
     GAME->mouseY = 0;
     GAME->mouseLeftDown = false;

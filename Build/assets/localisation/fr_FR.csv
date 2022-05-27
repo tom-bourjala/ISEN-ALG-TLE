@@ -53,4 +53,6 @@ turret_laser;Laser
 turret_artil;Artillerie
 turret_plasma;Plasma
 turret_radius;Portee
+turret_fire_rate;Cad. de tir
+turret_damage;Degats
 GAME_OVER; GAME OVER

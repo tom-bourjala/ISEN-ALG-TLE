@@ -76,7 +76,7 @@ void UI_RenderTextureObject(void *self)
 {
     UI_textureObject *this = self;
     Game *game = this->menu->game;
-    if(!this->hidden){
+    if(!this->hidden && this->texture){
         SDL_RenderCopyEx(game->renderer, this->texture, NULL, &this->rect, 0, NULL, this->flip);
     }
 }
@@ -100,6 +100,7 @@ UI_text *UI_newText(UI_menu *parent, char **text, UI_anchor *anchor, UI_textAlig
     text_object->textAlign=align;
     text_object->textJustify=justify;
     text_object->color = color;
+    text_object->colorCache = color;
     text_object->hidden = false;
     text_object->menu = parent;
     text_object->texture = NULL;
@@ -123,6 +124,14 @@ void UI_UpdateText(void *self){
         if(!surface) printf("TTF RenderUTF8_Solid : %s\n", TTF_GetError());
         this->texture = SDL_CreateTextureFromSurface(game->renderer, surface);
         SDL_FreeSurface(surface);
+    }
+    if(this->color.r != this->colorCache.r || this->color.g != this->colorCache.g || this->color.b != this->colorCache.b || this->color.a != this->colorCache.a){
+        SDL_Surface *surface = TTF_RenderUTF8_Solid(this->font, *this->text, this->color);
+        if(!surface) printf("TTF RenderUTF8_Solid : %s\n", TTF_GetError());
+        if(this->texture) SDL_DestroyTexture(this->texture);
+        this->texture = SDL_CreateTextureFromSurface(game->renderer, surface);
+        SDL_FreeSurface(surface);
+        this->colorCache = this->color;
     }
     if(this->anchor){
         int xA = this->anchor->getX(game);

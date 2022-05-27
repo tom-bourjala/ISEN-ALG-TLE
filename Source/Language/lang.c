@@ -88,7 +88,6 @@ langManager *initLanguageManager() {
     DIR *dir;
     struct dirent *ent;
     if ((dir = opendir ("./assets/localisation")) != NULL) {
-        /* print all the files and directories within directory */
         while ((ent = readdir (dir)) != NULL) {
             char *fileName = ent->d_name;
             if(strcmp(fileName, ".") != 0 && strcmp(fileName, "..") != 0)

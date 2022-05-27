@@ -2,20 +2,14 @@
 #include "../Game/game.h"
 #include "../Game/camera.h"
 #include "../Turrets/turrets.h"
+#include "../Robots/robots.h"
 #include "../Turrets/turretUsher.h"
 #include "../Game/selection.h"
+#include "../Game/gameManager.h"
 #include "../UI/UI_pause.h"
-
-/*
- * Global variables needed for the project
- */
 
 static list *bindings = NULL;
 static list* keyCodeTextureAsso = NULL;
-
-/*
- * Search function for the library to work properly
- */
 
 int Comparator(void *needle, void *data) {
     keyBinding *n1 = needle;
@@ -25,10 +19,6 @@ int Comparator(void *needle, void *data) {
     }
     return 1;
 }
-
-/*
- * Functions required for the library
- */
 
 int getKBEnumFromString(char *string)
 {
@@ -215,9 +205,35 @@ void KB_getInput(void (*cb)(SDL_Keycode code,void *data),void *d)
     data = d;
 }
 
+GameObject *getObjectUnderMouse(Game *game){
+    int mx = game->mouseX;
+    int my = game->mouseY;
+    GameObject *obj = NULL;
+    void getObjUnderMouse(void *self){
+        GameObject *o = self;
+        if(o->type == GOT_Turret){
+            turret *t = o->actor;
+            SDL_Rect turretArea = (SDL_Rect){t->x,t->y,t->width,t->height};
+            projectRectToCamera(&turretArea);
+            if(SDL_PointInRect(&(SDL_Point){mx,my},&turretArea)){
+                obj = o;
+            }
+        }
+        if(o->type == GOT_Robot){
+            robot *r = o->actor;
+            SDL_Rect robotArea = (SDL_Rect){r->x -(r->width/2)-10,r->y-(r->height/2)-10,r->width+10,r->height+10};
+            projectRectToCamera(&robotArea);
+            if(SDL_PointInRect(&(SDL_Point){mx,my},&robotArea)){
+                obj = o;
+            }
+        }
+    }
+    forEach(game->gameObjects,getObjUnderMouse);
+    return obj;
+}
+
 void KB_handleKeyCode(SDL_Keycode code, Game *game)
 {
-    
     if(callback)
     {
         callback(code,data);
@@ -227,15 +243,44 @@ void KB_handleKeyCode(SDL_Keycode code, Game *game)
     }
     list *inputs = KB_getInputs(code);
 
-    
-
     void handleInput(void *input) {
         GA_type *i = input;
         if(*i == GA_TURRET1 || *i == GA_TURRET2 || *i == GA_TURRET3)
         {
+            if(!isGameModeActive()) return;
             list *tsl = generateTurretsSelection(game);
             Selection *curSel = game->selection;
-            if(game->selection) free(game->selection);
+            if(curSel && curSel->type == SELECT_TURRET){
+                turretSelection *current = curSel->selected.turretSelection;
+                switch (*i)
+                {
+                    case GA_TURRET1:;
+                        turretSelection *t0 = getDataAtIndex(*tsl,0);
+                        if(!strcmp(current->turretId, t0->turretId)){
+                            free(curSel);
+                            game->selection = NULL;
+                            return;
+                        }
+                        break;
+                    case GA_TURRET2:;
+                        turretSelection *t1 = getDataAtIndex(*tsl,1);
+                        if(!strcmp(current->turretId, t1->turretId)){
+                            free(curSel);
+                            game->selection = NULL;
+                            return;
+                        }
+                        break;
+                    case GA_TURRET3:;
+                        turretSelection *t2 = getDataAtIndex(*tsl,2);
+                        if(!strcmp(current->turretId, t2->turretId)){
+                            free(curSel);
+                            game->selection = NULL;
+                            return;
+                        }
+                        break;
+                }
+            }
+            if(curSel) free(curSel);
             Selection *selection = malloc(sizeof(Selection));
             selection->type = SELECT_TURRET;
             switch (*i)
@@ -254,6 +299,11 @@ void KB_handleKeyCode(SDL_Keycode code, Game *game)
             }
             game->selection = selection;
         }
+        GameObject *obj = getObjectUnderMouse(game);
+        Selection *selection = game->selection;
+        GameObject *selected = NULL;
+        if(selection && selection->type == SELECT_GAMEOBJECT)
+            selected = selection->selected.gameObject;
         switch (*i)
         {
         case GA_DOWN:
@@ -283,8 +333,14 @@ void KB_handleKeyCode(SDL_Keycode code, Game *game)
             }
             break;
         case GA_SELL:
+            if(selected && selected->type == GOT_Turret)
+                sellTurret(selected);
+            else sellTurret(obj);
             break;
         case GA_UPGRADE:
+            if(selected && selected->type == GOT_Turret)
+                upgradeTurret(selected);
+            else upgradeTurret(obj);
             break;
         case GA_ZOOMIN:
             if(!game->pause) cameraZoom(0.2);

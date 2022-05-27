@@ -69,6 +69,7 @@ typedef struct
     UI_textJustify textJustify;
     TTF_Font *font;
     SDL_Color color;
+    SDL_Color colorCache;
     SDL_Texture *texture;
     bool hidden;
     UI_menu *menu;

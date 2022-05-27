@@ -67,7 +67,6 @@ void DrawCircle(SDL_Renderer * renderer, int32_t centreX, int32_t centreY, int32
 
    while (x >= y)
    {
-      //  Each of the following renders an octant of the circle
       SDL_RenderDrawPoint(renderer, dest.x + x, dest.y - y);
       SDL_RenderDrawPoint(renderer, dest.x + x, dest.y + y);
       SDL_RenderDrawPoint(renderer, dest.x - x, dest.y - y);

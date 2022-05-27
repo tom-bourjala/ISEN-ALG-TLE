@@ -77,7 +77,7 @@ SDL_Texture *getTexture(char *name){
     request->name = name;
     texture *data = searchDataInList(*TEXTURE_MANAGER->texList, request);
     if(!data){
-        printf("TextureManager : %s not found.\n", name);
+        // printf("TextureManager : %s not found.\n", name);
         return NULL;
     }
     return data->texture;

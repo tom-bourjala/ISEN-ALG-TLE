@@ -9,6 +9,7 @@
 #include "../Game/camera.h"
 #include "../Game/rendererAddons.h"
 #include "../Game/gameManager.h"
+#include "../Game/projectileManager.h"
 
 typedef enum{TP_NAME,TP_DESCRIPTION, TP_TEX_REF, TP_TEX_ANIM_FRAMES, TP_FIRE_FRAME, TP_ROTATION_SPEED, TP_ROTATION_ACCELERATION, TP_WEAPON_DELAY, TP_WEAPON_RANGE, TP_WEAPON_PROJECTILE_NAME, TP_NEWSTATE,TP_COST_A,TP_COST_B,TP_COST_C,TP_NONE} turretConfigFileParam;
 
@@ -163,8 +164,6 @@ void turretDelete(void *self){
 }
 
 bool turretIsAlive(void *self){
-    // GameObject *thisGameObject = self;
-    // turret *this = thisGameObject->actor;
     return true;
 }
 
@@ -195,6 +194,12 @@ turretSelection *newTurretSelection(Game *GAME, char *turretFileName){
     createdTurretSelection->costA = srcturret->currentState->costA;
     createdTurretSelection->costB = srcturret->currentState->costB;
     createdTurretSelection->costC = srcturret->currentState->costC;
+    int fireDelay = srcturret->currentState->delay + srcturret->currentState->canon.nOfFrames;
+    createdTurretSelection->firerate = 60/fireDelay;
+    projectile *srcprojectile = GAME->projectileManager->newProjectile(GAME, srcturret->currentState->projectileName, 0, 0, 0, NULL, NULL);
+    createdTurretSelection->damage = srcprojectile->damage;
+    projectileDelete(srcprojectile);
+
     SDL_PixelFormatEnum format = SDL_PIXELFORMAT_RGBA8888;
     // SDL_QueryTexture(srcturret->currentState->base.texture, &format, NULL, NULL, NULL);
 
@@ -248,22 +253,33 @@ turretSelection *newTurretSelection(Game *GAME, char *turretFileName){
     return createdTurretSelection;
 }
 
-void *upgradeTurret(turret *turret){
+void upgradeTurret(GameObject *this){
+    if(!this) return;
+    if(this->type != GOT_Turret) return;
+    turret *turret = this->actor;
     int state = searchIndexInList(*turret->states,turret->currentState);
-    turret->currentState = getDataAtIndex(*turret->states,state+1);
-    gameModeData data;
-    data.currencyA = getGameModeData().currencyA - turret->currentState->costA;
-    data.currencyB = getGameModeData().currencyB - turret->currentState->costB;
-    data.currencyC = getGameModeData().currencyC - turret->currentState->costC;
-    setGameModeData(data);
+    turret_state *next = getDataAtIndex(*turret->states,state+1);
+    gameModeData data = getGameModeData();
+    if(next){
+        if(next->costA <= data.currencyA && next->costB <= data.currencyB && next->costC <= data.currencyC){
+            turret->currentState = next;
+            data.currencyA -= turret->currentState->costA;
+            data.currencyB -= turret->currentState->costB;
+            data.currencyC -= turret->currentState->costC;
+            setGameModeData(data);
+        }
+    }
 }
 
-void *sellTurret(turret *turret){
-    turretDelete(turret);
-    gameModeData data;
-    data.currencyA = getGameModeData().currencyA + (75/100)*turret->currentState->costA;
-    data.currencyB = getGameModeData().currencyB + (75/100)*turret->currentState->costB;
-    data.currencyC = getGameModeData().currencyC + (75/100)*turret->currentState->costC;
+void sellTurret(GameObject *this){
+    if(!this) return;
+    if(this->type != GOT_Turret) return;
+    turret *turret = this->actor;
+    gameModeData data = getGameModeData();
+    data.currencyA += turret->currentState->costA;
+    data.currencyB += turret->currentState->costB;
+    data.currencyC += turret->currentState->costC;
+    turretDelete(this);
     setGameModeData(data);
 }
 
@@ -278,5 +294,12 @@ list *generateTurretsSelection(Game *GAME){
         }
     }
     closedir(dir);
+    int compareTurretSelection(void *a, void *b){
+        turretSelection *a_turret = (turretSelection *)a;
+        turretSelection *b_turret = (turretSelection *)b;
+        return a_turret->costA - b_turret->costA;
+    }
+    sortList(turrets, compareTurretSelection, true);
+    // sort list by cost
     return turrets;
 }

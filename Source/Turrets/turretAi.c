@@ -17,7 +17,7 @@ GameObject *getClosestEnemy(GameObject turretObject){
     float minDist = FLT_MAX;
     for(int index = 0; index < GameObjects->length; index++){
         GameObject *target = getDataAtIndex(*GameObjects, index);
-        if(target->type == GOT_Robot){
+        if(target->type == GOT_Robot && target->isAlive(target)){
             robot *actor = target->actor;
             float distanceIB = sqrt(pow(actor->x - (turret->x + turret->width/2),2) + pow(actor->y - (turret->y + turret->height/2),2));
             if(distanceIB <= minDist){
@@ -35,7 +35,6 @@ GameObject *getClosestEnemyInRange(GameObject turretObject){
     turret *turret = turretObject.actor;
     robot *actor = closestTarget->actor;
     float distanceIB = sqrt(pow(actor->x - (turret->x + turret->width/2),2) + pow(actor->y - (turret->y + turret->height/2),2));
-    // printf("IB=%f, R=%d\n", distanceIB, turret->range);
     if(distanceIB <= turret->currentState->range)
         return closestTarget;
     else
@@ -90,7 +89,7 @@ void updateTurretAi(GameObject *turretObject){
     if(turret->currentState->canon.currentFrame == turret->currentState->canon.fireFrame && !turret->turretLock){
         int spawnX = turret->x + (turret->width/2) - ((turret->width/2) * sin(turret->rotation));
         int spawnY = turret->y + (turret->height/2) - ((turret->height/2) * cos(turret->rotation));
-        turretObject->game->projectileManager->newProjectile(turretObject->game, turret->currentState->projectileName, spawnX, spawnY, turret->rotation, turretObject, getClosestEnemy(*turretObject));
+        turretObject->game->projectileManager->newProjectile(turretObject->game, turret->currentState->projectileName, spawnX, spawnY, turret->rotation, turretObject, getClosestEnemyInRange(*turretObject));
         turret->turretLock = true;
     }else if(turret->currentState->canon.currentFrame != turret->currentState->canon.fireFrame){
         turret->turretLock = false;

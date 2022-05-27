@@ -308,18 +308,10 @@ void updateButtonIcon(void *data)
 }
 
 void onUpdateSettings(){
-    //printf("%d x %d\n",THIS_GAME->mouseX,THIS_GAME->mouseY);
     st_panel->width = THIS_GAME->winWidth - (getLT_x(NULL)*2);
     st_panel->height = THIS_GAME->winHeight - (getLT_y(NULL)*2);
-
-    /*int max_x,max_y;
-    SDL_GetWindowMaximumSize(THIS_GAME->window,&max_x,&max_y);
-    SDL_SetWindowSize(THIS_GAME->window,800+(abs(max_x-800))*(*st_slider_resolution->value),600+(abs(max_x-600))*(*st_slider_resolution->value));
-    */
-
     
     forEach(KB_button_bindings,updateButtonIcon);
-    //forEach(keyTextureList,updateButtonIcon);
 
     changeGeneralHiddenState(!st_button_general->isActive);
     changeAccessibilityHiddenState(!st_button_accessibility->isActive);
@@ -486,6 +478,11 @@ void buttonInput(SDL_Keycode code, void *self)
 {
     buttonBinding *b = self;
     b->button->isPressed = false;
+    if(code == -1)
+    {
+        b->button->textureObjectIcon = b->button->textureObjectIconCache;
+        return;
+    }
     UI_buttonShowIcon(b->button);
     list *l = KB_getKeys(b->action);
     GA_type *action = getDataAtIndex(*l,0);
