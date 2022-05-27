@@ -63,6 +63,7 @@ void handleEvents(){
                 break;
             case SDL_QUIT:
                 GAME->isRunning = false;
+                GAME->clean();
                 break;
             case SDL_KEYDOWN:
                 KB_handleKeyCode(event.key.keysym.sym, GAME);
