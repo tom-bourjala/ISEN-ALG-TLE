@@ -169,6 +169,7 @@ void robotUpdate(void *self){
                 newData.currencyC = getGameModeData().currencyC + this->lootC;
                 setGameModeData(newData);
                 robotDelete(self);
+                return;
             }
             if (this->death.currentFrame == 2){
                 if(this->range == 0){
