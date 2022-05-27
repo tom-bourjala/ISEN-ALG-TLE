@@ -710,7 +710,6 @@ void UI_switchToSettings(void *GAME)
     UI_button *button_turret3 = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_left_row_7,true,inputKeyButton,NULL,NULL,1.5,NULL);
     UI_button *button_up_arrow = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_left_row_2,true,inputKeyButton,NULL,NULL,1.5,NULL);
     UI_button *button_down_arrow = UI_newButtonIcon(st_panel->menu,UI_B_DEFAULT,st_title_command_anchor_col_left_row_3,true,inputKeyButton,NULL,NULL,1.5,NULL);
-    UI_setButtonIcon(button_down_arrow,"UI_icon_key_move_up.png",SDL_FLIP_VERTICAL);
 
     buttonBinding *temp;
     KB_button_bindings = newList(COMPARE_PTR);
