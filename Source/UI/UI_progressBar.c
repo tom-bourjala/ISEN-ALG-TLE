@@ -119,14 +119,14 @@ void UI_renderProgressBars(void *self){
         else
         {
             src_rect = (SDL_Rect){7,7,2,2};
-            dst_rect = (SDL_Rect){newX,y,newWidth,this->height};
+            dst_rect = (SDL_Rect){x,y,newWidth,this->height};
             SDL_RenderCopy(game->renderer, this->front_texture, &src_rect,&dst_rect);
 
-            dst_rect=(SDL_Rect){newX,y,newWidth,z};
+            dst_rect=(SDL_Rect){x,y,newWidth,z};
             src_rect=(SDL_Rect){7,0,2,8};
             SDL_RenderCopy(game->renderer, this->front_texture,&src_rect,&dst_rect);
             
-            dst_rect=(SDL_Rect){newX,y+this->height-z,newWidth,z};
+            dst_rect=(SDL_Rect){x,y+this->height-z,newWidth,z};
             src_rect=(SDL_Rect){7,8,2,8};
             SDL_RenderCopy(game->renderer, this->front_texture,&src_rect,&dst_rect);
         }
