@@ -57,6 +57,7 @@ typedef struct{
     float speedy;
     float maxSpeed;
     int life;
+    int maxLife;
     int shield;
     int maxShield;
     int lootA;

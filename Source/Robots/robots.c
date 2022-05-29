@@ -10,6 +10,7 @@
 #include "../Game/camera.h"
 #include "../Game/gameManager.h"
 #include "../Core/core.h"
+#include "../Game/selection.h"
 
 
 typedef enum{ROB_NAME, ROB_TEX_REF, ROB_PROJECTILE_NAME, ROB_WIDTH, ROB_HEIGHT, ROB_SPEED, ROB_TEX_ANIM_FRAMES,ROB_TEX_ANIM_DELAY, ROB_LIFE,ROB_TEX_DEATH_ANIM_FRAMES,ROB_TEX_DEATH_ANIM_DELAY, ROB_WEAPON_DELAY, ROB_WEAPON_RANGE, ROB_IS_FRIENDLY, ROB_NONE, ROB_LOOT_A,ROB_LOOT_B,ROB_LOOT_C} robotConfigFileParam;
@@ -50,6 +51,8 @@ robot *newRobot(Game GAME, char *robotFileName, int x, int y, map_node *spawnNod
     char stat_value[255];
     createdRobot->isFriendly = false;
     createdRobot->projectileName = NULL;
+    createdRobot->maxShield = 0;
+    createdRobot->shield = 0;
     while(fgets(line_cache,255,robot_file) != NULL){
         sscanf(line_cache,"%[^ ] = %[^\n]", stat_name, stat_value);
         switch(getRobotConfigFileParamFromString(stat_name)){
@@ -59,6 +62,7 @@ robot *newRobot(Game GAME, char *robotFileName, int x, int y, map_node *spawnNod
                 break;
             case ROB_LIFE:
                 createdRobot->life = atoi(stat_value);
+                createdRobot->maxLife = atoi(stat_value);
                 break;
             case ROB_TEX_REF:
                 createdRobot->texref = malloc(sizeof(char)*(strlen(stat_value)+1));
@@ -152,11 +156,24 @@ void robotDelete(void *self){
     free(this->walk.textureName);
     deleteInList(thisGameObject->game->gameObjects, thisGameObject);
     free(this);
+    Selection *selection = thisGameObject->game->selection;
+    if(selection && selection->type == SELECT_GAMEOBJECT){
+        if(selection->selected.gameObject == thisGameObject){
+            free(selection);
+            thisGameObject->game->selection = NULL;
+        }
+    }
 }
 
 void robotUpdate(void *self){
     GameObject *thisGameObject = self;
     robot *this = thisGameObject->actor;
+    if(this->life < 0){
+        this->life = 0;
+    }
+    if(this->shield < 0){
+        this->shield = 0;
+    }
     if (!robotIsAlive(self)){
         this->death.animationDelayCount--;
         if (this->death.animationDelayCount <= 0){
@@ -280,7 +297,8 @@ GameObject *newGameObject_Robot(Game *GAME, char *robotFileName, map_node *spawn
             spawnX = Sx1 - decreaseLevel;
             spawnY = Sy1 + (rand()%(Sy2-Sy1));
         }
-        decreaseTryNumber++;}
+        decreaseTryNumber++;
+    }
     robot->x = spawnX;
     robot->y = spawnY;
     GameObject *gameObject = malloc(sizeof(GameObject));

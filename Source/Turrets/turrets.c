@@ -10,7 +10,7 @@
 #include "../Game/rendererAddons.h"
 #include "../Game/gameManager.h"
 #include "../Game/projectileManager.h"
-
+#include "../Game/selection.h"
 typedef enum{TP_NAME,TP_DESCRIPTION, TP_TEX_REF, TP_TEX_ANIM_FRAMES, TP_FIRE_FRAME, TP_ROTATION_SPEED, TP_ROTATION_ACCELERATION, TP_WEAPON_DELAY, TP_WEAPON_RANGE, TP_WEAPON_PROJECTILE_NAME, TP_NEWSTATE,TP_COST_A,TP_COST_B,TP_COST_C,TP_NONE} turretConfigFileParam;
 
 turretConfigFileParam getTurretConfigFileParamFromString(char *fileParamString){
@@ -161,6 +161,13 @@ void turretDelete(void *self){
     freeList(this->states);
     deleteInList(thisGameObject->game->gameObjects, thisGameObject);
     free(this);
+    Selection *selection = thisGameObject->game->selection;
+    if(selection && selection->type == SELECT_GAMEOBJECT){
+        if(selection->selected.gameObject == thisGameObject){
+            free(selection);
+            thisGameObject->game->selection = NULL;
+        }
+    }
 }
 
 bool turretIsAlive(void *self){
