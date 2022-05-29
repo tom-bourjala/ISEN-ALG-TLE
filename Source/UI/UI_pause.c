@@ -65,6 +65,7 @@ void clickQuit(void *self)
     game->projectileManager->empty();
     game->mapManager->unloadMap();
     game->pause = false;
+    game->speedMultiplicator = 1;
     WM_killWave();
     UI_initMainMenu(game);
 }
@@ -119,13 +120,7 @@ void catchPause()
 
     SDL_PixelFormatEnum format = SDL_PIXELFORMAT_RGBA8888;
     if(background)free(background);
-    background = SDL_CreateTexture(game->renderer, format, SDL_TEXTUREACCESS_TARGET,game->winWidth,game->winHeight);
-    SDL_SetRenderTarget(game->renderer, background);
-    SDL_SetTextureAlphaMod(background, 128);
-    game->pause = false;
-    game->render();
-    game->pause = true;
-    SDL_SetRenderTarget(game->renderer, NULL);
+
     UI_refreshMenu(game->menu);
     //pauseBackground->texture = background;
 }
@@ -158,5 +153,8 @@ void catchGameOver(){
     menuLogo->hidden = false;
     button_quit_game_over->hidden = false;
 
+    Selection *s = game->selection;
+    if(s) free(s);
+    game->selection = NULL;
     UI_refreshMenu(game->menu);
 }
