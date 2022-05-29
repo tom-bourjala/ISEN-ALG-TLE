@@ -7,6 +7,7 @@
 #include <stdbool.h>
 #include "../Core/core.h"
 #include "../Turrets/turrets.h"
+#include "../Robots/robots.h"
 #include "UI_progressBar.h"
 #include "../Waves/waveManager.h"
 #include "../Game/gameManager.h"
@@ -14,6 +15,10 @@
 static Game *THIS_GAME = NULL;
 static float *core_health_percentage = NULL;
 static float *core_shield_percentage = NULL;
+static float target_health_percentage = 0.0f;
+static float target_shield_percentage = 0.0f;
+static UI_progressBar *target_health_bar = NULL;
+static UI_progressBar *target_shield_bar = NULL;
 static UI_button *nextWaveButton = NULL;
 static UI_text *text_currencies_1 = NULL;
 static UI_text *text_currencies_2 = NULL;
@@ -124,6 +129,11 @@ int HUD_right_part_text_2_y(void *none){return HUD_right_part_img_panel_y(NULL)+
 int HUD_right_part_text_3_x(void *none){return HUD_right_part_img_panel_x(NULL)+0.095*THIS_GAME->winWidth;}
 int HUD_right_part_text_3_y(void *none){return HUD_right_part_img_panel_y(NULL)+0.1*THIS_GAME->winHeight;}
 
+int HUD_right_part_health_x(void *none){return HUD_right_part_text_1_x(NULL);}
+int HUD_right_part_health_y(void *none){return HUD_right_part_text_1_y(NULL)-16;}
+int HUD_right_part_shield_x(void *none){return HUD_right_part_text_2_x(NULL);}
+int HUD_right_part_shield_y(void *none){return HUD_right_part_text_2_y(NULL)-16;}
+
 static int deltaLeftT = 370;
 static int deltaLeftI = 340;
 static int HUD_right_part_text_cost_1_x(void *none){return HUD_right_part_text_1_x(NULL) + deltaLeftT;}
@@ -133,11 +143,11 @@ static int HUD_right_part_text_cost_2_y(void *none){return HUD_panel_y(NULL)+THI
 static int HUD_right_part_text_cost_3_x(void *none){return HUD_right_part_text_1_x(NULL) + deltaLeftT;}
 static int HUD_right_part_text_cost_3_y(void *none){return HUD_panel_y(NULL)+THIS_GAME->winHeight*0.0625 + 45;}
 static int HUD_right_part_img_cost_1_x(void *none){return HUD_right_part_text_1_x(NULL) + deltaLeftI;}
-static int HUD_right_part_img_cost_1_y(void *none){return HUD_right_part_text_cost_1_y(NULL) - 15;}
+static int HUD_right_part_img_cost_1_y(void *none){return HUD_right_part_text_cost_1_y(NULL) - 14;}
 static int HUD_right_part_img_cost_2_x(void *none){return HUD_right_part_text_1_x(NULL) + deltaLeftI;}
-static int HUD_right_part_img_cost_2_y(void *none){return HUD_right_part_text_cost_2_y(NULL) - 15;}
+static int HUD_right_part_img_cost_2_y(void *none){return HUD_right_part_text_cost_2_y(NULL) - 14;}
 static int HUD_right_part_img_cost_3_x(void *none){return HUD_right_part_text_1_x(NULL) + deltaLeftI;}
-static int HUD_right_part_img_cost_3_y(void *none){return HUD_right_part_text_cost_3_y(NULL) - 15;}
+static int HUD_right_part_img_cost_3_y(void *none){return HUD_right_part_text_cost_3_y(NULL) - 14;}
 
 typedef struct{
     turretSelection *turret;
@@ -242,6 +252,20 @@ void eventTurretSelector(void *triggeredActionArea)
     }
 }
 
+static void cropedAndControlledRender(GameObject *object){
+    Game *game = THIS_GAME;
+    float camScale = game->cameraScale;
+    int camX = game->cameraX;
+    int camY = game->cameraY;
+    game->cameraScale = 1.0;
+    game->cameraX = 0;
+    game->cameraY = 0;
+    object->render(object);
+    game->cameraScale = camScale;
+    game->cameraX = camX;
+    game->cameraY = camY;
+}
+
 static void onUpdate(){
     core *ThisCore = THIS_GAME->coreObj->actor;
     *core_health_percentage = (float)ThisCore->health/(float)ThisCore->maxHealth;
@@ -250,36 +274,11 @@ static void onUpdate(){
     sprintf(*text_currencies_1->text,"%d",data.currencyA);
     sprintf(*text_currencies_2->text,"%d",data.currencyB);
     sprintf(*text_currencies_3->text,"%d",data.currencyC);
-    if (THIS_GAME->waveManager->isWaveActive){
-        nextWaveButton->isDisabled = true;
-    }
-    else {
-        nextWaveButton->isDisabled = false;
-    }
-    if(THIS_GAME->speedMultiplicator == 1)
-    {
-        HUD_button_speed_1->isPressed = false;
-        HUD_button_speed_2->isPressed = false;
-        HUD_button_speed_3->isPressed = false;
-    }
-    else if(THIS_GAME->speedMultiplicator == 2)
-    {
-        HUD_button_speed_1->isPressed = true;
-        HUD_button_speed_2->isPressed = false;
-        HUD_button_speed_3->isPressed = false;
-    }
-    else if(THIS_GAME->speedMultiplicator == 3)
-    {
-        HUD_button_speed_1->isPressed = true;
-        HUD_button_speed_2->isPressed = true;
-        HUD_button_speed_3->isPressed = false;
-    }
-    else if(THIS_GAME->speedMultiplicator == 4)
-    {
-        HUD_button_speed_1->isPressed = true;
-        HUD_button_speed_2->isPressed = true;
-        HUD_button_speed_3->isPressed = true;
-    }
+    
+    nextWaveButton->isDisabled = THIS_GAME->waveManager->isWaveActive;
+    HUD_button_speed_1->isPressed = THIS_GAME->speedMultiplicator > 1;
+    HUD_button_speed_2->isPressed = THIS_GAME->speedMultiplicator > 2;
+    HUD_button_speed_3->isPressed = THIS_GAME->speedMultiplicator > 3;
 
     char *tradHudWaveInfo = *LM_getTradById("hud_wave_info");
     sprintf(*HUD_text_wave_info->text,"%s %d",tradHudWaveInfo,THIS_GAME->waveManager->waveNumber);
@@ -290,6 +289,7 @@ static void onUpdate(){
         HUD_title_right_part->hidden = false;
         HUD_right_part_panel->hidden = false;
         HUD_right_part_img_panel->hidden = false;
+        HUD_right_part_img_panel->isDisabled = false;
         HUD_text_1_right_part->hidden = false;
         HUD_text_2_right_part->hidden = false;
         HUD_text_3_right_part->hidden = false;
@@ -327,6 +327,8 @@ static void onUpdate(){
             {
             case GOT_Turret:
                 {   
+                    target_health_bar->hidden = true;
+                    target_shield_bar->hidden = true;
                     turret *turret = selected->actor;
                     HUD_title_right_part->text = LM_getTradById(*turret->name);
                     turret_state *nextState = getDataAtIndex(*turret->states,searchIndexInList(*turret->states,turret->currentState)+1);
@@ -363,20 +365,49 @@ static void onUpdate(){
                     int oldY = turret->y;
                     turret->x = 0;
                     turret->y = 0;
-                    float camScale = selected->game->cameraScale;
-                    int camX = selected->game->cameraX;
-                    int camY = selected->game->cameraY;
-                    selected->game->cameraScale = 1.0;
-                    selected->game->cameraX = 0;
-                    selected->game->cameraY = 0;
-                    selected->render(selected);
-                    selected->game->cameraScale = camScale;
-                    selected->game->cameraX = camX;
-                    selected->game->cameraY = camY;
+                    cropedAndControlledRender(selected);
                     turret->x = oldX;
                     turret->y = oldY;
                     SDL_SetRenderTarget(selected->game->renderer, NULL);
                     break;
+                }
+            case GOT_Robot:
+                {
+                    robot *robot = selected->actor;
+                    HUD_text_1_right_part->hidden = false;
+                    HUD_text_2_right_part->hidden = robot->maxShield == 0;
+                    HUD_right_part_img_panel->isDisabled = !robot->isFriendly;
+                    HUD_text_3_right_part->hidden = true;
+                    target_health_bar->hidden = false;
+                    target_shield_bar->hidden = robot->maxShield == 0;
+                    HUD_title_right_part->text = LM_getTradById(robot->name);
+                    if(robot->life > 0)
+                        target_health_percentage = (float)robot->life/(float)robot->maxLife;
+                    else target_health_percentage = 0;
+                    if(robot->maxShield > 0)
+                        target_shield_percentage = (float)robot->shield/(float)robot->maxShield;
+                    else target_shield_percentage = 0;
+                    if(HUD_right_part_img_render->texture){
+                        SDL_DestroyTexture(HUD_right_part_img_render->texture);
+                        HUD_right_part_img_render->texture = NULL;
+                    }
+                    sprintf(*HUD_text_1_right_part->text,"                             %d/%d", robot->life, robot->maxLife);
+                    sprintf(*HUD_text_2_right_part->text,"                             %d/%d", robot->shield, robot->maxShield);
+
+                    SDL_PixelFormatEnum format = SDL_PIXELFORMAT_RGBA8888;
+                    HUD_right_part_img_render->texture = SDL_CreateTexture(selected->game->renderer, format, SDL_TEXTUREACCESS_TARGET,robot->width,robot->height);
+                    SDL_SetTextureBlendMode(HUD_right_part_img_render->texture, SDL_BLENDMODE_BLEND);
+                    SDL_SetRenderTarget(selected->game->renderer, HUD_right_part_img_render->texture);
+
+                    float oldX = robot->x;
+                    float oldY = robot->y;
+                    robot->x = robot->width/2;
+                    robot->y = robot->height/2;
+                    cropedAndControlledRender(selected);
+                    robot->x = oldX;
+                    robot->y = oldY;
+                    SDL_SetRenderTarget(selected->game->renderer, NULL);
+                    break;   
                 }
             default:
                 break;
@@ -435,6 +466,9 @@ static void onUpdate(){
         HUD_item_text_2_right_part->hidden = true;
         HUD_item_3_right_part->hidden = true;
         HUD_item_text_3_right_part->hidden = true;
+
+        target_health_bar->hidden = true;
+        target_shield_bar->hidden = true;
     }
 
     void updateTurretSelector(void *self){
@@ -558,6 +592,7 @@ void UI_initHud(void *GAME)
     UI_anchor *A_TEXT_TURRET_HUD_3 = UI_newAnchor(game->menu, HUD_turret_text_3_x, HUD_turret_text_3_y);
 
     HUD_turret_list = generateTurretsSelection(game);
+    
     turretSelectors = newList(COMPARE_PTR);
     for(int i = 0; i < 3; i++){
         turretSelection *tmp = getDataAtIndex(*HUD_turret_list, i);
@@ -591,6 +626,16 @@ void UI_initHud(void *GAME)
     }
 
     /* HUD right part */
+    UI_anchor *A_TEXT_1_RIGHT_PART_HUD = UI_newAnchor(game->menu, HUD_right_part_text_1_x, HUD_right_part_text_1_y);
+    UI_anchor *A_TEXT_2_RIGHT_PART_HUD = UI_newAnchor(game->menu, HUD_right_part_text_2_x, HUD_right_part_text_2_y);
+    UI_anchor *A_TEXT_3_RIGHT_PART_HUD = UI_newAnchor(game->menu, HUD_right_part_text_3_x, HUD_right_part_text_3_y);
+
+    UI_anchor *A_HEALTH_RIGHT_PART_HUD = UI_newAnchor(game->menu, HUD_right_part_health_x, HUD_right_part_health_y);
+    UI_anchor *A_SHIELD_RIGHT_PART_HUD = UI_newAnchor(game->menu, HUD_right_part_shield_x, HUD_right_part_shield_y);
+
+    target_health_bar = UI_newProgressBar(game, 25, 250, NULL, NULL, A_HEALTH_RIGHT_PART_HUD, 2, false, &target_health_percentage, UI_PGB_HEALTH);
+    target_shield_bar = UI_newProgressBar(game, 25, 250, NULL, NULL, A_SHIELD_RIGHT_PART_HUD, 2, false, &target_shield_percentage, UI_PGB_SHIELD);
+    
     UI_anchor *A_PANEL_RIGHT_PART_HUD = UI_newAnchor(game->menu, HUD_right_part_panel_x, HUD_right_part_panel_y);
     HUD_right_part_panel = UI_newPanel(game->menu,0.378125*THIS_GAME->winWidth,0.2*THIS_GAME->winHeight, A_PANEL_RIGHT_PART_HUD, 2, UI_PT_A);
     
@@ -604,17 +649,14 @@ void UI_initHud(void *GAME)
     HUD_right_part_img_panel = UI_newPanel(game->menu,0.125*THIS_GAME->winHeight,0.125*THIS_GAME->winHeight, A_IMG_RIGHT_PART_HUD, 2, UI_PT_B);
     HUD_right_part_img = UI_newStaticTextureObjectStatic(game->menu, (SDL_Rect){0,0,0.125*THIS_GAME->winHeight,0.125*THIS_GAME->winHeight}, A_IMG_RIGHT_PART_HUD, NULL);
     HUD_right_part_img_render = UI_newStaticTextureObjectStatic(game->menu, (SDL_Rect){0,0,0.125*THIS_GAME->winHeight,0.125*THIS_GAME->winHeight}, A_IMG_RIGHT_PART_HUD, NULL);
-    UI_anchor *A_TEXT_1_RIGHT_PART_HUD = UI_newAnchor(game->menu, HUD_right_part_text_1_x, HUD_right_part_text_1_y);
     char **text_1_right_part = malloc(sizeof(char*));
     *text_1_right_part = malloc(sizeof(char)*255);
     strcpy(*text_1_right_part,"text");
     HUD_text_1_right_part = UI_newText(game->menu,text_1_right_part,A_TEXT_1_RIGHT_PART_HUD, UI_TA_LEFT, UI_TJ_CENTER,(SDL_Color){255,255,255,255}, "./assets/fonts/RulerGold.ttf", 30);
-    UI_anchor *A_TEXT_2_RIGHT_PART_HUD = UI_newAnchor(game->menu, HUD_right_part_text_2_x, HUD_right_part_text_2_y);
     char **text_2_right_part = malloc(sizeof(char*));
     *text_2_right_part = malloc(sizeof(char)*255);
     strcpy(*text_2_right_part,"text");
     HUD_text_2_right_part = UI_newText(game->menu,text_2_right_part,A_TEXT_2_RIGHT_PART_HUD, UI_TA_LEFT, UI_TJ_CENTER,(SDL_Color){255,255,255,255}, "./assets/fonts/RulerGold.ttf", 30);
-    UI_anchor *A_TEXT_3_RIGHT_PART_HUD = UI_newAnchor(game->menu, HUD_right_part_text_3_x, HUD_right_part_text_3_y);
     char **text_3_right_part = malloc(sizeof(char*));
     *text_3_right_part = malloc(sizeof(char)*255);
     strcpy(*text_3_right_part,"text");
@@ -643,4 +685,5 @@ void UI_initHud(void *GAME)
     sprintf(*HUD_costC_string,"%d",data.currencyC);
     HUD_item_text_3_right_part = UI_newText(game->menu,HUD_costC_string,A_COST_RIGHT_TEXT_3, UI_TA_LEFT, UI_TJ_CENTER,(SDL_Color){255,255,255,255}, "./assets/fonts/RulerGold.ttf", 25);
     HUD_item_3_right_part = UI_newStaticTextureObject(game->menu, (SDL_Rect){0,0,20,20},A_COST_RIGHT_IMG_3,"cur_aicore.png");
+
 }
