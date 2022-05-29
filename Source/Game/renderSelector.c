@@ -23,15 +23,11 @@ static void renderTurretGOSelection(Game *game, GameObject *goum){
 
 static void renderRobotGOSelection(Game *game, GameObject *goum){
     robot *robot = goum->actor;
-    int range = robot->range/2 + 10;
-    SDL_SetRenderDrawColor(game->renderer, 255, 255, 255, 100);
-    DrawCircle(game->renderer, robot->x, robot->y, range);
+    int range = robot->width/1.9;
     SDL_SetRenderDrawColor(game->renderer, 250, 43, 43, 200);
-    DrawCircle(game->renderer, robot->x, robot->y, range-1);
-    DrawCircle(game->renderer, robot->x, robot->y, range-2);
-    DrawCircle(game->renderer, robot->x, robot->y, range-3);
-    SDL_SetRenderDrawColor(game->renderer, 255, 255, 255, 100);
-    DrawCircle(game->renderer, robot->x, robot->y, range-4);
+    for(range; range > 0; range--){
+        DrawCircle(game->renderer, robot->x, robot->y, range);
+    }
 }
 
 static void renderCoreGOSelection(Game *game, GameObject *goum){
