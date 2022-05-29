@@ -42,6 +42,8 @@ static UI_text *HUD_item_text_1_right_part = NULL;
 static UI_text *HUD_item_text_2_right_part = NULL;
 static UI_text *HUD_item_text_3_right_part = NULL;
 
+static UI_button *HUD_button_right_sell = NULL;
+static UI_button *HUD_button_right_upgrade = NULL;
 static char **(*LM_getTradById)(char *idToGet) = NULL;
 
 /* Main HUD panel */
@@ -149,6 +151,11 @@ static int HUD_right_part_img_cost_2_y(void *none){return HUD_right_part_text_co
 static int HUD_right_part_img_cost_3_x(void *none){return HUD_right_part_text_1_x(NULL) + deltaLeftI;}
 static int HUD_right_part_img_cost_3_y(void *none){return HUD_right_part_text_cost_3_y(NULL) - 14;}
 
+static int HUD_right_part_sellbutton_x(void *none){return HUD_right_part_text_1_x(NULL) + deltaLeftT;}
+static int HUD_right_part_sellbutton_y(void *none){return HUD_panel_y(NULL)+THIS_GAME->winHeight*0.0625 + 110;}
+static int HUD_right_part_upgradebutton_x(void *none){return HUD_right_part_text_1_x(NULL) + deltaLeftT;}
+static int HUD_right_part_upgradebutton_y(void *none){return HUD_panel_y(NULL)+THIS_GAME->winHeight*0.0625 + 75;}
+
 typedef struct{
     turretSelection *turret;
     int x;
@@ -215,6 +222,15 @@ void changeSpeed_3_OFF(void *none)
     }
 }
 
+static void onClickSell(void *none){
+    Selection *sel = THIS_GAME->selection;
+    sellTurret(sel->selected.gameObject);
+}
+
+static void onClickUpgrade(void *none){
+    Selection *sel = THIS_GAME->selection;
+    upgradeTurret(sel->selected.gameObject);
+}
 
 void nextWave(void *none)
 {
@@ -293,6 +309,8 @@ static void onUpdate(){
         HUD_text_1_right_part->hidden = false;
         HUD_text_2_right_part->hidden = false;
         HUD_text_3_right_part->hidden = false;
+        HUD_button_right_sell->hidden = true;
+        HUD_button_right_upgrade->hidden = true;
 
 
         int costA = -1;
@@ -329,6 +347,7 @@ static void onUpdate(){
                 {   
                     target_health_bar->hidden = true;
                     target_shield_bar->hidden = true;
+                    HUD_button_right_sell->hidden = false;
                     turret *turret = selected->actor;
                     HUD_title_right_part->text = LM_getTradById(*turret->name);
                     turret_state *nextState = getDataAtIndex(*turret->states,searchIndexInList(*turret->states,turret->currentState)+1);
@@ -346,10 +365,12 @@ static void onUpdate(){
                         sprintf(*HUD_text_2_right_part->text,"%s : %d (> %d)",tradTurretDamage, currentprojectile->damage, nextProjectile->damage);
                         sprintf(*HUD_text_3_right_part->text,"%s : %d (> %d)",tradTurretFireRate, 60/(turret->currentState->delay + turret->currentState->canon.nOfFrames), 60/(nextState->delay + nextState->canon.nOfFrames));
                         projectileDelete(nextProjectile);
+                        HUD_button_right_upgrade->hidden = false;
                     }else{
                         sprintf(*HUD_text_1_right_part->text,"%s : %d",tradTurretRadius, turret->currentState->range);
                         sprintf(*HUD_text_2_right_part->text,"%s : %d",tradTurretDamage, currentprojectile->damage);
                         sprintf(*HUD_text_3_right_part->text,"%s : %d",tradTurretFireRate, 60/(turret->currentState->delay + turret->currentState->canon.nOfFrames));
+                        HUD_button_right_upgrade->hidden = true;
                     }
                     projectileDelete(currentprojectile);
                     if(HUD_right_part_img_render->texture){
@@ -413,14 +434,17 @@ static void onUpdate(){
                 break;
             }
         }
+        HUD_button_right_upgrade->isDisabled = false;
         if(costA > 0){
                 HUD_item_1_right_part->hidden = false;
                 HUD_item_text_1_right_part->hidden = false;
                 sprintf(*HUD_item_text_1_right_part->text,"%d",costA);
                 if(data.currencyA >= costA)
                     HUD_item_text_1_right_part->color = (SDL_Color){255,255,255,255};
-                else 
+                else{
                     HUD_item_text_1_right_part->color = (SDL_Color){255,25,25,255};
+                    HUD_button_right_upgrade->isDisabled = true;
+                }
         }else{
             HUD_item_1_right_part->hidden = true;
             HUD_item_text_1_right_part->hidden = true;
@@ -431,8 +455,10 @@ static void onUpdate(){
             sprintf(*HUD_item_text_2_right_part->text,"%d",costB);
             if(data.currencyB >= costB)
                 HUD_item_text_2_right_part->color = (SDL_Color){255,255,255,255};
-            else 
+            else{
                 HUD_item_text_2_right_part->color = (SDL_Color){255,25,25,255};
+                HUD_button_right_upgrade->isDisabled = true;
+            }
         }else{
             HUD_item_2_right_part->hidden = true;
             HUD_item_text_2_right_part->hidden = true;
@@ -444,8 +470,10 @@ static void onUpdate(){
             sprintf(*HUD_item_text_3_right_part->text,"%d",costC);
             if(data.currencyC >= costC)
                 HUD_item_text_3_right_part->color = (SDL_Color){255,255,255,255};
-            else 
+            else {
                 HUD_item_text_3_right_part->color = (SDL_Color){255,25,25,255};
+                HUD_button_right_upgrade->isDisabled = true;
+            }
         }else{
             HUD_item_3_right_part->hidden = true;
             HUD_item_text_3_right_part->hidden = true;
@@ -469,6 +497,9 @@ static void onUpdate(){
 
         target_health_bar->hidden = true;
         target_shield_bar->hidden = true;
+
+        HUD_button_right_sell->hidden = true;
+        HUD_button_right_upgrade->hidden = true;
     }
 
     void updateTurretSelector(void *self){
@@ -686,4 +717,10 @@ void UI_initHud(void *GAME)
     HUD_item_text_3_right_part = UI_newText(game->menu,HUD_costC_string,A_COST_RIGHT_TEXT_3, UI_TA_LEFT, UI_TJ_CENTER,(SDL_Color){255,255,255,255}, "./assets/fonts/RulerGold.ttf", 25);
     HUD_item_3_right_part = UI_newStaticTextureObject(game->menu, (SDL_Rect){0,0,20,20},A_COST_RIGHT_IMG_3,"cur_aicore.png");
 
+    UI_anchor *A_SELL_RIGHT_BUTTON = UI_newAnchor(game->menu, HUD_right_part_sellbutton_x, HUD_right_part_sellbutton_y);
+    HUD_button_right_sell = UI_newButtonIcon(game->menu, UI_B_DIAG, A_SELL_RIGHT_BUTTON, false, onClickSell, NULL, NULL, 1.1, "UI_icon_sell.png");
+
+    UI_anchor *A_UPGRADE_RIGHT_BUTTON = UI_newAnchor(game->menu, HUD_right_part_upgradebutton_x, HUD_right_part_upgradebutton_y);
+    HUD_button_right_upgrade = UI_newButtonIcon(game->menu, UI_B_DIAG, A_UPGRADE_RIGHT_BUTTON, false, onClickUpgrade, NULL, NULL, 1.1, "UI_icon_upgrade.png");
+    HUD_button_right_upgrade->isDisabled = true;
 }

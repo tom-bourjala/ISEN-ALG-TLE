@@ -19,6 +19,10 @@
         "mapmanager.h": "c",
         "ui_loading.h": "c",
         "ui_settingsmenu.h": "c",
-        "stdlib.h": "c"
+        "stdlib.h": "c",
+        "wavemanager.h": "c",
+        "CORE.H": "cpp",
+        "keybindings.h": "c",
+        "renderselector.h": "c"
     }
 }

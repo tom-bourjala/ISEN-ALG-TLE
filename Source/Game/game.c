@@ -32,6 +32,7 @@ void handleEvents(){
                     GAME->mouseLeftDown = true;
                     GAME->menu->handleEvent(true);
                     if(GAME->mouseY < GAME->winHeight - 200) cameraStartDrag();
+                    else continue;
                     Selection *selection = GAME->selection;
                     if(!selection || selection->type != SELECT_TURRET){
                         if(selection) free(selection);
