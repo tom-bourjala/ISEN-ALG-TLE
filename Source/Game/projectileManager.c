@@ -45,6 +45,8 @@ void applyHit(void *self){
     switch (targetObject->type) {
         case GOT_Robot:
             ((robot*)targetObject->actor)->life -= this->damage;
+            if(((robot*)targetObject->actor)->life <= 0)
+                ((robot*)targetObject->actor)->life = 0;
             break;
         case GOT_Core:
             hitCore(targetObject, this->damage);
