@@ -13,6 +13,7 @@ static void coreUpdate(void *self){
     core *this = thisGameObject->actor;
     if(this->health <= 0){
         this->radius = 0;
+        thisGameObject->game->speedMultiplicator = 1;
         return;
     }
     if(this->shield < this->maxShield){
