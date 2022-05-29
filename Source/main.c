@@ -23,7 +23,9 @@ int main(int argc, const char * argv[]) {
 
         frameStart = SDL_GetTicks();
         game->handleEvents();
-        game->update();
+        for(int i=0; i<*speed; i++){
+            game->update();
+        }
         game->render();
 
         frameTime = SDL_GetTicks() - frameStart;
