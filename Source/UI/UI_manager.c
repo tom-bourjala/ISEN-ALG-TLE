@@ -85,10 +85,10 @@ void UI_MenuHandleEvent(bool isDown){
 void UI_MenuRender(){
     forEach(MENU->panels, UI_renderPanel);
     forEach(MENU->panelButtons, UI_renderButtonPanel);
+    forEach(MENU->progressBars, UI_renderProgressBars);
     forEach(MENU->textureObjects, UI_RenderTextureObject);
     forEach(MENU->texts, UI_RenderText);
     forEach(MENU->sliders, UI_renderSlider);
-    forEach(MENU->progressBars, UI_renderProgressBars);
 }
 
 UI_menu *UI_initMenu(void *game){
