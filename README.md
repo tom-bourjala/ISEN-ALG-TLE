@@ -1,4 +1,6 @@
 # THE LAST ENGINEER
+![TLELogo](https://github.com/tom-bourjala/ISEN-ALG-TLE/assets/31037693/7abe1745-4aef-4cca-bcbe-cd65b518cb3d)
+
 ### By Tom BOURJALA, Rémi HOARAU, William DER KRIKORIAN
 ## Table of Contents
 - [Overview](#overview)
