@@ -39,12 +39,6 @@ Our game introduces several innovations, including:
 - **Adaptive Sound Engine**: A complete individual track management system, non-functional in the current build.
 
 ## Dependencies
-The game is developed using the following tools and libraries:
-- GitHub
-- Visual Studio
-- Discord
-- Live Share
-- Valgrind
 - SDL2 (and libs)
 
 ## Future Improvements
